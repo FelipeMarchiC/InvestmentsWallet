@@ -1,5 +1,9 @@
-package br.ifsp.demo.domain;
+package br.ifsp.demo.service;
 
+import br.ifsp.demo.domain.Investment;
+import br.ifsp.demo.domain.Wallet;
+import br.ifsp.demo.repository.InMemoryWalletRepository;
+import br.ifsp.demo.repository.WalletRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -8,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-class WalletTest {
+class WalletServiceTest {
 
     @Nested
     class RegisterInvestment {
@@ -18,7 +22,8 @@ class WalletTest {
         @Tag("TDD")
         @DisplayName("Should register an investment")
         void shouldRegisterAnInvestment(){
-            Wallet sut = new Wallet();
+            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
+            WalletService sut = new WalletService(inMemoryRepository);
             Investment investment = new Investment();
 
             boolean result = sut.addInvestment(investment);

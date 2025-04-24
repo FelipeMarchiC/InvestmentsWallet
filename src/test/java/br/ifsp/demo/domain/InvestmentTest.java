@@ -27,6 +27,6 @@ class InvestmentTest {
         Asset asset = new Asset("PETR4");
         Investment investment = new Investment(100, 50, asset);
         String result = investment.toString();
-        assertThat(result).isEqualTo("Initial value = 100 | Recurrent value = 50 | Asset name = " + asset.getName());
+        assertThat(result).isEqualTo("Initial value = 100.0 | Recurrent value = 50.0 | Asset name = " + asset.getName());
     }
 }

@@ -12,6 +12,11 @@ public class Investment {
         this.asset = asset;
     }
 
+    @Override
+    public String toString() {
+        return "Initial value = " + initialValue + " | Recurrent value = " + recurrentValue + " | Asset name = " + asset.getName();
+    }
+
     private void verifyInvestment(double initialValue, double recurrentValue, Asset asset){
         if (initialValue <= 0) throw new IllegalArgumentException("Initial value must be greater than zero");
         if (recurrentValue <= 0) throw new IllegalArgumentException("Recurrent value must be greater than zero");

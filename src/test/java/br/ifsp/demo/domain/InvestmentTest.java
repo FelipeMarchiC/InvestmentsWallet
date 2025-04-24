@@ -22,6 +22,8 @@ class InvestmentTest {
     }
 
     @Test
+    @Tag("TDD")
+    @Tag("UnitTest")
     @DisplayName("Should correctly return toString of an investment")
     void shouldCorrectlyReturnToStringOfAnInvestment(){
         Asset asset = new Asset("PETR4");

@@ -1,20 +1,22 @@
 package br.ifsp.demo.repository;
 
-import br.ifsp.demo.domain.Investment;
+import br.ifsp.demo.domain.Wallet;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 public class InMemoryWalletRepository implements WalletRepository {
-    private final List<Investment> investments;
+    private final Map<UUID, Wallet> WalletContainer = new HashMap<>();
 
-    public InMemoryWalletRepository() {
-        this.investments = new ArrayList<>();
+    @Override
+    public Optional<Wallet> findById(UUID walletId) {
+        return Optional.of(WalletContainer.get(walletId));
     }
 
     @Override
-    public boolean addInvestment(Investment investment) {
-        investments.add(investment);
-        return true;
+    public void save(Wallet wallet) {
+        WalletContainer.put(wallet.getId(), wallet);
     }
 }

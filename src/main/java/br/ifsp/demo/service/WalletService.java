@@ -1,7 +1,11 @@
 package br.ifsp.demo.service;
 
 import br.ifsp.demo.domain.Investment;
+import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.WalletRepository;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public class WalletService {
     private final WalletRepository repository;
@@ -10,7 +14,15 @@ public class WalletService {
         this.repository = repository;
     }
 
-    public boolean addInvestment(Investment investment) {
-        return repository.addInvestment(investment);
+    public boolean addInvestment(UUID walletId, Investment investment) {
+        Optional<Wallet> walletOptional = repository.findById(walletId);
+        if (walletOptional.isPresent()) {
+            Wallet wallet = walletOptional.get();
+            wallet.addInvestiment(investment);
+            repository.save(wallet);
+            return true;
+
+        }
+        return false;
     }
 }

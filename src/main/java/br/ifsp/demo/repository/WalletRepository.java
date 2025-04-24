@@ -1,7 +1,11 @@
 package br.ifsp.demo.repository;
 
-import br.ifsp.demo.domain.Investment;
+import br.ifsp.demo.domain.Wallet;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public interface WalletRepository {
-    boolean addInvestment(Investment investment);
+    Optional<Wallet> findById(UUID walletId);
+    void save(Wallet wallet);
 }

@@ -26,7 +26,7 @@ class WalletServiceTest {
             WalletRepository inMemoryRepository = new InMemoryWalletRepository();
             WalletService sut = new WalletService(inMemoryRepository);
             Asset asset = new Asset();
-            Investment investment = new Investment(asset);
+            Investment investment = new Investment(100, 50, asset);
 
             boolean result = sut.addInvestment(investment);
             assertThat(result).isTrue();

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InvestmentTest {
@@ -18,5 +19,14 @@ class InvestmentTest {
         assertThrows(IllegalArgumentException.class, () -> {
             Investment investment = new Investment(initialValue, recurrentValue, asset);
         });
+    }
+
+    @Test
+    @DisplayName("Should correctly return toString of an investment")
+    void shouldCorrectlyReturnToStringOfAnInvestment(){
+        Asset asset = new Asset("PETR4");
+        Investment investment = new Investment(100, 50, asset);
+        String result = investment.toString();
+        assertThat(result).isEqualTo("Initial value = 100 | Recurrent value = 50 | Asset name = " + asset.getName());
     }
 }

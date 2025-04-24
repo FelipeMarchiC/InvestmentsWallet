@@ -24,7 +24,8 @@ class WalletServiceTest {
         void shouldRegisterAnInvestment(){
             WalletRepository inMemoryRepository = new InMemoryWalletRepository();
             WalletService sut = new WalletService(inMemoryRepository);
-            Investment investment = new Investment();
+            Asset asset = new Asset();
+            Investment investment = new Investment(asset);
 
             boolean result = sut.addInvestment(investment);
             assertThat(result).isTrue();

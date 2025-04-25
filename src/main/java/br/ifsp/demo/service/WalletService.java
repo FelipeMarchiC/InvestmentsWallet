@@ -25,4 +25,8 @@ public class WalletService {
         }
         return false;
     }
+
+    public boolean withdrawInvestment(UUID walletId, UUID investmentId) {
+        return true;
+    }
 }

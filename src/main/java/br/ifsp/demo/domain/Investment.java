@@ -1,15 +1,19 @@
 package br.ifsp.demo.domain;
 
+import java.util.UUID;
+
 public class Investment {
     private final double initialValue;
     private final double recurrentValue;
     private final Asset asset;
+    private final UUID id;
 
     public Investment(double initialValue, double recurrentValue, Asset asset) {
         verifyInvestment(initialValue, recurrentValue, asset);
         this.initialValue = initialValue;
         this.recurrentValue = recurrentValue;
         this.asset = asset;
+        this.id = UUID.randomUUID();
     }
 
     @Override
@@ -21,5 +25,9 @@ public class Investment {
         if (initialValue <= 0) throw new IllegalArgumentException("Initial value must be greater than zero");
         if (recurrentValue <= 0) throw new IllegalArgumentException("Recurrent value must be greater than zero");
         if (asset == null) throw new IllegalArgumentException("Asset cannot be null");
+    }
+
+    public UUID getId() {
+        return this.id;
     }
 }

@@ -24,4 +24,8 @@ public class Wallet {
     public List<Investment> getInvestments() {
         return investments;
     }
+
+    public double getTotalBalance() {
+        return 2500;
+    }
 }

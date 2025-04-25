@@ -13,15 +13,15 @@ public class Wallet {
         investments = new ArrayList<>();
     }
 
+    public void addInvestiment(Investment investment) {
+        investments.add(investment);
+    }
+
     public UUID getId() {
         return id;
     }
 
     public List<Investment> getInvestments() {
         return investments;
-    }
-
-    public void addInvestiment(Investment investment) {
-        investments.add(investment);
     }
 }

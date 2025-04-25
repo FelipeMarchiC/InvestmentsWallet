@@ -16,7 +16,6 @@ public class InMemoryWalletRepository implements WalletRepository {
 
     @Override
     public Optional<Wallet> findById(UUID walletId) {
-        System.out.println(walletContainer);
         return Optional.ofNullable(walletContainer.get(walletId));
     }
 

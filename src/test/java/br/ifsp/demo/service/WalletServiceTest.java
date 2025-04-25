@@ -57,4 +57,28 @@ class WalletServiceTest {
             assertThat(result).isTrue();
         }
     }
+
+    @Nested
+    class Balance {
+
+        @Test
+        @DisplayName("Should return total balance when there are active investments")
+        void shouldReturnTotalBalance(){
+            Wallet wallet = new Wallet();
+            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
+            inMemoryRepository.save(wallet);
+            WalletService sut = new WalletService(inMemoryRepository);
+
+            Asset asset = new Asset("Asset 1");
+            Investment investment1 = new Investment(1000, 200, asset);
+            Investment investment2 = new Investment(1500, 300, asset);
+
+            sut.addInvestment(wallet.getId(), investment1);
+            sut.addInvestment(wallet.getId(), investment2);
+            double totalBalance = wallet.getTotalBalance();
+            double expectedBalance = 2500;
+
+            assertThat(totalBalance).isEqualTo(expectedBalance);
+        }
+    }
 }

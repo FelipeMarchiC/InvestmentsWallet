@@ -25,6 +25,18 @@ public class WalletService {
     }
 
     public boolean withdrawInvestment(UUID walletId, UUID investmentId) {
+        Optional<Wallet> walletOptional = repository.findById(walletId);
+        if (walletOptional.isEmpty()) return false;
+
+        Wallet wallet = walletOptional.get();
+        Investment investment = wallet.getInvestmentById(investmentId);
+
+        boolean added = wallet.addInvestmentOnHistory(investment);
+        if (!added) return false;
+
+        wallet.removeInvestiment(investment);
+        repository.save(wallet);
+
         return true;
     }
 }

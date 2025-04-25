@@ -16,14 +16,12 @@ public class WalletService {
 
     public boolean addInvestment(UUID walletId, Investment investment) {
         Optional<Wallet> walletOptional = repository.findById(walletId);
-        if (walletOptional.isPresent()) {
-            Wallet wallet = walletOptional.get();
-            wallet.addInvestiment(investment);
-            repository.save(wallet);
-            return true;
+        if (walletOptional.isEmpty()) return false;
 
-        }
-        return false;
+        Wallet wallet = walletOptional.get();
+        wallet.addInvestiment(investment);
+        repository.save(wallet);
+        return true;
     }
 
     public boolean withdrawInvestment(UUID walletId, UUID investmentId) {

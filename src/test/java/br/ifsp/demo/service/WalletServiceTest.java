@@ -23,15 +23,16 @@ class WalletServiceTest {
         @Tag("TDD")
         @DisplayName("Should register an investment")
         void shouldRegisterAnInvestment(){
+            Wallet wallet = new Wallet();
             WalletRepository inMemoryRepository = new InMemoryWalletRepository();
+            inMemoryRepository.save(wallet);
+
             WalletService sut = new WalletService(inMemoryRepository);
             Asset asset = new Asset("PETR4");
             Investment investment = new Investment(100, 50, asset);
 
-            boolean result = sut.addInvestment(investment);
+            boolean result = sut.addInvestment(wallet.getId(), investment);
             assertThat(result).isTrue();
         }
     }
-
-
 }

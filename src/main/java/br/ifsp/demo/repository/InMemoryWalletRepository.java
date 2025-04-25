@@ -8,15 +8,20 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class InMemoryWalletRepository implements WalletRepository {
-    private final Map<UUID, Wallet> WalletContainer = new HashMap<>();
+    private final Map<UUID, Wallet> walletContainer;
+
+    public InMemoryWalletRepository() {
+        this.walletContainer = new HashMap<>();
+    }
 
     @Override
     public Optional<Wallet> findById(UUID walletId) {
-        return Optional.of(WalletContainer.get(walletId));
+        System.out.println(walletContainer);
+        return Optional.ofNullable(walletContainer.get(walletId));
     }
 
     @Override
     public void save(Wallet wallet) {
-        WalletContainer.put(wallet.getId(), wallet);
+        walletContainer.put(wallet.getId(), wallet);
     }
 }

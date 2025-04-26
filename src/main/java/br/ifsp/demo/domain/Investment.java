@@ -1,17 +1,29 @@
 package br.ifsp.demo.domain;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 public class Investment {
     private final double initialValue;
     private final Asset asset;
     private final UUID id;
+    private final LocalDate purchaseDate;
+    private LocalDate withdrawDate;
 
     public Investment(double initialValue, Asset asset) {
         verifyInvestment(initialValue, asset);
         this.initialValue = initialValue;
         this.asset = asset;
         this.id = UUID.randomUUID();
+        this.purchaseDate = LocalDate.now();
+    }
+
+    Investment(double initialValue, Asset asset, LocalDate purchaseDate) {
+        verifyInvestment(initialValue, asset);
+        this.initialValue = initialValue;
+        this.asset = asset;
+        this.id = UUID.randomUUID();
+        this.purchaseDate = purchaseDate;
     }
 
     @Override
@@ -26,5 +38,9 @@ public class Investment {
 
     public UUID getId() {
         return this.id;
+    }
+
+    public void setWithdrawDate(LocalDate withdrawDate) {
+        this.withdrawDate = withdrawDate;
     }
 }

@@ -10,14 +10,16 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InvestmentTest {
+
     @ParameterizedTest
     @Tag("TDD")
     @Tag("UnitTest")
-    @CsvSource({"0,0,", "-1,1,", "-1,-1,"})
+    @CsvSource({"0.0, PETR4, 0.01", "-100.0, PETR4, 0.01"})
     @DisplayName("Should return error when try to create investment with invalid parameters")
-    void shouldReturnErrorWhenTryToCreateInvestmentWithInvalidParameters(double initialValue, double recurrentValue, Asset asset){
+    void shouldReturnErrorWhenTryToCreateInvestmentWithInvalidParameters(double initialValue, String assetName, double assetProfitability){
         assertThrows(IllegalArgumentException.class, () -> {
-            Investment investment = new Investment(initialValue, recurrentValue, asset);
+            Asset asset = new Asset(assetName, assetProfitability);
+            Investment investment = new Investment(initialValue, asset);
         });
     }
 
@@ -26,9 +28,9 @@ class InvestmentTest {
     @Tag("UnitTest")
     @DisplayName("Should correctly return toString of an investment")
     void shouldCorrectlyReturnToStringOfAnInvestment(){
-        Asset asset = new Asset("PETR4");
-        Investment investment = new Investment(100, 50, asset);
+        Asset asset = new Asset("PETR4", 0.01);
+        Investment investment = new Investment(100, asset);
         String result = investment.toString();
-        assertThat(result).isEqualTo("Initial value = 100.0 | Recurrent value = 50.0 | Asset name = " + asset.getName());
+        assertThat(result).isEqualTo("Initial value = 100.0 | Asset name = " + asset.getName() + " | Asset profitability = " + asset.getProfitability());
     }
 }

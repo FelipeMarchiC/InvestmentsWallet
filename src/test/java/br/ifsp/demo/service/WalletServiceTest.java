@@ -28,8 +28,8 @@ class WalletServiceTest {
             inMemoryRepository.save(wallet);
 
             WalletService sut = new WalletService(inMemoryRepository);
-            Asset asset = new Asset("PETR4");
-            Investment investment = new Investment(100, 50, asset);
+            Asset asset = new Asset("PETR4", 0.01);
+            Investment investment = new Investment(100, asset);
 
             boolean result = sut.addInvestment(wallet.getId(), investment);
             assertThat(result).isTrue();
@@ -48,8 +48,8 @@ class WalletServiceTest {
             inMemoryRepository.save(wallet);
 
             WalletService sut = new WalletService(inMemoryRepository);
-            Asset asset = new Asset("PETR4");
-            Investment investment = new Investment(100, 50, asset);
+            Asset asset = new Asset("PETR4", 0.01);
+            Investment investment = new Investment(100, asset);
             sut.addInvestment(wallet.getId(), investment);
 
             boolean result = sut.withdrawInvestment(wallet.getId(), investment.getId());
@@ -69,9 +69,9 @@ class WalletServiceTest {
             inMemoryRepository.save(wallet);
             WalletService sut = new WalletService(inMemoryRepository);
 
-            Asset asset = new Asset("Asset 1");
-            Investment investment1 = new Investment(1000, 200, asset);
-            Investment investment2 = new Investment(1500, 300, asset);
+            Asset asset = new Asset("PETR4", 0.01);
+            Investment investment1 = new Investment(1000, asset);
+            Investment investment2 = new Investment(1500, asset);
 
             sut.addInvestment(wallet.getId(), investment1);
             sut.addInvestment(wallet.getId(), investment2);

@@ -33,6 +33,9 @@ class InvestmentTest {
         Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
         Investment investment = new Investment(100, asset);
         String result = investment.toString();
-        assertThat(result).isEqualTo("Initial value = 100.0 | Asset name = " + asset.getName() + " | Asset profitability = " + asset.getProfitability());
+        assertThat(result).isEqualTo(
+                "Initial value = 100.0 | Asset name = " + asset.getName() +
+                        " | Asset profitability = " + asset.getProfitability() +
+                        " | Asset maturity date = " + asset.getMaturityDate());
     }
 }

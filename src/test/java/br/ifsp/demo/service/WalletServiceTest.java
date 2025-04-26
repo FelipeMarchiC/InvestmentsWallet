@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,7 +30,7 @@ class WalletServiceTest {
             inMemoryRepository.save(wallet);
 
             WalletService sut = new WalletService(inMemoryRepository);
-            Asset asset = new Asset("PETR4", 0.01);
+            Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
             Investment investment = new Investment(100, asset);
 
             boolean result = sut.addInvestment(wallet.getId(), investment);
@@ -48,7 +50,7 @@ class WalletServiceTest {
             inMemoryRepository.save(wallet);
 
             WalletService sut = new WalletService(inMemoryRepository);
-            Asset asset = new Asset("PETR4", 0.01);
+            Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
             Investment investment = new Investment(100, asset);
             sut.addInvestment(wallet.getId(), investment);
 
@@ -69,7 +71,7 @@ class WalletServiceTest {
             inMemoryRepository.save(wallet);
             WalletService sut = new WalletService(inMemoryRepository);
 
-            Asset asset = new Asset("PETR4", 0.01);
+            Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
             Investment investment1 = new Investment(1000, asset);
             Investment investment2 = new Investment(1500, asset);
 

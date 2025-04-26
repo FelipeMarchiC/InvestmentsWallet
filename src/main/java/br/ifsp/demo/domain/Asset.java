@@ -33,4 +33,8 @@ public class Asset {
     public double getProfitability() {
         return profitability;
     }
+
+    public LocalDate getMaturityDate() {
+        return maturityDate;
+    }
 }

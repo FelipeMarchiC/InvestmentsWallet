@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,11 +30,57 @@ class WalletServiceTest {
             inMemoryRepository.save(wallet);
 
             WalletService sut = new WalletService(inMemoryRepository);
-            Asset asset = new Asset("PETR4");
-            Investment investment = new Investment(100, 50, asset);
+            Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
+            Investment investment = new Investment(100, asset);
 
             boolean result = sut.addInvestment(wallet.getId(), investment);
             assertThat(result).isTrue();
+        }
+    }
+
+    @Nested
+    class WithdrawInvestment {
+        @Test
+        @Tag("UnitTest")
+        @Tag("TDD")
+        @DisplayName("Should withdraw an investment")
+        void shouldWithdrawAnInvestment(){
+            Wallet wallet = new Wallet();
+            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
+            inMemoryRepository.save(wallet);
+
+            WalletService sut = new WalletService(inMemoryRepository);
+            Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
+            Investment investment = new Investment(100, asset);
+            sut.addInvestment(wallet.getId(), investment);
+
+            boolean result = sut.withdrawInvestment(wallet.getId(), investment.getId());
+
+            assertThat(result).isTrue();
+        }
+    }
+
+    @Nested
+    class Balance {
+
+        @Test
+        @DisplayName("Should return total balance when there are active investments")
+        void shouldReturnTotalBalance(){
+            Wallet wallet = new Wallet();
+            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
+            inMemoryRepository.save(wallet);
+            WalletService sut = new WalletService(inMemoryRepository);
+
+            Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
+            Investment investment1 = new Investment(1000, asset);
+            Investment investment2 = new Investment(1500, asset);
+
+            sut.addInvestment(wallet.getId(), investment1);
+            sut.addInvestment(wallet.getId(), investment2);
+            double totalBalance = wallet.getTotalBalance();
+            double expectedBalance = 2500;
+
+            assertThat(totalBalance).isEqualTo(expectedBalance);
         }
     }
 }

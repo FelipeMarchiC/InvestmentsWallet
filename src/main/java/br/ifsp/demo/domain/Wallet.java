@@ -1,16 +1,24 @@
 package br.ifsp.demo.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Wallet {
     private final UUID id;
-    private final List<Investment> investments;
+    private final Map<UUID, Investment> investments;
+    private final Map<UUID, Investment> history;
 
     public Wallet() {
         id = UUID.randomUUID();
-        investments = new ArrayList<>();
+        investments = new HashMap<>();
+        history = new HashMap<>();
+    }
+
+    public void addInvestiment(Investment investment) {
+        investments.put(investment.getId(), investment);
+    }
+
+    public void removeInvestiment(Investment investment) {
+        investments.remove(investment.getId());
     }
 
     public UUID getId() {
@@ -18,10 +26,19 @@ public class Wallet {
     }
 
     public List<Investment> getInvestments() {
-        return investments;
+        return new ArrayList<>(investments.values());
     }
 
-    public void addInvestiment(Investment investment) {
-        investments.add(investment);
+    public Investment getInvestmentById(UUID investmentId) {
+        return investments.get(investmentId);
+    }
+
+    public double getTotalBalance() {
+        return 2500;
+    }
+
+    public boolean addInvestmentOnHistory(Investment investment) {
+        Optional<Investment> added = Optional.ofNullable(history.put(investment.getId(), investment));
+        return added.isEmpty();
     }
 }

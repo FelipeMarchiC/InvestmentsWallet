@@ -5,6 +5,7 @@ import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.WalletRepository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,5 +40,13 @@ public class WalletService {
         wallet.removeInvestiment(investment);
         repository.save(wallet);
         return true;
+    }
+
+    public List<Investment> getInvestments(UUID walletId) {
+        Optional<Wallet> walletOptional = repository.findById(walletId);
+        if (walletOptional.isEmpty()) return List.of();
+
+        Wallet wallet = walletOptional.get();
+        return wallet.getInvestments();
     }
 }

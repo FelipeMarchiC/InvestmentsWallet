@@ -4,7 +4,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import java.time.LocalDate;
 
@@ -13,14 +17,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InvestmentTest {
 
+    private static Stream<Arguments> getInvalidParameters() {
+        return Stream.of(
+                Arguments.of(0, new Asset("PETR4", 0.01, LocalDate.now().plusYears(1))),
+                Arguments.of(-0.1, new Asset("PETR4", 0.01, LocalDate.now().plusYears(1))),
+                Arguments.of(100.0, null)
+        );
+    }
+
     @ParameterizedTest
     @Tag("TDD")
     @Tag("UnitTest")
-    @CsvSource({"0.0, PETR4, 0.01", "-100.0, PETR4, 0.01"})
+    @MethodSource("getInvalidParameters")
     @DisplayName("Should return error when try to create investment with invalid parameters")
-    void shouldReturnErrorWhenTryToCreateInvestmentWithInvalidParameters(double initialValue, String assetName, double assetProfitability){
+    void shouldReturnErrorWhenTryToCreateInvestmentWithInvalidParameters(double initialValue, Asset asset){
         assertThrows(IllegalArgumentException.class, () -> {
-            Asset asset = new Asset(assetName, assetProfitability, LocalDate.now().plusYears(1));
             Investment investment = new Investment(initialValue, asset);
         });
     }

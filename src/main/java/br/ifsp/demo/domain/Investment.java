@@ -11,15 +11,15 @@ public class Investment {
     private LocalDate withdrawDate;
 
     public Investment(double initialValue, Asset asset) {
-        verifyInvestment(initialValue, asset);
+        this.purchaseDate = LocalDate.now();
+        verifyInvestment(initialValue, asset, purchaseDate);
         this.initialValue = initialValue;
         this.asset = asset;
         this.id = UUID.randomUUID();
-        this.purchaseDate = LocalDate.now();
     }
 
     Investment(double initialValue, Asset asset, LocalDate purchaseDate) {
-        verifyInvestment(initialValue, asset);
+        verifyInvestment(initialValue, asset, purchaseDate);
         this.initialValue = initialValue;
         this.asset = asset;
         this.id = UUID.randomUUID();
@@ -31,13 +31,31 @@ public class Investment {
         return "Initial value = " + initialValue + " | " + asset.toString();
     }
 
-    private void verifyInvestment(double initialValue, Asset asset){
+    private void verifyInvestment(double initialValue, Asset asset, LocalDate purchaseDate){
         if (initialValue <= 0) throw new IllegalArgumentException("Initial value must be greater than zero");
         if (asset == null) throw new IllegalArgumentException("Asset cannot be null");
+        if (purchaseDate == null) throw new IllegalArgumentException("Purchase date cannot be null");
+        if (purchaseDate.isAfter(LocalDate.now())) throw new IllegalArgumentException("Purchase date cannot be in the future");
     }
 
     public UUID getId() {
         return this.id;
+    }
+
+    public double getInitialValue() {
+        return initialValue;
+    }
+
+    public LocalDate getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    public LocalDate getWithdrawDate() {
+        return withdrawDate;
+    }
+
+    public Asset getAsset() {
+        return asset;
     }
 
     public void setWithdrawDate(LocalDate withdrawDate) {

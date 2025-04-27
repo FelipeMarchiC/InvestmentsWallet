@@ -18,6 +18,16 @@ import static org.assertj.core.api.AssertionsForClassTypes.within;
 import static org.junit.jupiter.api.Assertions.*;
 
 class WalletServiceTest {
+    private Wallet wallet;
+    private WalletService sut;
+
+    @BeforeEach
+    public void setUp() {
+        wallet = new Wallet();
+        WalletRepository inMemoryRepository = new InMemoryWalletRepository();
+        inMemoryRepository.save(wallet);
+        sut = new WalletService(inMemoryRepository);
+    }
 
     @Nested
     class RegisterInvestment {
@@ -30,8 +40,8 @@ class WalletServiceTest {
             Wallet wallet = new Wallet();
             WalletRepository inMemoryRepository = new InMemoryWalletRepository();
             inMemoryRepository.save(wallet);
-
             WalletService sut = new WalletService(inMemoryRepository);
+
             Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
             Investment investment = new Investment(100, asset);
 
@@ -42,6 +52,7 @@ class WalletServiceTest {
 
     @Nested
     class WithdrawInvestment {
+
         @Test
         @Tag("UnitTest")
         @Tag("TDD")
@@ -50,8 +61,8 @@ class WalletServiceTest {
             Wallet wallet = new Wallet();
             WalletRepository inMemoryRepository = new InMemoryWalletRepository();
             inMemoryRepository.save(wallet);
-
             WalletService sut = new WalletService(inMemoryRepository);
+
             Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
             Investment investment = new Investment(100, asset);
             sut.addInvestment(wallet.getId(), investment);
@@ -70,11 +81,6 @@ class WalletServiceTest {
         @Tag("UnitTest")
         @DisplayName("Should calculate total balance with active investments")
         void shouldCalculateTotalBalanceWithActiveInvestments(){
-            Wallet wallet = new Wallet();
-            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
-            inMemoryRepository.save(wallet);
-            WalletService sut = new WalletService(inMemoryRepository);
-
             LocalDate purchaseDate = LocalDate.now().minusMonths(1).minusDays(10);
             Asset asset = new Asset("PETR4", 0.1, LocalDate.now().plusMonths(2));
             Investment investment = InvestmentFactory.createInvestmentWithPurchaseDate(1000, asset, purchaseDate);
@@ -85,20 +91,28 @@ class WalletServiceTest {
 
             assertThat(totalBalance).isCloseTo(expectedBalance, within(0.2));
         }
+        
+        @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @DisplayName("Should calculate total balance with history investments")
+        void shouldCalculateTotalBalanceWithHistoryInvestments(){
+            LocalDate purchaseDate = LocalDate.now().minusMonths(1).minusDays(10);
+            Asset asset = new Asset("PETR4", 0.1, LocalDate.now().plusMonths(2));
+            Investment investment = InvestmentFactory.createInvestmentWithPurchaseDate(1000, asset, purchaseDate);
+
+            sut.addInvestment(wallet.getId(), investment);
+            sut.withdrawInvestment(wallet.getId(), investment.getId());
+
+            double totalBalance = wallet.getTotalBalance();
+            double expectedBalance = 1139;
+
+            assertThat(totalBalance).isCloseTo(expectedBalance, within(0.2));
+        }
     }
 
     @Nested
     class GetInvestments {
-        private Wallet wallet;
-        private WalletService sut;
-
-        @BeforeEach
-        public void setUp() {
-            wallet = new Wallet();
-            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
-            inMemoryRepository.save(wallet);
-            sut = new WalletService(inMemoryRepository);
-        }
 
         @Test
         @Tag("TDD")

@@ -110,7 +110,7 @@ class WalletServiceTest {
             sut.addInvestment(wallet.getId(), investment1);
             sut.addInvestment(wallet.getId(), investment2);
 
-            List<Investment> result = sut.getInvestments();
+            List<Investment> result = sut.getInvestments(wallet.getId());
             assertThat(result.size()).isEqualTo(2);
         }
     }

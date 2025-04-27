@@ -5,10 +5,7 @@ import br.ifsp.demo.domain.Investment;
 import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.InMemoryWalletRepository;
 import br.ifsp.demo.repository.WalletRepository;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -93,16 +90,22 @@ class WalletServiceTest {
 
     @Nested
     class GetInvestments {
+        private Wallet wallet;
+        private WalletService sut;
+
+        @BeforeEach
+        public void setUp() {
+            wallet = new Wallet();
+            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
+            inMemoryRepository.save(wallet);
+            sut = new WalletService(inMemoryRepository);
+        }
+
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
         @DisplayName("Should return all investments on wallet")
-        void shouldReturnAllInvestmentsOnWallet(){
-            Wallet wallet = new Wallet();
-            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
-            inMemoryRepository.save(wallet);
-            WalletService sut = new WalletService(inMemoryRepository);
-
+        void shouldReturnAllInvestmentsOnWallet() {
             Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
             Investment investment1 = new Investment(1000, asset);
             Investment investment2 = new Investment(1500, asset);
@@ -112,6 +115,15 @@ class WalletServiceTest {
 
             List<Investment> result = sut.getInvestments(wallet.getId());
             assertThat(result.size()).isEqualTo(2);
+        }
+
+        @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @DisplayName("shouldReturnAnEmptyListWhenThereIsNoInvestments")
+        void shouldReturnAnEmptyListWhenThereIsNoInvestments(){
+            List<Investment> result = sut.getInvestments(wallet.getId());
+            assertThat(result).isEqualTo(List.of());
         }
     }
 }

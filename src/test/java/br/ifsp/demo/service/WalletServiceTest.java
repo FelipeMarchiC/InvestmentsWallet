@@ -11,11 +11,18 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class WalletServiceTest {
+
+    private void createAndFillWallet() {
+
+    }
 
     @Nested
     class RegisterInvestment {
@@ -81,6 +88,30 @@ class WalletServiceTest {
             double expectedBalance = 2500;
 
             assertThat(totalBalance).isEqualTo(expectedBalance);
+        }
+    }
+
+    @Nested
+    class GetInvestments {
+        @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @DisplayName("Should return all investments on wallet")
+        void shouldReturnAllInvestmentsOnWallet(){
+            Wallet wallet = new Wallet();
+            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
+            inMemoryRepository.save(wallet);
+            WalletService sut = new WalletService(inMemoryRepository);
+
+            Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
+            Investment investment1 = new Investment(1000, asset);
+            Investment investment2 = new Investment(1500, asset);
+
+            sut.addInvestment(wallet.getId(), investment1);
+            sut.addInvestment(wallet.getId(), investment2);
+
+            List<Investment> result = sut.getInvestments();
+            assertThat(result.size()).isEqualTo(2);
         }
     }
 }

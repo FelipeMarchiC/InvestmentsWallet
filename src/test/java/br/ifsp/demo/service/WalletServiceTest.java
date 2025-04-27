@@ -2,6 +2,7 @@ package br.ifsp.demo.service;
 
 import br.ifsp.demo.domain.Asset;
 import br.ifsp.demo.domain.Investment;
+import br.ifsp.demo.domain.InvestmentFactory;
 import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.InMemoryWalletRepository;
 import br.ifsp.demo.repository.WalletRepository;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.within;
 import static org.junit.jupiter.api.Assertions.*;
 
 class WalletServiceTest {
@@ -68,23 +70,22 @@ class WalletServiceTest {
     class Balance {
 
         @Test
-        @DisplayName("Should return total balance when there are active investments")
-        void shouldReturnTotalBalance(){
+        @DisplayName("Should calculate total balance with active investments")
+        void shouldCalculateTotalBalanceWithActiveInvestments(){
             Wallet wallet = new Wallet();
             WalletRepository inMemoryRepository = new InMemoryWalletRepository();
             inMemoryRepository.save(wallet);
             WalletService sut = new WalletService(inMemoryRepository);
 
-            Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
-            Investment investment1 = new Investment(1000, asset);
-            Investment investment2 = new Investment(1500, asset);
+            LocalDate purchaseDate = LocalDate.now().minusMonths(1).minusDays(10);
+            Asset asset = new Asset("PETR4", 0.1, LocalDate.now().plusMonths(2));
+            Investment investment = InvestmentFactory.createInvestmentWithPurchaseDate(1000, asset, purchaseDate);
 
-            sut.addInvestment(wallet.getId(), investment1);
-            sut.addInvestment(wallet.getId(), investment2);
+            sut.addInvestment(wallet.getId(), investment);
             double totalBalance = wallet.getTotalBalance();
-            double expectedBalance = 2500;
+            double expectedBalance = 1139;
 
-            assertThat(totalBalance).isEqualTo(expectedBalance);
+            assertThat(totalBalance).isCloseTo(expectedBalance, within(0.2));
         }
     }
 

@@ -19,10 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class WalletServiceTest {
 
-    private void createAndFillWallet() {
-
-    }
-
     @Nested
     class RegisterInvestment {
 
@@ -70,6 +66,8 @@ class WalletServiceTest {
     class Balance {
 
         @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
         @DisplayName("Should calculate total balance with active investments")
         void shouldCalculateTotalBalanceWithActiveInvestments(){
             Wallet wallet = new Wallet();

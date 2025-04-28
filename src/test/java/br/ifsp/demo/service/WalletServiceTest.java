@@ -91,6 +91,25 @@ class WalletServiceTest {
                sut.withdrawInvestment(wallet.getId(), UUID.randomUUID());
             });
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("TDD")
+        @DisplayName("Should return NoSuchElementException if the wallet does not exist")
+        void shouldReturnNoSuchElementExceptionIfTheWalletDoesNotExist(){
+            Wallet wallet = new Wallet();
+            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
+            inMemoryRepository.save(wallet);
+            WalletService sut = new WalletService(inMemoryRepository);
+
+            Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
+            Investment investment = new Investment(100, asset);
+            sut.addInvestment(wallet.getId(), investment);
+
+            assertThrows(NoSuchElementException.class, () -> {
+                sut.withdrawInvestment(UUID.randomUUID(), investment.getId());
+            });
+        }
     }
 
     @Nested

@@ -69,7 +69,6 @@ class WalletServiceTest {
             sut.addInvestment(wallet.getId(), investment);
 
             boolean result = sut.withdrawInvestment(wallet.getId(), investment.getId());
-
             assertThat(result).isTrue();
         }
 

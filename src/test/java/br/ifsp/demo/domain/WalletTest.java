@@ -87,5 +87,16 @@ class WalletTest {
 
             assertThat(futureBalance).isEqualTo(expectedBalance);
         }
+
+        @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @DisplayName("Should return zero when calculate future balance with no active investments")
+        void shouldReturnZeroWhenCalculateFutureBalanceWithNoActiveInvestments(){
+            double futureBalance = wallet.getFutureBalance();
+            double expectedBalance = 0.0;
+
+            assertThat(futureBalance).isEqualTo(expectedBalance);
+        }
     }
 }

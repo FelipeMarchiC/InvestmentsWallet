@@ -81,7 +81,7 @@ class WalletTest {
             Asset asset = new Asset("PETR4", 0.1, LocalDate.now().plusMonths(2));
             Investment investment = new Investment(1000, asset, purchaseDate);
 
-            wallet.addInvestiment(investment);
+            wallet.addInvestment(investment);
             double futureBalance = wallet.getFutureBalance();
             double expectedBalance = 1213.85;
 

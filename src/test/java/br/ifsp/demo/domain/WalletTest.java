@@ -7,6 +7,7 @@ import org.junit.jupiter.api.*;
 
 import java.time.LocalDate;
 
+import static br.ifsp.demo.domain.AssetType.CDB;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class WalletTest {
@@ -30,7 +31,7 @@ class WalletTest {
         @DisplayName("Should calculate total balance with active investments")
         void shouldCalculateTotalBalanceWithActiveInvestments(){
             LocalDate purchaseDate = LocalDate.now().minusMonths(1).minusDays(10);
-            Asset asset = new Asset("PETR4", 0.1, LocalDate.now().plusMonths(2));
+            Asset asset = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusMonths(2));
             Investment investment = new Investment(1000, asset, purchaseDate);
 
             sut.addInvestment(wallet.getId(), investment);
@@ -46,7 +47,7 @@ class WalletTest {
         @DisplayName("Should calculate total balance with history investments")
         void shouldCalculateTotalBalanceWithHistoryInvestments(){
             LocalDate purchaseDate = LocalDate.now().minusMonths(1).minusDays(10);
-            Asset asset = new Asset("PETR4", 0.1, LocalDate.now().plusMonths(2));
+            Asset asset = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusMonths(2));
             Investment investment = new Investment(1000, asset, purchaseDate);
 
             sut.addInvestment(wallet.getId(), investment);

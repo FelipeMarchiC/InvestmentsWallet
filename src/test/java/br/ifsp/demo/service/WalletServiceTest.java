@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import static br.ifsp.demo.domain.AssetType.CDB;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.within;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -43,7 +44,7 @@ class WalletServiceTest {
             inMemoryRepository.save(wallet);
             WalletService sut = new WalletService(inMemoryRepository);
 
-            Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
+            Asset asset = new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1));
             Investment investment = new Investment(100, asset);
 
             boolean result = sut.addInvestment(wallet.getId(), investment);
@@ -64,7 +65,7 @@ class WalletServiceTest {
             inMemoryRepository.save(wallet);
             WalletService sut = new WalletService(inMemoryRepository);
 
-            Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
+            Asset asset = new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1));
             Investment investment = new Investment(100, asset);
             sut.addInvestment(wallet.getId(), investment);
 
@@ -82,7 +83,7 @@ class WalletServiceTest {
             inMemoryRepository.save(wallet);
             WalletService sut = new WalletService(inMemoryRepository);
 
-            Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
+            Asset asset = new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1));
             Investment investment = new Investment(100, asset);
             sut.addInvestment(wallet.getId(), investment);
 
@@ -101,7 +102,7 @@ class WalletServiceTest {
             inMemoryRepository.save(wallet);
             WalletService sut = new WalletService(inMemoryRepository);
 
-            Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
+            Asset asset = new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1));
             Investment investment = new Investment(100, asset);
             sut.addInvestment(wallet.getId(), investment);
 
@@ -119,7 +120,7 @@ class WalletServiceTest {
         @Tag("UnitTest")
         @DisplayName("Should return all investments on wallet")
         void shouldReturnAllInvestmentsOnWallet() {
-            Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
+            Asset asset = new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1));
             Investment investment1 = new Investment(1000, asset);
             Investment investment2 = new Investment(1500, asset);
 

@@ -157,5 +157,14 @@ class WalletServiceTest {
             List<Investment> result = sut.getHistoryInvestments(wallet.getId());
             assertThat(result.size()).isEqualTo(1);
         }
+
+        @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @DisplayName("shouldReturnAnEmptyListWhenThereIsNoHistoryInvestments")
+        void shouldReturnAnEmptyListWhenThereIsNoHistoryInvestments(){
+            List<Investment> result = sut.getHistoryInvestments(wallet.getId());
+            assertThat(result).isEqualTo(List.of());
+        }
     }
 }

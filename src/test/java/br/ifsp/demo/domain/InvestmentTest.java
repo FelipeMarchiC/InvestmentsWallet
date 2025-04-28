@@ -49,4 +49,12 @@ class InvestmentTest {
                         " | Asset profitability = " + asset.getProfitability() +
                         " | Asset maturity date = " + asset.getMaturityDate());
     }
+
+    @Test
+    @DisplayName("Should return initial value of the investment")
+    void shouldReturnInitialValueOfTheInvestment(){
+        Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
+        Investment investment = new Investment(100, asset);
+        assertThat(investment.getInitialValue()).isEqualTo(100.0);
+    }
 }

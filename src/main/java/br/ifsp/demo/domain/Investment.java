@@ -28,7 +28,14 @@ public class Investment {
     }
 
     public double getFutureBalance() {
-        return 1213.85;
+        double totalBalance = 0.0;
+
+        long days = ChronoUnit.DAYS.between(this.purchaseDate, this.asset.getMaturityDate());
+        double time = days / 30.0;
+
+        double profitability = this.asset.getProfitability();
+        totalBalance += this.initialValue * Math.pow(1 + profitability, time);
+        return Math.round(totalBalance * 100.0) / 100.0;
     }
 
     @Override

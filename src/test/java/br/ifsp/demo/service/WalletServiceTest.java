@@ -6,12 +6,16 @@ import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.InMemoryWalletRepository;
 import br.ifsp.demo.repository.WalletRepository;
 import org.junit.jupiter.api.*;
+import org.openqa.selenium.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.within;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class WalletServiceTest {
     private Wallet wallet;
@@ -66,6 +70,25 @@ class WalletServiceTest {
             boolean result = sut.withdrawInvestment(wallet.getId(), investment.getId());
 
             assertThat(result).isTrue();
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("TDD")
+        @DisplayName("Should return NotFoundException if the investment does not exist")
+        void shouldReturnNotFoundExceptionIfTheInvestmentDoesNotExist(){
+            Wallet wallet = new Wallet();
+            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
+            inMemoryRepository.save(wallet);
+            WalletService sut = new WalletService(inMemoryRepository);
+
+            Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
+            Investment investment = new Investment(100, asset);
+            sut.addInvestment(wallet.getId(), investment);
+
+            assertThrows(NotFoundException.class, () -> {
+               sut.withdrawInvestment(wallet.getId(), UUID.randomUUID());
+            });
         }
     }
 

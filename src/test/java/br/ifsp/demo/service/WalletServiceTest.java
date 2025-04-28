@@ -105,9 +105,9 @@ class WalletServiceTest {
             sut.withdrawInvestment(wallet.getId(), investment.getId());
 
             double totalBalance = wallet.getTotalBalance();
-            double expectedBalance = 1139;
+            double expectedBalance = 1139.12;
 
-            assertThat(totalBalance).isCloseTo(expectedBalance, within(0.2));
+            assertThat(totalBalance).isEqualTo(expectedBalance);
         }
 
         @Test

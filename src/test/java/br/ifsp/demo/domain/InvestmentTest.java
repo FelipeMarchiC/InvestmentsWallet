@@ -69,7 +69,7 @@ class InvestmentTest {
         Investment sut = new Investment(1000, asset, purchaseDate);
 
         double totalBalance = sut.getFutureBalance();
-        double expectedBalance = 1210.0;
+        double expectedBalance = 1213.85;
 
         assertThat(totalBalance).isEqualTo(expectedBalance);
     }

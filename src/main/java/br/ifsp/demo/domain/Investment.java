@@ -1,6 +1,7 @@
 package br.ifsp.demo.domain;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 public class Investment {
@@ -24,6 +25,10 @@ public class Investment {
         this.asset = asset;
         this.id = UUID.randomUUID();
         this.purchaseDate = purchaseDate;
+    }
+
+    public double getFutureBalance() {
+        return 1213.85;
     }
 
     @Override

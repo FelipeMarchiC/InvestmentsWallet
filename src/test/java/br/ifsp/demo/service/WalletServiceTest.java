@@ -10,6 +10,7 @@ import org.openqa.selenium.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -75,8 +76,8 @@ class WalletServiceTest {
         @Test
         @Tag("UnitTest")
         @Tag("TDD")
-        @DisplayName("Should return NotFoundException if the investment does not exist")
-        void shouldReturnNotFoundExceptionIfTheInvestmentDoesNotExist(){
+        @DisplayName("Should return NoSuchElementException if the investment does not exist")
+        void shouldReturnNoSuchElementExceptionIfTheInvestmentDoesNotExist(){
             Wallet wallet = new Wallet();
             WalletRepository inMemoryRepository = new InMemoryWalletRepository();
             inMemoryRepository.save(wallet);
@@ -86,7 +87,7 @@ class WalletServiceTest {
             Investment investment = new Investment(100, asset);
             sut.addInvestment(wallet.getId(), investment);
 
-            assertThrows(NotFoundException.class, () -> {
+            assertThrows(NoSuchElementException.class, () -> {
                sut.withdrawInvestment(wallet.getId(), UUID.randomUUID());
             });
         }

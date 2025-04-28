@@ -6,6 +6,7 @@ import br.ifsp.demo.repository.WalletRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,7 +32,8 @@ public class WalletService {
         if (walletOptional.isEmpty()) return false;
 
         Wallet wallet = walletOptional.get();
-        Investment investment = wallet.getInvestmentById(investmentId);
+        Optional<Investment> investmentOpt = wallet.getInvestmentById(investmentId);
+        Investment investment = investmentOpt.orElseThrow(NoSuchElementException::new);
 
         boolean added = wallet.addInvestmentOnHistory(investment);
         if (!added) return false;

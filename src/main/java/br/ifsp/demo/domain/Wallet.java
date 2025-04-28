@@ -1,5 +1,6 @@
 package br.ifsp.demo.domain;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -64,7 +65,7 @@ public class Wallet {
         return new ArrayList<>(investments.values());
     }
 
-    public Investment getInvestmentById(UUID investmentId) {
-        return investments.get(investmentId);
+    public Optional<Investment> getInvestmentById(UUID investmentId) {
+        return Optional.ofNullable(investments.get(investmentId));
     }
 }

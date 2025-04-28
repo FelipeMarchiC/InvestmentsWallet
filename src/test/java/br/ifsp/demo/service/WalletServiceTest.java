@@ -109,6 +109,16 @@ class WalletServiceTest {
 
             assertThat(totalBalance).isCloseTo(expectedBalance, within(0.2));
         }
+
+        @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @DisplayName("Should calculate total balance with no investments")
+        void shouldCalculateTotalBalanceWithNoInvestments(){
+            double totalBalance = wallet.getTotalBalance();
+            double expectedBalance = 0;
+            assertThat(totalBalance).isEqualTo(expectedBalance);
+        }
     }
 
     @Nested

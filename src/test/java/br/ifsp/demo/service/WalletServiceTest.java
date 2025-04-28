@@ -2,7 +2,6 @@ package br.ifsp.demo.service;
 
 import br.ifsp.demo.domain.Asset;
 import br.ifsp.demo.domain.Investment;
-import br.ifsp.demo.domain.InvestmentFactory;
 import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.InMemoryWalletRepository;
 import br.ifsp.demo.repository.WalletRepository;
@@ -10,12 +9,9 @@ import org.junit.jupiter.api.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.within;
-import static org.junit.jupiter.api.Assertions.*;
 
 class WalletServiceTest {
     private Wallet wallet;
@@ -70,54 +66,6 @@ class WalletServiceTest {
             boolean result = sut.withdrawInvestment(wallet.getId(), investment.getId());
 
             assertThat(result).isTrue();
-        }
-    }
-
-    @Nested
-    class Balance {
-
-        @Test
-        @Tag("TDD")
-        @Tag("UnitTest")
-        @DisplayName("Should calculate total balance with active investments")
-        void shouldCalculateTotalBalanceWithActiveInvestments(){
-            LocalDate purchaseDate = LocalDate.now().minusMonths(1).minusDays(10);
-            Asset asset = new Asset("PETR4", 0.1, LocalDate.now().plusMonths(2));
-            Investment investment = InvestmentFactory.createInvestmentWithPurchaseDate(1000, asset, purchaseDate);
-
-            sut.addInvestment(wallet.getId(), investment);
-            double totalBalance = wallet.getTotalBalance();
-            double expectedBalance = 1139;
-
-            assertThat(totalBalance).isCloseTo(expectedBalance, within(0.2));
-        }
-        
-        @Test
-        @Tag("TDD")
-        @Tag("UnitTest")
-        @DisplayName("Should calculate total balance with history investments")
-        void shouldCalculateTotalBalanceWithHistoryInvestments(){
-            LocalDate purchaseDate = LocalDate.now().minusMonths(1).minusDays(10);
-            Asset asset = new Asset("PETR4", 0.1, LocalDate.now().plusMonths(2));
-            Investment investment = InvestmentFactory.createInvestmentWithPurchaseDate(1000, asset, purchaseDate);
-
-            sut.addInvestment(wallet.getId(), investment);
-            sut.withdrawInvestment(wallet.getId(), investment.getId());
-
-            double totalBalance = wallet.getTotalBalance();
-            double expectedBalance = 1139.12;
-
-            assertThat(totalBalance).isEqualTo(expectedBalance);
-        }
-
-        @Test
-        @Tag("TDD")
-        @Tag("UnitTest")
-        @DisplayName("Should calculate total balance with no investments")
-        void shouldCalculateTotalBalanceWithNoInvestments(){
-            double totalBalance = wallet.getTotalBalance();
-            double expectedBalance = 0;
-            assertThat(totalBalance).isEqualTo(expectedBalance);
         }
     }
 

@@ -28,11 +28,11 @@ public class WalletService {
     }
 
     public boolean withdrawInvestment(UUID walletId, UUID investmentId) {
-        Optional<Wallet> walletOptional = repository.findById(walletId);
-        Wallet wallet = walletOptional.orElseThrow(NoSuchElementException::new);
+        Wallet wallet = repository.findById(walletId).orElseThrow(
+                () -> new NoSuchElementException("Wallet not found: " + walletId));
 
-        Optional<Investment> investmentOpt = wallet.getInvestmentById(investmentId);
-        Investment investment = investmentOpt.orElseThrow(NoSuchElementException::new);
+        Investment investment = wallet.getInvestmentById(investmentId).orElseThrow(
+                () -> new NoSuchElementException("Investment not found: " + investmentId));
 
         boolean added = wallet.addInvestmentOnHistory(investment);
         if (!added) return false;

@@ -57,6 +57,14 @@ public class Wallet {
         return calculateHistoryBalance() + calculateActiveInvestmentsBalance();
     }
 
+    public double getFutureBalance() {
+        double futureBalance = 0.0;
+        for (Investment investment : investments.values()) {
+            futureBalance += investment.getFutureBalance();
+        }
+        return Math.round(futureBalance * 100.0) / 100.0;
+    }
+
     public UUID getId() {
         return id;
     }

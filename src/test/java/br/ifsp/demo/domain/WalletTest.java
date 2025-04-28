@@ -22,7 +22,7 @@ class WalletTest {
     }
 
     @Nested
-    class Balance {
+    class BalanceCalculation {
 
         @Test
         @Tag("TDD")
@@ -66,6 +66,26 @@ class WalletTest {
             double totalBalance = wallet.getTotalBalance();
             double expectedBalance = 0;
             assertThat(totalBalance).isEqualTo(expectedBalance);
+        }
+    }
+
+    @Nested
+    class FutureBalanceCalculation {
+
+        @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @DisplayName("Should calculate future balance with active investments")
+        void shouldCalculateFutureBalanceWithActiveInvestments(){
+            LocalDate purchaseDate = LocalDate.now();
+            Asset asset = new Asset("PETR4", 0.1, LocalDate.now().plusMonths(2));
+            Investment investment = new Investment(1000, asset, purchaseDate);
+
+            wallet.addInvestiment(investment);
+            double futureBalance = wallet.getFutureBalance();
+            double expectedBalance = 1213.85;
+
+            assertThat(futureBalance).isEqualTo(expectedBalance);
         }
     }
 }

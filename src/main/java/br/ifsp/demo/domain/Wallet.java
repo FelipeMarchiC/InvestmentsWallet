@@ -16,11 +16,11 @@ public class Wallet {
         history = new HashMap<>();
     }
 
-    public void addInvestiment(Investment investment) {
+    public void addInvestment(Investment investment) {
         investments.put(investment.getId(), investment);
     }
 
-    public void removeInvestiment(Investment investment) {
+    public void removeInvestment(Investment investment) {
         investments.remove(investment.getId());
     }
 

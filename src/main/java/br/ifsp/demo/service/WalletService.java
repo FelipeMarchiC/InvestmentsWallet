@@ -22,16 +22,15 @@ public class WalletService {
         if (walletOptional.isEmpty()) return false;
 
         Wallet wallet = walletOptional.get();
-        wallet.addInvestiment(investment);
+        wallet.addInvestment(investment);
         repository.save(wallet);
         return true;
     }
 
     public boolean withdrawInvestment(UUID walletId, UUID investmentId) {
         Optional<Wallet> walletOptional = repository.findById(walletId);
-        if (walletOptional.isEmpty()) return false;
+        Wallet wallet = walletOptional.orElseThrow(NoSuchElementException::new);
 
-        Wallet wallet = walletOptional.get();
         Optional<Investment> investmentOpt = wallet.getInvestmentById(investmentId);
         Investment investment = investmentOpt.orElseThrow(NoSuchElementException::new);
 
@@ -39,7 +38,7 @@ public class WalletService {
         if (!added) return false;
 
         investment.setWithdrawDate(LocalDate.now());
-        wallet.removeInvestiment(investment);
+        wallet.removeInvestment(investment);
         repository.save(wallet);
         return true;
     }

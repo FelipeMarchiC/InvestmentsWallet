@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.within;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InvestmentTest {
@@ -56,5 +57,20 @@ class InvestmentTest {
         Asset asset = new Asset("PETR4", 0.01, LocalDate.now().plusYears(1));
         Investment investment = new Investment(100, asset);
         assertThat(investment.getInitialValue()).isEqualTo(100.0);
+    }
+
+    @Test
+    @Tag("TDD")
+    @Tag("UnitTest")
+    @DisplayName("Should calculate future balance of an investment")
+    void shouldCalculateFutureBalanceOfAnInvestment(){
+        LocalDate purchaseDate = LocalDate.now();
+        Asset asset = new Asset("PETR4", 0.1, LocalDate.now().plusMonths(2));
+        Investment sut = new Investment(1000, asset, purchaseDate);
+
+        double totalBalance = sut.getFutureBalance();
+        double expectedBalance = 1210.0;
+
+        assertThat(totalBalance).isEqualTo(expectedBalance);
     }
 }

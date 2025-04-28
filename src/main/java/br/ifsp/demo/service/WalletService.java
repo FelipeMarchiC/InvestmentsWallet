@@ -50,4 +50,12 @@ public class WalletService {
         Wallet wallet = walletOptional.get();
         return wallet.getInvestments();
     }
+
+    public List<Investment> getHistoryInvestments(UUID walletId) {
+        Optional<Wallet> walletOptional = repository.findById(walletId);
+        if (walletOptional.isEmpty()) return List.of();
+
+        Wallet wallet = walletOptional.get();
+        return wallet.getHistoryInvestments();
+    }
 }

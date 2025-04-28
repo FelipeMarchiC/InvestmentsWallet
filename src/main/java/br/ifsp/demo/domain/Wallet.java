@@ -73,6 +73,10 @@ public class Wallet {
         return new ArrayList<>(investments.values());
     }
 
+    public List<Investment> getHistoryInvestments() {
+        return new ArrayList<>(history.values());
+    }
+
     public Optional<Investment> getInvestmentById(UUID investmentId) {
         return Optional.ofNullable(investments.get(investmentId));
     }

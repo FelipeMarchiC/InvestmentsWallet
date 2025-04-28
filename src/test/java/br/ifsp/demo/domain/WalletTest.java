@@ -79,7 +79,7 @@ class WalletTest {
         @DisplayName("Should calculate future balance with active investments")
         void shouldCalculateFutureBalanceWithActiveInvestments(){
             LocalDate purchaseDate = LocalDate.now();
-            Asset asset = new Asset("PETR4", 0.1, LocalDate.now().plusMonths(2));
+            Asset asset = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusMonths(2));
             Investment investment = new Investment(1000, asset, purchaseDate);
 
             wallet.addInvestment(investment);

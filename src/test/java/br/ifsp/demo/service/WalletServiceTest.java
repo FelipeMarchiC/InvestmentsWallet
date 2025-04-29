@@ -207,5 +207,15 @@ class WalletServiceTest {
                 sut.generateReport(wallet.getId());
             });
         }
+
+        @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @DisplayName("Should throw NoSuchElementException when there is no wallet registered")
+        void shouldThrowNoSuchElementExceptionWhenThereIsNoWalletRegistered(){
+            assertThrows(NoSuchElementException.class, () -> {
+                sut.generateReport(UUID.randomUUID());
+            });
+        }
     }
 }

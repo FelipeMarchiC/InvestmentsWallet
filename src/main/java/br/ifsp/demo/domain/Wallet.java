@@ -82,7 +82,7 @@ public class Wallet {
     }
 
     public String generateReport() {
-        if (investments.isEmpty() && history.isEmpty()) throw new NoSuchElementException();
+        if (investments.isEmpty() && history.isEmpty()) throw new NoSuchElementException("No investments found");
         return "";
     }
 }

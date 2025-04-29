@@ -70,7 +70,7 @@ public class WalletService {
 
     public String generateReport(UUID walletId) {
         Optional<Wallet> walletOptional = repository.findById(walletId);
-        if (walletOptional.isEmpty()) return "";
+        if (walletOptional.isEmpty()) throw new NoSuchElementException("Wallet not found: " + walletId);
         Wallet wallet = walletOptional.get();
         return wallet.generateReport();
     }

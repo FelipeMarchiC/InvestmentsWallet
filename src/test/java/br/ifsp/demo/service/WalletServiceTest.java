@@ -195,4 +195,17 @@ class WalletServiceTest {
             assertThat(result.size()).isEqualTo(2);
         }
     }
+
+    @Nested
+    class Report {
+        @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @DisplayName("Should throw NoSuchElementException when there is no investments")
+        void shouldThrowNoSuchElementExceptionWhenThereIsNoInvestments(){
+            assertThrows(NoSuchElementException.class, () -> {
+                sut.generateReport(wallet.getId());
+            });
+        }
+    }
 }

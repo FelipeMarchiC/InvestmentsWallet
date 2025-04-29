@@ -67,4 +67,8 @@ public class WalletService {
         return List.of(new Investment(1, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1))),
                 new Investment(1, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1))));
     }
+
+    public String generateReport(UUID walletId) {
+        throw new NoSuchElementException();
+    }
 }

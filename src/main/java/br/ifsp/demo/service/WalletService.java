@@ -69,6 +69,9 @@ public class WalletService {
     }
 
     public String generateReport(UUID walletId) {
-        throw new NoSuchElementException();
+        Optional<Wallet> walletOptional = repository.findById(walletId);
+        if (walletOptional.isEmpty()) return "";
+        Wallet wallet = walletOptional.get();
+        return wallet.generateReport();
     }
 }

@@ -80,4 +80,9 @@ public class Wallet {
     public Optional<Investment> getInvestmentById(UUID investmentId) {
         return Optional.ofNullable(investments.get(investmentId));
     }
+
+    public String generateReport() {
+        if (investments.isEmpty() && history.isEmpty()) throw new NoSuchElementException();
+        return "";
+    }
 }

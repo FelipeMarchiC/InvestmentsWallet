@@ -1,5 +1,7 @@
 package br.ifsp.demo.service;
 
+import br.ifsp.demo.domain.Asset;
+import br.ifsp.demo.domain.AssetType;
 import br.ifsp.demo.domain.Investment;
 import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.WalletRepository;
@@ -9,6 +11,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
+
+import static br.ifsp.demo.domain.AssetType.CDB;
 
 public class WalletService {
     private final WalletRepository repository;
@@ -57,5 +61,10 @@ public class WalletService {
 
         Wallet wallet = walletOptional.get();
         return wallet.getHistoryInvestments();
+    }
+
+    public List<Investment> filterHistory(AssetType assetType) {
+        return List.of(new Investment(1, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1))),
+                new Investment(1, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1))));
     }
 }

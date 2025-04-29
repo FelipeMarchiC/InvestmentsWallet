@@ -15,10 +15,10 @@ public class AssetServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
-    @DisplayName("Should return an empty list if there is no asset registered")
-    void shouldReturnAnEmptyListIfThereIsNoAssetRegistered(){
+    @DisplayName("Should return the registered assets")
+    void shouldReturnTheRegisteredAssets(){
         AssetRepository repository = new InMemoryAssetRepository();
         AssetService sut = new AssetService(repository);
-        assertThat(sut.getAssets()).isEqualTo(List.of());
+        assertThat(sut.getAssets().size()).isGreaterThan(0);
     }
 }

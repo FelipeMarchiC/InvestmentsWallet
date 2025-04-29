@@ -13,8 +13,10 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static br.ifsp.demo.domain.AssetType.CDB;
+import static br.ifsp.demo.domain.AssetType.LCI;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class WalletServiceTest {
     private Wallet wallet;
@@ -165,6 +167,32 @@ class WalletServiceTest {
         void shouldReturnAnEmptyListWhenThereIsNoHistoryInvestments(){
             List<Investment> result = sut.getHistoryInvestments(wallet.getId());
             assertThat(result).isEqualTo(List.of());
+        }
+    }
+
+    @Nested
+    class HistoryFilter{
+        
+        @Test
+        @Tag("UnitTest")
+        @Tag("TDD")
+        @DisplayName("Should return investments when filtered by asset type")
+        void shouldReturnInvestmentsWhenFilteredByAssetType(){
+            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));
+            Investment investment3 = new Investment(1500, new Asset("Banco Itau", LCI, 0.01, LocalDate.now().plusYears(1)));
+
+            sut.addInvestment(wallet.getId(), investment1);
+            sut.addInvestment(wallet.getId(), investment2);
+            sut.addInvestment(wallet.getId(), investment3);
+
+            sut.withdrawInvestment(wallet.getId(), investment1.getId());
+            sut.withdrawInvestment(wallet.getId(), investment2.getId());
+            sut.withdrawInvestment(wallet.getId(), investment3.getId());
+
+            List<Investment> result = sut.filterHistory(CDB);
+
+            assertThat(result.size()).isEqualTo(2);
         }
     }
 }

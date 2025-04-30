@@ -40,7 +40,7 @@ public class Investment {
 
     @Override
     public String toString() {
-        return "Initial value = " + initialValue + " | " + asset.toString();
+        return "Initial value = R$ " + String.format("%.2f", initialValue) + " | " + asset.toString();
     }
 
     private void verifyInvestment(double initialValue, Asset asset, LocalDate purchaseDate){

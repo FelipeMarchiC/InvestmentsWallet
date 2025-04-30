@@ -1,5 +1,7 @@
 package br.ifsp.demo.domain;
 
+import br.ifsp.demo.util.DateFormatter;
+
 import java.time.LocalDate;
 
 public class Asset {
@@ -26,7 +28,13 @@ public class Asset {
 
     @Override
     public String toString() {
-        return "Asset name = " + name + " | Type: " + assetType + " | Asset profitability = " + profitability + " | Asset maturity date = " + maturityDate;
+        return "Asset name = "
+                + name
+                + " | Type: " + assetType
+                + " | Asset profitability = "
+                + String.format("%.2f%%", profitability * 100)
+                + " | Asset maturity date = "
+                +  DateFormatter.formatDateToSlash(maturityDate);
     }
 
     public String getName() {

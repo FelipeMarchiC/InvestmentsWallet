@@ -83,6 +83,37 @@ public class Wallet {
 
     public String generateReport() {
         if (investments.isEmpty() && history.isEmpty()) throw new NoSuchElementException("No investments found");
-        return "";
+        StringBuilder report = new StringBuilder();
+
+        report.append("=========== WALLET REPORT ===========\n\n");
+
+        if (!investments.isEmpty()) {
+            report.append("> Active Investments:\n");
+            for (Investment investment : investments.values()) {
+                report.append("- ")
+                        .append(investment.toString())
+                        .append("\n");
+            }
+            report.append("\n");
+        }
+
+        if (!history.isEmpty()) {
+            report.append("> Historical Investments:\n");
+            for (Investment investment : history.values()) {
+                report.append("- ")
+                        .append(investment.toString())
+                        .append("\n");
+            }
+            report.append("\n");
+        }
+
+        report.append("> Current Total Balance: R$ ")
+                .append(String.format("%.2f", getTotalBalance())).append("\n");
+        report.append("> Future Investments Balance: R$ ")
+                .append(String.format("%.2f", getFutureBalance())).append("\n");
+        report.append("> Total Balance (Current + Future): R$ ")
+                .append(String.format("%.2f", getTotalBalance() + getFutureBalance())).append("\n");
+
+        return report.toString();
     }
 }

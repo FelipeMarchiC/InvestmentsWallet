@@ -1,5 +1,6 @@
 package br.ifsp.demo.domain;
 
+import br.ifsp.demo.util.DateFormatter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -47,10 +48,10 @@ class InvestmentTest {
         Investment investment = new Investment(100, asset);
         String result = investment.toString();
         assertThat(result).isEqualTo(
-                "Initial value = 100.0 | Asset name = " + asset.getName() +
+                "Initial value = R$ 100,00 | Asset name = " + asset.getName() +
                         " | Type: " + asset.getAssetType() +
-                        " | Asset profitability = " + asset.getProfitability() +
-                        " | Asset maturity date = " + asset.getMaturityDate());
+                        " | Asset profitability = " + String.format("%.2f%%", asset.getProfitability() * 100) +
+                        " | Asset maturity date = " + DateFormatter.formatDateToSlash(asset.getMaturityDate()));
     }
 
     @Test

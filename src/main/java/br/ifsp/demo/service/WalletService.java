@@ -32,11 +32,11 @@ public class WalletService {
     }
 
     public boolean withdrawInvestment(UUID walletId, UUID investmentId) {
-        Wallet wallet = repository.findById(walletId).orElseThrow(
-                () -> new NoSuchElementException("Wallet not found: " + walletId));
+        Wallet wallet = repository.findById(walletId)
+                .orElseThrow(() -> new NoSuchElementException("Wallet not found: " + walletId));
 
-        Investment investment = wallet.getInvestmentById(investmentId).orElseThrow(
-                () -> new NoSuchElementException("Investment not found: " + investmentId));
+        Investment investment = wallet.getInvestmentById(investmentId)
+                .orElseThrow(() -> new NoSuchElementException("Investment not found: " + investmentId));
 
         boolean added = wallet.addInvestmentOnHistory(investment);
         if (!added) return false;
@@ -69,9 +69,8 @@ public class WalletService {
     }
 
     public String generateReport(UUID walletId) {
-        Optional<Wallet> walletOptional = repository.findById(walletId);
-        if (walletOptional.isEmpty()) throw new NoSuchElementException("Wallet not found: " + walletId);
-        Wallet wallet = walletOptional.get();
+        Wallet wallet = repository.findById(walletId)
+                .orElseThrow(() -> new NoSuchElementException("Wallet not found: " + walletId));
         return wallet.generateReport();
     }
 }

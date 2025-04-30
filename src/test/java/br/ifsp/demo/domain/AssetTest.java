@@ -1,5 +1,6 @@
 package br.ifsp.demo.domain;
 
+import br.ifsp.demo.util.DateFormatter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -24,7 +25,13 @@ class AssetTest {
     void shouldCorrectlyReturnToStringOfAnAsset() {
         Asset asset = new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1));
         String result = asset.toString();
-        assertThat(result).isEqualTo("Asset name = Banco Inter | Type: CDB | Asset profitability = 0.01 | Asset maturity date = " + LocalDate.now().plusYears(1));
+        assertThat(result)
+                .isEqualTo(
+                        "Asset name = Banco Inter " +
+                                "| Type: CDB " +
+                                "| Asset profitability = 1,00% " +
+                                "| Asset maturity date = " +
+                                DateFormatter.formatDateToSlash(asset.getMaturityDate()));
     }
     
     @Test

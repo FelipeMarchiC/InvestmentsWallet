@@ -214,6 +214,15 @@ class WalletServiceTest {
 
             assertThat(result).isEqualTo(List.of());
         }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("TDD")
+        @DisplayName("Should return an empty list if there are no investment in history")
+        void shouldReturnAnEmptyListIfThereAreNoInvestmentInHistory(){
+             List<Investment> result = sut.filterHistory(wallet.getId(), CDB);
+             assertThat(result).isEqualTo(List.of());
+        }
     }
 
     @Nested

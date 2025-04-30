@@ -84,7 +84,10 @@ public class WalletService {
     }
 
     public List<Investment> filterActiveInvestments(UUID walletId, LocalDate initialDate, LocalDate finalDate) {
-        return List.of();
+        return getInvestments(walletId).stream()
+                .filter(investment -> investment.getPurchaseDate().isAfter(initialDate)
+                        && investment.getPurchaseDate().isBefore(finalDate) )
+                .toList();
     }
 
     public String generateReport(UUID walletId) {

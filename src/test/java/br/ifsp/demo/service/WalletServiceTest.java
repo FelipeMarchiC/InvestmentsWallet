@@ -6,6 +6,7 @@ import br.ifsp.demo.domain.Investment;
 import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.InMemoryWalletRepository;
 import br.ifsp.demo.repository.WalletRepository;
+import net.bytebuddy.asm.Advice;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -198,6 +199,22 @@ class WalletServiceTest {
             List<Investment> result = sut.filterHistory(wallet.getId(), CDB);
 
             assertThat(result.size()).isEqualTo(2);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("TDD")
+        @DisplayName("Should return investments when filtered by date")
+        void shouldReturnInvestmentsWhenFilteredByDate(){
+            LocalDate initialDate = LocalDate.now().minusMonths(1);
+            LocalDate finalDate = LocalDate.now().plusMonths(1);
+
+            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+            sut.withdrawInvestment(wallet.getId(), investment1.getId());
+
+            List<Investment> result = sut.filterHistory(wallet.getId(), initialDate, finalDate);
+
+            assertThat(result.size()).isEqualTo(1);
         }
         
         @ParameterizedTest

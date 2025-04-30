@@ -191,7 +191,7 @@ class WalletServiceTest {
             sut.withdrawInvestment(wallet.getId(), investment2.getId());
             sut.withdrawInvestment(wallet.getId(), investment3.getId());
 
-            List<Investment> result = sut.filterHistory(CDB);
+            List<Investment> result = sut.filterHistory(wallet.getId(), CDB);
 
             assertThat(result.size()).isEqualTo(2);
         }
@@ -210,7 +210,7 @@ class WalletServiceTest {
             sut.withdrawInvestment(wallet.getId(), investment1.getId());
             sut.withdrawInvestment(wallet.getId(), investment2.getId());
 
-            List<Investment> result = sut.filterHistory(LCI);
+            List<Investment> result = sut.filterHistory(wallet.getId(), LCI);
 
             assertThat(result).isEqualTo(List.of());
         }

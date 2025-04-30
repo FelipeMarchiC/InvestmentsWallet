@@ -248,9 +248,18 @@ class WalletServiceTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
-        @DisplayName("Should return an empty list if there is no active investments")
-        void shouldReturnAnEmptyListIfThereIsNoActiveInvestments(){
+        @DisplayName("Should return an empty list if there is no active investments when filter by type")
+        void shouldReturnAnEmptyListIfThereIsNoActiveInvestmentsWhenFilterByType(){
             List<Investment> result = sut.filterActiveInvestments(wallet.getId(), CDB);
+            assertThat(result).isEqualTo(List.of());
+        }
+
+        @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @DisplayName("Should return an empty list if there is no active investments when filter by date")
+        void shouldReturnAnEmptyListIfThereIsNoActiveInvestmentsWhenFilterByDate(){
+            List<Investment> result = sut.filterActiveInvestments(wallet.getId(), LocalDate.now().minusMonths(1), LocalDate.now().plusMonths(1));
             assertThat(result).isEqualTo(List.of());
         }
 

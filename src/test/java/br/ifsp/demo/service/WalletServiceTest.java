@@ -269,12 +269,15 @@ class WalletServiceTest {
 
     @Nested
     class ActiveInvestmentsFilter {
-        @Test
+        @ParameterizedTest
         @Tag("TDD")
         @Tag("UnitTest")
+        @MethodSource("provideScenariosForEmptyTypeFilterActiveInvestments")
         @DisplayName("Should return an empty list if there is no active investments when filter by type")
-        void shouldReturnAnEmptyListIfThereIsNoActiveInvestmentsWhenFilterByType(){
-            List<Investment> result = sut.filterActiveInvestments(wallet.getId(), CDB);
+        void shouldReturnAnEmptyListIfThereIsNoActiveInvestmentsWhenFilterByType(List<Investment> registeredInvestments, AssetType assetType){
+            registeredInvestments.forEach(investment -> sut.addInvestment(wallet.getId(), investment));
+
+            List<Investment> result = sut.filterActiveInvestments(wallet.getId(), assetType);
             assertThat(result).isEqualTo(List.of());
         }
 
@@ -309,6 +312,26 @@ class WalletServiceTest {
             sut.addInvestment(wallet.getId(), investment);
             List<Investment> result = sut.filterActiveInvestments(wallet.getId(), LocalDate.now().minusMonths(1), LocalDate.now().plusMonths(1));
             assertThat(result.size()).isEqualTo(1);
+        }
+
+        private static Stream<Arguments> provideScenariosForEmptyTypeFilterActiveInvestments(){
+            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));
+
+            return Stream.of(
+                    Arguments.of(List.of(), CDB),
+                    Arguments.of(List.of(investment1, investment2), LCI)
+            );
+        }
+
+        private static Stream<Arguments> provideScenariosForEmptyDateFilterActiveInvestments(){
+            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));
+
+            return Stream.of(
+                    Arguments.of(List.of(), LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(2)),
+                    Arguments.of(List.of(investment1, investment2), LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(2))
+            );
         }
     }
 

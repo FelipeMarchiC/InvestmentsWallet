@@ -7,6 +7,7 @@ import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.WalletRepository;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -66,6 +67,13 @@ public class WalletService {
     public List<Investment> filterHistory(UUID walletId, AssetType assetType) {
         return getHistoryInvestments(walletId).stream()
                 .filter(investment -> investment.getAsset().getAssetType() == assetType)
+                .toList();
+    }
+
+    public List<Investment> filterHistory(UUID walletId, LocalDate initialDate, LocalDate finalDate) {
+        return getHistoryInvestments(walletId).stream()
+                .filter(investment -> investment.getPurchaseDate().isAfter(initialDate)
+                        && investment.getPurchaseDate().isBefore(finalDate) )
                 .toList();
     }
 

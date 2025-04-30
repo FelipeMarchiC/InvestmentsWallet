@@ -209,8 +209,9 @@ class WalletServiceTest {
             LocalDate initialDate = LocalDate.now().minusMonths(1);
             LocalDate finalDate = LocalDate.now().plusMonths(1);
 
-            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
-            sut.withdrawInvestment(wallet.getId(), investment1.getId());
+            Investment investment = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+            sut.addInvestment(wallet.getId(), investment);
+            sut.withdrawInvestment(wallet.getId(), investment.getId());
 
             List<Investment> result = sut.filterHistory(wallet.getId(), initialDate, finalDate);
 

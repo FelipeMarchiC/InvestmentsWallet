@@ -1,6 +1,5 @@
 package br.ifsp.demo.domain;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -81,7 +80,19 @@ public class Wallet {
         return Optional.ofNullable(investments.get(investmentId));
     }
 
-    public String generateReport() {
+    private Map<AssetType, Double> getInvestmentsByTypeAndPercentage(Map<UUID, Investment> investmentStorage) {
+        double totalStorage = investmentStorage.size();
+        Map<AssetType, Double> typesCount = new HashMap<>();
+        AssetType[] types = AssetType.values();
+        Arrays.stream(types).toList().forEach(type -> {
+            long totalByType = investmentStorage.values().stream().filter(investment -> investment.getAsset().getAssetType() == type).count();
+            Double percentage = ((totalByType / totalStorage) * 100.0);
+            typesCount.put(type, percentage);
+        });
+        return typesCount;
+    }
+
+     public String generateReport() {
         if (investments.isEmpty() && history.isEmpty()) throw new NoSuchElementException("No investments found");
         StringBuilder report = new StringBuilder();
 
@@ -112,8 +123,32 @@ public class Wallet {
         report.append("> Future Investments Balance: R$ ")
                 .append(String.format("%.2f", getFutureBalance())).append("\n");
         report.append("> Total Balance (Current + Future): R$ ")
-                .append(String.format("%.2f", getTotalBalance() + getFutureBalance())).append("\n");
-
+                .append(String.format("%.2f", getTotalBalance() + getFutureBalance())).append("\n\n");
+        report.append("> Investment by Type: \n").append(generateAndFormatInvestmentsByType());
         return report.toString();
+    }
+
+    private String generateAndFormatInvestmentsByType() {
+        StringBuilder investmentsByType = new StringBuilder();
+        Map<AssetType, Double> countActive = getInvestmentsByTypeAndPercentage(investments);
+        Map<AssetType, Double> countHistory = getInvestmentsByTypeAndPercentage(history);
+
+        investmentsByType.append("- Active investments by type: ").append("\n");
+        formatInvestmentTypePercentages(investmentsByType, countActive);
+        investmentsByType.append("\n");
+        investmentsByType.append("- Historical investments by type: ").append("\n");
+        formatInvestmentTypePercentages(investmentsByType, countHistory);
+        return investmentsByType.toString();
+    }
+
+    private void formatInvestmentTypePercentages(StringBuilder investmentsByType, Map<AssetType, Double> countStorage) {
+        for (Map.Entry<AssetType, Double> entry : countStorage.entrySet()) {
+            AssetType type = entry.getKey();
+            Double percentage = entry.getValue();
+            investmentsByType.append(" | ");
+            investmentsByType.append(type.toString());
+            investmentsByType.append(": ");
+            investmentsByType.append(String.format("%.2f%%", percentage));
+        }
     }
 }

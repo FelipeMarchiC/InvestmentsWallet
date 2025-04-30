@@ -281,12 +281,15 @@ class WalletServiceTest {
             assertThat(result).isEqualTo(List.of());
         }
 
-        @Test
+        @ParameterizedTest
         @Tag("TDD")
         @Tag("UnitTest")
+        @MethodSource("provideScenariosForEmptyDateFilterActiveInvestments")
         @DisplayName("Should return an empty list if there is no active investments when filter by date")
-        void shouldReturnAnEmptyListIfThereIsNoActiveInvestmentsWhenFilterByDate(){
-            List<Investment> result = sut.filterActiveInvestments(wallet.getId(), LocalDate.now().minusMonths(1), LocalDate.now().plusMonths(1));
+        void shouldReturnAnEmptyListIfThereIsNoActiveInvestmentsWhenFilterByDate(List<Investment> registeredInvestments, LocalDate initialDate, LocalDate finalDate){
+            registeredInvestments.forEach(investment -> sut.addInvestment(wallet.getId(), investment));
+
+            List<Investment> result = sut.filterActiveInvestments(wallet.getId(), initialDate, finalDate);
             assertThat(result).isEqualTo(List.of());
         }
 

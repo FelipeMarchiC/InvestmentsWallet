@@ -18,8 +18,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static br.ifsp.demo.domain.AssetType.CDB;
-import static br.ifsp.demo.domain.AssetType.LCI;
+import static br.ifsp.demo.domain.AssetType.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -253,25 +252,39 @@ class WalletServiceTest {
         @Tag("UnitTest")
         @DisplayName("Should return report when there is investments")
         void shouldReturnReportWhenThereIsInvestments(){
-            Asset asset = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusMonths(2));
-            Investment investment1 = new Investment(1000, asset);
-            Investment investment2 = new Investment(1500, asset);
+            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusMonths(2));
+            Asset assetTesouroDireto = new Asset("Banco BMG", TESOURO_DIRETO, 0.1, LocalDate.now().plusMonths(2));
+            Investment investment1 = new Investment(1000, assetCDB);
+            Investment investment2 = new Investment(1500, assetTesouroDireto);
+            Investment investment3 = new Investment(1500, assetTesouroDireto);
+            Investment investment4 = new Investment(1500, assetTesouroDireto);
+            Investment investment5 = new Investment(1500, assetCDB);
 
             sut.addInvestment(wallet.getId(), investment1);
             sut.addInvestment(wallet.getId(), investment2);
+            sut.addInvestment(wallet.getId(), investment3);
+            sut.addInvestment(wallet.getId(), investment4);
+            sut.addInvestment(wallet.getId(), investment5);
             sut.withdrawInvestment(wallet.getId(), investment2.getId());
+            sut.withdrawInvestment(wallet.getId(), investment5.getId());
 
             SoftAssertions softly = new SoftAssertions();
             String report = sut.generateReport(wallet.getId());
 
-            softly.assertThat(report).contains("=========== WALLET REPORT ===========");
-            softly.assertThat(report).contains("> Active Investments:");
             softly.assertThat(report).contains(investment1.toString());
-            softly.assertThat(report).contains("> Historical Investments:");
             softly.assertThat(report).contains(investment2.toString());
-            softly.assertThat(report).contains("> Current Total Balance: R$");
-            softly.assertThat(report).contains("> Future Investments Balance: R$");
-            softly.assertThat(report).contains("> Total Balance (Current + Future): R$");
+            softly.assertThat(report).contains("> Current Total Balance: R$ 7000,00");
+            softly.assertThat(report).contains("> Future Investments Balance: R$ 4855,41");
+            softly.assertThat(report).contains("> Total Balance (Current + Future): R$ 11855,41");
+
+            softly.assertThat(report).contains("CRA: 0,00%");
+            softly.assertThat(report).contains("CRI: 0,00%");
+            softly.assertThat(report).contains("TESOURO_DIRETO: 66,67%");
+            softly.assertThat(report).contains("TESOURO_DIRETO: 50,00%");
+            softly.assertThat(report).contains("LCI: 0,00%");
+            softly.assertThat(report).contains("CDB: 33,33%");
+            softly.assertThat(report).contains("CDB: 50,00%");
+            softly.assertThat(report).contains("LCA: 0,00%");
 
             softly.assertAll();
         }

@@ -195,6 +195,25 @@ class WalletServiceTest {
 
             assertThat(result.size()).isEqualTo(2);
         }
+        
+        @Test
+        @Tag("UnitTest")
+        @Tag("TDD")
+        @DisplayName("Should return an empty list when filter has no result")
+        void shouldReturnAnEmptyListWhenFilterHasNoResult(){
+            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));
+
+            sut.addInvestment(wallet.getId(), investment1);
+            sut.addInvestment(wallet.getId(), investment2);
+
+            sut.withdrawInvestment(wallet.getId(), investment1.getId());
+            sut.withdrawInvestment(wallet.getId(), investment2.getId());
+
+            List<Investment> result = sut.filterHistory(LCI);
+
+            assertThat(result).isEqualTo(List.of());
+        }
     }
 
     @Nested

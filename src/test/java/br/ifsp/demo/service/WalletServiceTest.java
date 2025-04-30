@@ -244,6 +244,18 @@ class WalletServiceTest {
     }
 
     @Nested
+    class ActiveInvestmentsFilter {
+        @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @DisplayName("Should return an empty list if there is no active investments")
+        void shouldReturnAnEmptyListIfThereIsNoActiveInvestments(){
+            List<Investment> result = sut.filterActiveInvestments(wallet.getId(), CDB);
+            assertThat(result).isEqualTo(List.of());
+        }
+    }
+
+    @Nested
     class Report {
         @Test
         @Tag("TDD")

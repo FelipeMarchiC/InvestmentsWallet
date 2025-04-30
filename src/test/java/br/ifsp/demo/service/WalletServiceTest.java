@@ -5,6 +5,7 @@ import br.ifsp.demo.domain.Investment;
 import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.InMemoryWalletRepository;
 import br.ifsp.demo.repository.WalletRepository;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDate;
@@ -216,6 +217,34 @@ class WalletServiceTest {
             assertThrows(NoSuchElementException.class, () -> {
                 sut.generateReport(UUID.randomUUID());
             });
+        }
+
+        @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @DisplayName("Should return report when there is investments")
+        void shouldReturnReportWhenThereIsInvestments(){
+            Asset asset = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusMonths(2));
+            Investment investment1 = new Investment(1000, asset);
+            Investment investment2 = new Investment(1500, asset);
+
+            sut.addInvestment(wallet.getId(), investment1);
+            sut.addInvestment(wallet.getId(), investment2);
+            sut.withdrawInvestment(wallet.getId(), investment2.getId());
+
+            SoftAssertions softly = new SoftAssertions();
+            String report = sut.generateReport(wallet.getId());
+
+            softly.assertThat(report).contains("=========== WALLET REPORT ===========");
+            softly.assertThat(report).contains("> Active Investments:");
+            softly.assertThat(report).contains(investment1.toString());
+            softly.assertThat(report).contains("> Historical Investments:");
+            softly.assertThat(report).contains(investment2.toString());
+            softly.assertThat(report).contains("> Current Total Balance: R$");
+            softly.assertThat(report).contains("> Future Investments Balance: R$");
+            softly.assertThat(report).contains("> Total Balance (Current + Future): R$");
+
+            softly.assertAll();
         }
     }
 }

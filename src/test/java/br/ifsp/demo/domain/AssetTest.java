@@ -6,10 +6,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
 import static br.ifsp.demo.domain.AssetType.CDB;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -58,7 +60,7 @@ class AssetTest {
         @ParameterizedTest
         @Tag("TDD")
         @Tag("UnitTest")
-        @CsvSource({"Banco Inter, -0.01", "Banco Inter, 0.0"})
+        @CsvSource({"Banco Inter, -0.01", "Banco Inter, 0.0", "Banco Inter, 0.001"})
         @DisplayName("Should return error when profitability is invalid")
         void shouldReturnErrorWhenProfitabilityIsInvalid(String name, double profitability) {
             assertThrows(IllegalArgumentException.class, () -> {
@@ -85,5 +87,6 @@ class AssetTest {
                 Asset asset = new Asset("Banco Inter", CDB, 0.01, null);
             });
         }
+
     }
 }

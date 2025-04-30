@@ -219,11 +219,11 @@ class WalletServiceTest {
         }
         
         @ParameterizedTest
-        @MethodSource("provideScenariosForEmptyFilterHistory")
+        @MethodSource("provideScenariosForEmptyTypeFilterHistory")
         @Tag("UnitTest")
         @Tag("TDD")
         @DisplayName("Should return an empty list when filter has no match")
-        void shouldReturnAnEmptyListWhenFilterHasNoMatch(List<Investment> investments, AssetType assetType){
+        void shouldReturnAnEmptyListWhenTypeFilterHasNoMatch(List<Investment> investments, AssetType assetType){
             investments.forEach(investment -> sut.addInvestment(wallet.getId(), investment));
             investments.forEach(investment -> sut.withdrawInvestment(wallet.getId(), investment.getId()));
 
@@ -232,13 +232,37 @@ class WalletServiceTest {
             assertThat(result).isEqualTo(List.of());
         }
 
-        private static Stream<Arguments> provideScenariosForEmptyFilterHistory(){
+        @ParameterizedTest
+        @MethodSource("provideScenariosForEmptyDateFilterHistory")
+        @Tag("UnitTest")
+        @Tag("TDD")
+        @DisplayName("Should return an empty list when date filter has no match")
+        void shouldReturnAnEmptyListWhenDateFilterHasNoMatch(List<Investment> investments, LocalDate initialDate, LocalDate finalDate){
+            investments.forEach(investment -> sut.addInvestment(wallet.getId(), investment));
+            investments.forEach(investment -> sut.withdrawInvestment(wallet.getId(), investment.getId()));
+
+            List<Investment> result = sut.filterHistory(wallet.getId(), initialDate, finalDate);
+
+            assertThat(result).isEqualTo(List.of());
+        }
+
+        private static Stream<Arguments> provideScenariosForEmptyTypeFilterHistory(){
             Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
             Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));
 
             return Stream.of(
                     Arguments.of(List.of(), CDB),
                     Arguments.of(List.of(investment1, investment2), LCI)
+            );
+        }
+
+        private static Stream<Arguments> provideScenariosForEmptyDateFilterHistory(){
+            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));
+
+            return Stream.of(
+                    Arguments.of(List.of(), LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(2)),
+                    Arguments.of(List.of(investment1, investment2), LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(2))
             );
         }
     }

@@ -63,9 +63,10 @@ public class WalletService {
         return wallet.getHistoryInvestments();
     }
 
-    public List<Investment> filterHistory(AssetType assetType) {
-        return List.of(new Investment(1, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1))),
-                new Investment(1, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1))));
+    public List<Investment> filterHistory(UUID walletId, AssetType assetType) {
+        return getHistoryInvestments(walletId).stream()
+                .filter(investment -> investment.getAsset().getAssetType() == assetType)
+                .toList();
     }
 
     public String generateReport(UUID walletId) {

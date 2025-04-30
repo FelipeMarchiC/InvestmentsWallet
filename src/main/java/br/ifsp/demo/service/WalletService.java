@@ -78,7 +78,9 @@ public class WalletService {
     }
 
     public List<Investment> filterActiveInvestments(UUID walletId, AssetType assetType) {
-        return List.of();
+        return getInvestments(walletId).stream()
+                .filter(investment -> investment.getAsset().getAssetType() == assetType)
+                .toList();
     }
 
     public String generateReport(UUID walletId) {

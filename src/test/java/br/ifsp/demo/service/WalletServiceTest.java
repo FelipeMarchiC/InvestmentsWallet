@@ -1,17 +1,22 @@
 package br.ifsp.demo.service;
 
 import br.ifsp.demo.domain.Asset;
+import br.ifsp.demo.domain.AssetType;
 import br.ifsp.demo.domain.Investment;
 import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.InMemoryWalletRepository;
 import br.ifsp.demo.repository.WalletRepository;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static br.ifsp.demo.domain.AssetType.CDB;
 import static br.ifsp.demo.domain.AssetType.LCI;
@@ -196,32 +201,28 @@ class WalletServiceTest {
             assertThat(result.size()).isEqualTo(2);
         }
         
-        @Test
+        @ParameterizedTest
+        @MethodSource("provideScenariosForEmptyFilterHistory")
         @Tag("UnitTest")
         @Tag("TDD")
-        @DisplayName("Should return an empty list when filter has no result")
-        void shouldReturnAnEmptyListWhenFilterHasNoResult(){
-            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
-            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));
+        @DisplayName("Should return an empty list when filter has no match")
+        void shouldReturnAnEmptyListWhenFilterHasNoMatch(List<Investment> investments, AssetType assetType){
+            investments.forEach(investment -> sut.addInvestment(wallet.getId(), investment));
+            investments.forEach(investment -> sut.withdrawInvestment(wallet.getId(), investment.getId()));
 
-            sut.addInvestment(wallet.getId(), investment1);
-            sut.addInvestment(wallet.getId(), investment2);
-
-            sut.withdrawInvestment(wallet.getId(), investment1.getId());
-            sut.withdrawInvestment(wallet.getId(), investment2.getId());
-
-            List<Investment> result = sut.filterHistory(wallet.getId(), LCI);
+            List<Investment> result = sut.filterHistory(wallet.getId(), assetType);
 
             assertThat(result).isEqualTo(List.of());
         }
 
-        @Test
-        @Tag("UnitTest")
-        @Tag("TDD")
-        @DisplayName("Should return an empty list if there are no investment in history")
-        void shouldReturnAnEmptyListIfThereAreNoInvestmentInHistory(){
-             List<Investment> result = sut.filterHistory(wallet.getId(), CDB);
-             assertThat(result).isEqualTo(List.of());
+        private static Stream<Arguments> provideScenariosForEmptyFilterHistory(){
+            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));
+
+            return Stream.of(
+                    Arguments.of(List.of(), CDB),
+                    Arguments.of(List.of(investment1, investment2), LCI)
+            );
         }
     }
 

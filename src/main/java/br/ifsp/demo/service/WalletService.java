@@ -77,6 +77,16 @@ public class WalletService {
                 .toList();
     }
 
+    public List<Investment> filterActiveInvestments(UUID walletId, AssetType assetType) {
+        return getInvestments(walletId).stream()
+                .filter(investment -> investment.getAsset().getAssetType() == assetType)
+                .toList();
+    }
+
+    public List<Investment> filterActiveInvestments(UUID walletId, LocalDate initialDate, LocalDate finalDate) {
+        return List.of();
+    }
+
     public String generateReport(UUID walletId) {
         Wallet wallet = repository.findById(walletId)
                 .orElseThrow(() -> new NoSuchElementException("Wallet not found: " + walletId));

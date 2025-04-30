@@ -268,6 +268,39 @@ class WalletServiceTest {
     }
 
     @Nested
+    class ActiveInvestmentsFilter {
+        @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @DisplayName("Should return an empty list if there is no active investments when filter by type")
+        void shouldReturnAnEmptyListIfThereIsNoActiveInvestmentsWhenFilterByType(){
+            List<Investment> result = sut.filterActiveInvestments(wallet.getId(), CDB);
+            assertThat(result).isEqualTo(List.of());
+        }
+
+        @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @DisplayName("Should return an empty list if there is no active investments when filter by date")
+        void shouldReturnAnEmptyListIfThereIsNoActiveInvestmentsWhenFilterByDate(){
+            List<Investment> result = sut.filterActiveInvestments(wallet.getId(), LocalDate.now().minusMonths(1), LocalDate.now().plusMonths(1));
+            assertThat(result).isEqualTo(List.of());
+        }
+
+        @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @DisplayName("Should return the active investments found when filter by type")
+        void shouldReturnTheActiveInvestmentsFoundWhenFilterByType(){
+            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusMonths(2));
+            Investment investment = new Investment(1000, assetCDB);
+            sut.addInvestment(wallet.getId(), investment);
+            List<Investment> result = sut.filterActiveInvestments(wallet.getId(), CDB);
+            assertThat(result.size()).isEqualTo(1);
+        }
+    }
+
+    @Nested
     class Report {
         @Test
         @Tag("TDD")

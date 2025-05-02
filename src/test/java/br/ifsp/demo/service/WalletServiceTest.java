@@ -152,6 +152,23 @@ class WalletServiceTest {
 
             assertThat(result).isTrue();
         }
+        
+        @ParameterizedTest
+        @MethodSource("provideScenariosToNullPointerException")
+        @Tag("UnitTest")
+        @DisplayName("Should return NullPointerException when some parameter is null")
+        void shouldReturnNullPointerExceptionWhenSomeParameterIsNull(UUID walletId, UUID investmentId){
+            assertThrows(NullPointerException.class, () -> {
+                sut.withdrawInvestment(walletId, investmentId);
+            });
+        }
+
+        static Stream<Arguments> provideScenariosToNullPointerException(){
+            return Stream.of(
+                    Arguments.of(null, UUID.randomUUID()),
+                    Arguments.of(UUID.randomUUID(), null)
+            );
+        }
     }
 
     @Nested

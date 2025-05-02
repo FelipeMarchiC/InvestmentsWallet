@@ -6,7 +6,6 @@ import br.ifsp.demo.domain.Investment;
 import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.InMemoryWalletRepository;
 import br.ifsp.demo.repository.WalletRepository;
-import net.bytebuddy.asm.Advice;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -124,6 +123,18 @@ class WalletServiceTest {
             assertThrows(NoSuchElementException.class, () -> {
                 sut.withdrawInvestment(wallet.getId(), investment.getId());
             });
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should return true when withdrawing from a wallet with only one investment")
+        void shouldReturnTrueWhenWithdrawingFromAWalletWithOnlyOneInvestment(){
+            Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+            sut.addInvestment(wallet.getId(), investment);
+
+            boolean result = sut.withdrawInvestment(wallet.getId(), investment.getId());
+
+            assertThat(result).isTrue();
         }
     }
 

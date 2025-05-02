@@ -21,8 +21,7 @@ import java.util.stream.Stream;
 
 import static br.ifsp.demo.domain.AssetType.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 class WalletServiceTest {
     private Wallet wallet;
@@ -113,6 +112,17 @@ class WalletServiceTest {
 
             assertThrows(NoSuchElementException.class, () -> {
                 sut.withdrawInvestment(UUID.randomUUID(), investment.getId());
+            });
+        }
+        
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should return NoSuchElementException when wallet has no investment")
+        void shouldReturnNoSuchElementExceptionWhenWalletHasNoInvestment(){
+            Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+
+            assertThrows(NoSuchElementException.class, () -> {
+                sut.withdrawInvestment(wallet.getId(), investment.getId());
             });
         }
     }

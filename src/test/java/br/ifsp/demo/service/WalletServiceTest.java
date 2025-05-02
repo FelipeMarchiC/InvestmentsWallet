@@ -1,9 +1,6 @@
 package br.ifsp.demo.service;
 
-import br.ifsp.demo.domain.Asset;
-import br.ifsp.demo.domain.AssetType;
-import br.ifsp.demo.domain.Investment;
-import br.ifsp.demo.domain.Wallet;
+import br.ifsp.demo.domain.*;
 import br.ifsp.demo.repository.InMemoryWalletRepository;
 import br.ifsp.demo.repository.WalletRepository;
 import org.assertj.core.api.SoftAssertions;
@@ -19,12 +16,14 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static br.ifsp.demo.domain.AssetType.*;
+import static br.ifsp.demo.domain.InvestmentFactory.createInvestmentWithPurchaseDate;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class WalletServiceTest {
     private Wallet wallet;
     private WalletService sut;
+    private LocalDate date;
 
     @BeforeEach
     public void setUp() {
@@ -32,6 +31,7 @@ class WalletServiceTest {
         WalletRepository inMemoryRepository = new InMemoryWalletRepository();
         inMemoryRepository.save(wallet);
         sut = new WalletService(inMemoryRepository);
+        date = LocalDate.of(2025, 4, 25);
     }
 
     @Nested
@@ -47,7 +47,7 @@ class WalletServiceTest {
             inMemoryRepository.save(wallet);
             WalletService sut = new WalletService(inMemoryRepository);
 
-            Asset asset = new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1));
+            Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
             Investment investment = new Investment(100, asset);
 
             boolean result = sut.addInvestment(wallet.getId(), investment);
@@ -68,11 +68,11 @@ class WalletServiceTest {
             inMemoryRepository.save(wallet);
             WalletService sut = new WalletService(inMemoryRepository);
 
-            Asset asset = new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1));
+            Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
             Investment investment = new Investment(100, asset);
             sut.addInvestment(wallet.getId(), investment);
 
-            boolean result = sut.withdrawInvestment(wallet.getId(), investment.getId());
+            boolean result = sut.withdrawInvestment(wallet.getId(), investment.getId(), date);
             assertThat(result).isTrue();
         }
 
@@ -86,12 +86,12 @@ class WalletServiceTest {
             inMemoryRepository.save(wallet);
             WalletService sut = new WalletService(inMemoryRepository);
 
-            Asset asset = new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1));
+            Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
             Investment investment = new Investment(100, asset);
             sut.addInvestment(wallet.getId(), investment);
 
             assertThrows(NoSuchElementException.class, () -> {
-               sut.withdrawInvestment(wallet.getId(), UUID.randomUUID());
+               sut.withdrawInvestment(wallet.getId(), UUID.randomUUID(), date);
             });
         }
 
@@ -105,12 +105,12 @@ class WalletServiceTest {
             inMemoryRepository.save(wallet);
             WalletService sut = new WalletService(inMemoryRepository);
 
-            Asset asset = new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1));
+            Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
             Investment investment = new Investment(100, asset);
             sut.addInvestment(wallet.getId(), investment);
 
             assertThrows(NoSuchElementException.class, () -> {
-                sut.withdrawInvestment(UUID.randomUUID(), investment.getId());
+                sut.withdrawInvestment(UUID.randomUUID(), investment.getId(), date);
             });
         }
         
@@ -118,10 +118,10 @@ class WalletServiceTest {
         @Tag("UnitTest")
         @DisplayName("Should return NoSuchElementException when wallet has no investment")
         void shouldReturnNoSuchElementExceptionWhenWalletHasNoInvestment(){
-            Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+            Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
 
             assertThrows(NoSuchElementException.class, () -> {
-                sut.withdrawInvestment(wallet.getId(), investment.getId());
+                sut.withdrawInvestment(wallet.getId(), investment.getId(), date);
             });
         }
 
@@ -129,10 +129,10 @@ class WalletServiceTest {
         @Tag("UnitTest")
         @DisplayName("Should return true when withdrawing from a wallet with only one investment")
         void shouldReturnTrueWhenWithdrawingFromAWalletWithOnlyOneInvestment(){
-            Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+            Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
             sut.addInvestment(wallet.getId(), investment);
 
-            boolean result = sut.withdrawInvestment(wallet.getId(), investment.getId());
+            boolean result = sut.withdrawInvestment(wallet.getId(), investment.getId(), date);
 
             assertThat(result).isTrue();
         }
@@ -141,14 +141,14 @@ class WalletServiceTest {
         @Tag("UnitTest")
         @DisplayName("Should return true when withdrawing from a wallet with many investments")
         void shouldReturnTrueWhenWithdrawingFromAWalletWithManyInvestments(){
-            Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
-            Investment investment2 = new Investment(150, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));
-            Investment investment3 = new Investment(150, new Asset("Banco Itau", LCI, 0.01, LocalDate.now().plusYears(1)));
+            Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
+            Investment investment2 = new Investment(150, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)));
+            Investment investment3 = new Investment(150, new Asset("Banco Itau", LCI, 0.01, date.plusYears(1)));
             sut.addInvestment(wallet.getId(), investment);
             sut.addInvestment(wallet.getId(), investment2);
             sut.addInvestment(wallet.getId(), investment3);
 
-            boolean result = sut.withdrawInvestment(wallet.getId(), investment2.getId());
+            boolean result = sut.withdrawInvestment(wallet.getId(), investment2.getId(), date);
 
             assertThat(result).isTrue();
         }
@@ -159,7 +159,7 @@ class WalletServiceTest {
         @DisplayName("Should return NullPointerException when some parameter is null")
         void shouldReturnNullPointerExceptionWhenSomeParameterIsNull(UUID walletId, UUID investmentId){
             assertThrows(NullPointerException.class, () -> {
-                sut.withdrawInvestment(walletId, investmentId);
+                sut.withdrawInvestment(walletId, investmentId, date);
             });
         }
 
@@ -169,10 +169,10 @@ class WalletServiceTest {
         void shouldMoveInvestmentToHistoryWhenWithdrawing(){
             SoftAssertions softly = new SoftAssertions();
 
-            Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+            Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
             sut.addInvestment(wallet.getId(), investment);
 
-            sut.withdrawInvestment(wallet.getId(), investment.getId());
+            sut.withdrawInvestment(wallet.getId(), investment.getId(), date);
             List<Investment> history = sut.getHistoryInvestments(wallet.getId());
 
             softly.assertThat(history.size()).isEqualTo(1);
@@ -197,7 +197,7 @@ class WalletServiceTest {
         @Tag("UnitTest")
         @DisplayName("Should return all investments on wallet")
         void shouldReturnAllInvestmentsOnWallet() {
-            Asset asset = new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1));
+            Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
             Investment investment1 = new Investment(1000, asset);
             Investment investment2 = new Investment(1500, asset);
 
@@ -226,13 +226,13 @@ class WalletServiceTest {
         @Tag("UnitTest")
         @DisplayName("Should return all history investments on wallet")
         void shouldReturnAllHistoryInvestmentsOnWallet() {
-            Asset asset = new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1));
+            Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
             Investment investment1 = new Investment(1000, asset);
             Investment investment2 = new Investment(1500, asset);
 
             sut.addInvestment(wallet.getId(), investment1);
             sut.addInvestment(wallet.getId(), investment2);
-            sut.withdrawInvestment(wallet.getId(), investment1.getId());
+            sut.withdrawInvestment(wallet.getId(), investment1.getId(), date);
 
             List<Investment> result = sut.getHistoryInvestments(wallet.getId());
             assertThat(result.size()).isEqualTo(1);
@@ -256,17 +256,17 @@ class WalletServiceTest {
         @Tag("TDD")
         @DisplayName("Should return investments when filtered by asset type")
         void shouldReturnInvestmentsWhenFilteredByAssetType(){
-            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
-            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));
-            Investment investment3 = new Investment(1500, new Asset("Banco Itau", LCI, 0.01, LocalDate.now().plusYears(1)));
+            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
+            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)));
+            Investment investment3 = new Investment(1500, new Asset("Banco Itau", LCI, 0.01, date.plusYears(1)));
 
             sut.addInvestment(wallet.getId(), investment1);
             sut.addInvestment(wallet.getId(), investment2);
             sut.addInvestment(wallet.getId(), investment3);
 
-            sut.withdrawInvestment(wallet.getId(), investment1.getId());
-            sut.withdrawInvestment(wallet.getId(), investment2.getId());
-            sut.withdrawInvestment(wallet.getId(), investment3.getId());
+            sut.withdrawInvestment(wallet.getId(), investment1.getId(), date);
+            sut.withdrawInvestment(wallet.getId(), investment2.getId(), date);
+            sut.withdrawInvestment(wallet.getId(), investment3.getId(), date);
 
             List<Investment> result = sut.filterHistory(wallet.getId(), CDB);
 
@@ -278,12 +278,12 @@ class WalletServiceTest {
         @Tag("TDD")
         @DisplayName("Should return investments when filtered by date")
         void shouldReturnInvestmentsWhenFilteredByDate(){
-            LocalDate initialDate = LocalDate.now().minusMonths(1);
-            LocalDate finalDate = LocalDate.now().plusMonths(1);
+            LocalDate initialDate = date.minusMonths(1);
+            LocalDate finalDate = date.plusMonths(1);
 
-            Investment investment = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+            Investment investment = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
             sut.addInvestment(wallet.getId(), investment);
-            sut.withdrawInvestment(wallet.getId(), investment.getId());
+            sut.withdrawInvestment(wallet.getId(), investment.getId(), date);
 
             List<Investment> result = sut.filterHistory(wallet.getId(), initialDate, finalDate);
 
@@ -297,7 +297,7 @@ class WalletServiceTest {
         @DisplayName("Should return an empty list when filter has no match")
         void shouldReturnAnEmptyListWhenTypeFilterHasNoMatch(List<Investment> investments, AssetType assetType){
             investments.forEach(investment -> sut.addInvestment(wallet.getId(), investment));
-            investments.forEach(investment -> sut.withdrawInvestment(wallet.getId(), investment.getId()));
+            investments.forEach(investment -> sut.withdrawInvestment(wallet.getId(), investment.getId(), date));
 
             List<Investment> result = sut.filterHistory(wallet.getId(), assetType);
 
@@ -311,7 +311,7 @@ class WalletServiceTest {
         @DisplayName("Should return an empty list when date filter has no match")
         void shouldReturnAnEmptyListWhenDateFilterHasNoMatch(List<Investment> investments, LocalDate initialDate, LocalDate finalDate){
             investments.forEach(investment -> sut.addInvestment(wallet.getId(), investment));
-            investments.forEach(investment -> sut.withdrawInvestment(wallet.getId(), investment.getId()));
+            investments.forEach(investment -> sut.withdrawInvestment(wallet.getId(), investment.getId(), date));
 
             List<Investment> result = sut.filterHistory(wallet.getId(), initialDate, finalDate);
 
@@ -319,8 +319,9 @@ class WalletServiceTest {
         }
 
         private static Stream<Arguments> provideScenariosForEmptyTypeFilterHistory(){
-            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
-            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));
+            LocalDate date = LocalDate.of(2025, 4, 25);
+            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
+            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)));
 
             return Stream.of(
                     Arguments.of(List.of(), CDB),
@@ -329,12 +330,13 @@ class WalletServiceTest {
         }
 
         private static Stream<Arguments> provideScenariosForEmptyDateFilterHistory(){
-            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
-            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));
+            LocalDate date = LocalDate.of(2025, 4, 25);
+            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
+            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)));
 
             return Stream.of(
-                    Arguments.of(List.of(), LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(2)),
-                    Arguments.of(List.of(investment1, investment2), LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(2))
+                    Arguments.of(List.of(), date.plusMonths(1), date.plusMonths(2)),
+                    Arguments.of(List.of(investment1, investment2), date.plusMonths(1), date.plusMonths(2))
             );
         }
     }
@@ -370,7 +372,7 @@ class WalletServiceTest {
         @Tag("UnitTest")
         @DisplayName("Should return the active investments found when filter by type")
         void shouldReturnTheActiveInvestmentsFoundWhenFilterByType(){
-            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusMonths(2));
+            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, date.plusMonths(2));
             Investment investment = new Investment(1000, assetCDB);
             sut.addInvestment(wallet.getId(), investment);
             List<Investment> result = sut.filterActiveInvestments(wallet.getId(), CDB);
@@ -382,16 +384,17 @@ class WalletServiceTest {
         @Tag("UnitTest")
         @DisplayName("Should return the active investments found when filter by date")
         void shouldReturnTheActiveInvestmentsFoundWhenFilterByDate(){
-            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusMonths(2));
+            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, date.plusMonths(2));
             Investment investment = new Investment(1000, assetCDB);
             sut.addInvestment(wallet.getId(), investment);
-            List<Investment> result = sut.filterActiveInvestments(wallet.getId(), LocalDate.now().minusMonths(1), LocalDate.now().plusMonths(1));
+            List<Investment> result = sut.filterActiveInvestments(wallet.getId(), date.minusMonths(1), date.plusMonths(1));
             assertThat(result.size()).isEqualTo(1);
         }
 
         private static Stream<Arguments> provideScenariosForEmptyTypeFilterActiveInvestments(){
-            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
-            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));
+            LocalDate date = LocalDate.of(2025, 4, 25);
+            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
+            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)));
 
             return Stream.of(
                     Arguments.of(List.of(), CDB),
@@ -400,12 +403,13 @@ class WalletServiceTest {
         }
 
         private static Stream<Arguments> provideScenariosForEmptyDateFilterActiveInvestments(){
-            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
-            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));
+            LocalDate date = LocalDate.of(2025, 4, 25);
+            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
+            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)));
 
             return Stream.of(
-                    Arguments.of(List.of(), LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(2)),
-                    Arguments.of(List.of(investment1, investment2), LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(2))
+                    Arguments.of(List.of(), date.plusMonths(1), date.plusMonths(2)),
+                    Arguments.of(List.of(investment1, investment2), date.plusMonths(1), date.plusMonths(2))
             );
         }
     }
@@ -418,7 +422,7 @@ class WalletServiceTest {
         @DisplayName("Should throw NoSuchElementException when there is no investments")
         void shouldThrowNoSuchElementExceptionWhenThereIsNoInvestments(){
             assertThrows(NoSuchElementException.class, () -> {
-                sut.generateReport(wallet.getId());
+                sut.generateReport(wallet.getId(), date);
             });
         }
 
@@ -428,7 +432,7 @@ class WalletServiceTest {
         @DisplayName("Should throw NoSuchElementException when there is no wallet registered")
         void shouldThrowNoSuchElementExceptionWhenThereIsNoWalletRegistered(){
             assertThrows(NoSuchElementException.class, () -> {
-                sut.generateReport(UUID.randomUUID());
+                sut.generateReport(UUID.randomUUID(), date);
             });
         }
 
@@ -437,27 +441,27 @@ class WalletServiceTest {
         @Tag("UnitTest")
         @DisplayName("Should return report when there is investments")
         void shouldReturnReportWhenThereIsInvestments(){
-            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusMonths(2));
-            Asset assetTesouroDireto = new Asset("Banco BMG", TESOURO_DIRETO, 0.1, LocalDate.now().plusMonths(2));
-            Investment investment1 = new Investment(1000, assetCDB);
-            Investment investment2 = new Investment(1500, assetTesouroDireto);
-            Investment investment3 = new Investment(1500, assetTesouroDireto);
-            Investment investment4 = new Investment(1500, assetTesouroDireto);
-            Investment investment5 = new Investment(1500, assetCDB);
+            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, date.plusMonths(2));
+            Asset assetTesouroDireto = new Asset("Banco BMG", TESOURO_DIRETO, 0.1, date.plusMonths(2));
+            Investment investmentCDB1 = createInvestmentWithPurchaseDate(1000, assetCDB, date);
+            Investment investmentCDB2 = createInvestmentWithPurchaseDate(1500, assetCDB, date);
+            Investment investmentTS1 = createInvestmentWithPurchaseDate(1500, assetTesouroDireto, date);
+            Investment investmentTS2 = createInvestmentWithPurchaseDate(1500, assetTesouroDireto, date);
+            Investment investmentTS3 = createInvestmentWithPurchaseDate(1500, assetTesouroDireto, date);
 
-            sut.addInvestment(wallet.getId(), investment1);
-            sut.addInvestment(wallet.getId(), investment2);
-            sut.addInvestment(wallet.getId(), investment3);
-            sut.addInvestment(wallet.getId(), investment4);
-            sut.addInvestment(wallet.getId(), investment5);
-            sut.withdrawInvestment(wallet.getId(), investment2.getId());
-            sut.withdrawInvestment(wallet.getId(), investment5.getId());
+            sut.addInvestment(wallet.getId(), investmentCDB1);
+            sut.addInvestment(wallet.getId(), investmentCDB2);
+            sut.addInvestment(wallet.getId(), investmentTS1);
+            sut.addInvestment(wallet.getId(), investmentTS2);
+            sut.addInvestment(wallet.getId(), investmentTS3);
+            sut.withdrawInvestment(wallet.getId(), investmentTS1.getId(), date);
+            sut.withdrawInvestment(wallet.getId(), investmentCDB2.getId(), date);
 
             SoftAssertions softly = new SoftAssertions();
-            String report = sut.generateReport(wallet.getId());
+            String report = sut.generateReport(wallet.getId(), date);
 
-            softly.assertThat(report).contains(investment1.toString());
-            softly.assertThat(report).contains(investment2.toString());
+            softly.assertThat(report).contains(investmentCDB1.toString());
+            softly.assertThat(report).contains(investmentTS1.toString());
             softly.assertThat(report).contains("> Current Total Balance: R$ 7000,00");
             softly.assertThat(report).contains("> Future Investments Balance: R$ 4855,41");
             softly.assertThat(report).contains("> Total Balance (Current + Future): R$ 11855,41");

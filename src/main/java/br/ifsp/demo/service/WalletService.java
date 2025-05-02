@@ -1,16 +1,12 @@
 package br.ifsp.demo.service;
 
-import br.ifsp.demo.domain.Asset;
 import br.ifsp.demo.domain.AssetType;
 import br.ifsp.demo.domain.Investment;
 import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.WalletRepository;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
-
-import static br.ifsp.demo.domain.AssetType.CDB;
 
 public class WalletService {
     private final WalletRepository repository;
@@ -29,7 +25,7 @@ public class WalletService {
         return true;
     }
 
-    public boolean withdrawInvestment(UUID walletId, UUID investmentId) {
+    public boolean withdrawInvestment(UUID walletId, UUID investmentId, LocalDate withdrawDate) {
         Objects.requireNonNull(walletId, "walletId cannot be null");
         Objects.requireNonNull(investmentId, "investmentId cannot be null");
 
@@ -42,7 +38,7 @@ public class WalletService {
         boolean added = wallet.addInvestmentOnHistory(investment);
         if (!added) return false;
 
-        investment.setWithdrawDate(LocalDate.now());
+        investment.setWithdrawDate(withdrawDate);
         wallet.removeInvestment(investment);
         repository.save(wallet);
         return true;
@@ -90,9 +86,9 @@ public class WalletService {
                 .toList();
     }
 
-    public String generateReport(UUID walletId) {
+    public String generateReport(UUID walletId, LocalDate relativeDate) {
         Wallet wallet = repository.findById(walletId)
                 .orElseThrow(() -> new NoSuchElementException("Wallet not found: " + walletId));
-        return wallet.generateReport();
+        return wallet.generateReport(relativeDate);
     }
 }

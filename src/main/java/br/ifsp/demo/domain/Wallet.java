@@ -1,7 +1,7 @@
 package br.ifsp.demo.domain;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class Wallet {
@@ -28,40 +28,23 @@ public class Wallet {
         return added.isEmpty();
     }
 
-    private double calculateHistoryBalance() {
-        return calculateInvestmentsBalance(history);
-    }
-
-    private double calculateActiveInvestmentsBalance() {
-        return calculateInvestmentsBalance(investments);
-    }
-
-    private double calculateInvestmentsBalance(Map<UUID, Investment> investmentStorage) {
-        double totalBalance = 0.0;
-        for (Investment investment : investmentStorage.values()) {
-            LocalDate withdrawDate = investment.getWithdrawDate();
-            LocalDate effectiveWithdrawDate = withdrawDate != null ? withdrawDate : LocalDate.now();
-
-            long days = ChronoUnit.DAYS.between(investment.getPurchaseDate(), effectiveWithdrawDate);
-            double time = days / 30.0;
-
-            double initialValue = investment.getInitialValue();
-            double profitability = investment.getAsset().getProfitability();
-            totalBalance += initialValue * Math.pow(1 + profitability, time);
+    public double getTotalBalance(LocalDate withdrawDate) {
+        double total = 0.0;
+        for (Investment investment : history.values()) {
+            total += investment.calculateBalanceAt(null);
         }
-        return Math.round(totalBalance * 100.0) / 100.0;
-    }
-
-    public double getTotalBalance() {
-        return calculateHistoryBalance() + calculateActiveInvestmentsBalance();
+        for (Investment investment : investments.values()) {
+            total += investment.calculateBalanceAt(withdrawDate);
+        }
+        return total;
     }
 
     public double getFutureBalance() {
         double futureBalance = 0.0;
         for (Investment investment : investments.values()) {
-            futureBalance += investment.getFutureBalance();
+            futureBalance += investment.calculateBalanceAt(investment.getMaturityDate());
         }
-        return Math.round(futureBalance * 100.0) / 100.0;
+        return futureBalance;
     }
 
     public UUID getId() {
@@ -92,7 +75,7 @@ public class Wallet {
         return typesCount;
     }
 
-     public String generateReport() {
+     public String generateReport(LocalDate relativeDate) {
         if (investments.isEmpty() && history.isEmpty()) throw new NoSuchElementException("No investments found");
         StringBuilder report = new StringBuilder();
 
@@ -119,11 +102,11 @@ public class Wallet {
         }
 
         report.append("> Current Total Balance: R$ ")
-                .append(String.format("%.2f", getTotalBalance())).append("\n");
+                .append(String.format("%.2f", getTotalBalance(relativeDate))).append("\n");
         report.append("> Future Investments Balance: R$ ")
                 .append(String.format("%.2f", getFutureBalance())).append("\n");
         report.append("> Total Balance (Current + Future): R$ ")
-                .append(String.format("%.2f", getTotalBalance() + getFutureBalance())).append("\n\n");
+                .append(String.format("%.2f", getTotalBalance(relativeDate) + getFutureBalance())).append("\n\n");
         report.append("> Investment by Type: \n").append(generateAndFormatInvestmentsByType());
         return report.toString();
     }

@@ -71,7 +71,7 @@ class InvestmentTest {
         Asset asset = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusMonths(2));
         Investment sut = new Investment(1000, asset, purchaseDate);
 
-        double totalBalance = sut.getFutureBalance();
+        double totalBalance = sut.calculateBalanceAt(sut.getMaturityDate());
         double expectedBalance = 1213.85;
 
         assertThat(totalBalance).isEqualTo(expectedBalance);

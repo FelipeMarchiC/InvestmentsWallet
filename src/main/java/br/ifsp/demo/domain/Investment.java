@@ -1,5 +1,7 @@
 package br.ifsp.demo.domain;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
@@ -28,15 +30,24 @@ public class Investment {
         this.purchaseDate = purchaseDate;
     }
 
-    public double getFutureBalance() {
-        double totalBalance = 0.0;
+    public double calculateBalanceAt(LocalDate referenceDate) {
+        BigDecimal balance = BigDecimal.ZERO;
 
-        long days = ChronoUnit.DAYS.between(this.purchaseDate, this.asset.getMaturityDate());
-        double time = days / 30.0;
+        LocalDate effectiveWithdrawDate = withdrawDate != null ? withdrawDate : referenceDate;
 
-        double profitability = this.asset.getProfitability();
-        totalBalance += this.initialValue * Math.pow(1 + profitability, time);
-        return Math.round(totalBalance * 100.0) / 100.0;
+        long days = ChronoUnit.DAYS.between(this.purchaseDate, effectiveWithdrawDate);
+        BigDecimal time = BigDecimal.valueOf(days)
+                .divide(BigDecimal.valueOf(30.0), 10, RoundingMode.HALF_UP);
+
+        BigDecimal initialValue = BigDecimal.valueOf(this.initialValue);
+        BigDecimal profitability = BigDecimal.valueOf(this.asset.getProfitability()).add(BigDecimal.ONE);
+        BigDecimal compound = BigDecimal.valueOf(
+                Math.pow(profitability.doubleValue(), time.doubleValue())
+        );
+
+        BigDecimal finalValue = initialValue.multiply(compound);
+        balance = balance.add(finalValue);
+        return balance.setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
     @Override
@@ -51,6 +62,18 @@ public class Investment {
         if (purchaseDate.isAfter(LocalDate.now())) throw new IllegalArgumentException("Purchase date cannot be in the future");
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Investment that = (Investment) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
     public UUID getId() {
         return this.id;
     }
@@ -63,27 +86,19 @@ public class Investment {
         return purchaseDate;
     }
 
-    public LocalDate getWithdrawDate() {
-        return withdrawDate;
+    public LocalDate getMaturityDate() {
+        return asset.getMaturityDate();
     }
 
     public Asset getAsset() {
         return asset;
     }
 
+    public LocalDate getWithdrawDate() {
+        return withdrawDate;
+    }
+
     public void setWithdrawDate(LocalDate withdrawDate) {
         this.withdrawDate = withdrawDate;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Investment that = (Investment) o;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
     }
 }

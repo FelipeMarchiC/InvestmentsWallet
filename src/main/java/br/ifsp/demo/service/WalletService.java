@@ -8,10 +8,7 @@ import br.ifsp.demo.repository.WalletRepository;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static br.ifsp.demo.domain.AssetType.CDB;
 
@@ -33,6 +30,9 @@ public class WalletService {
     }
 
     public boolean withdrawInvestment(UUID walletId, UUID investmentId) {
+        Objects.requireNonNull(walletId, "walletId cannot be null");
+        Objects.requireNonNull(investmentId, "investmentId cannot be null");
+
         Wallet wallet = repository.findById(walletId)
                 .orElseThrow(() -> new NoSuchElementException("Wallet not found: " + walletId));
 

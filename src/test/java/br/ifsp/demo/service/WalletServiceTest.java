@@ -163,6 +163,24 @@ class WalletServiceTest {
             });
         }
 
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should move investment to history when withdrawing")
+        void shouldMoveInvestmentToHistoryWhenWithdrawing(){
+            SoftAssertions softly = new SoftAssertions();
+
+            Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+            sut.addInvestment(wallet.getId(), investment);
+
+            sut.withdrawInvestment(wallet.getId(), investment.getId());
+            List<Investment> history = sut.getHistoryInvestments(wallet.getId());
+
+            softly.assertThat(history.size()).isEqualTo(1);
+            softly.assertThat(history.getFirst()).isEqualTo(investment);
+            softly.assertThat(history.getFirst().getWithdrawDate()).isNotNull();
+            softly.assertAll();
+        }
+
         static Stream<Arguments> provideScenariosToNullPointerException(){
             return Stream.of(
                     Arguments.of(null, UUID.randomUUID()),

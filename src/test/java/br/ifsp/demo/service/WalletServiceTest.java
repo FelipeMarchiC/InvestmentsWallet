@@ -136,6 +136,22 @@ class WalletServiceTest {
 
             assertThat(result).isTrue();
         }
+
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("sSould return true when withdrawing from a wallet with many investments")
+        void shouldReturnTrueWhenWithdrawingFromAWalletWithManyInvestments(){
+            Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
+            Investment investment2 = new Investment(150, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));
+            Investment investment3 = new Investment(150, new Asset("Banco Itau", LCI, 0.01, LocalDate.now().plusYears(1)));
+            sut.addInvestment(wallet.getId(), investment);
+            sut.addInvestment(wallet.getId(), investment2);
+            sut.addInvestment(wallet.getId(), investment3);
+
+            boolean result = sut.withdrawInvestment(wallet.getId(), investment2.getId());
+
+            assertThat(result).isTrue();
+        }
     }
 
     @Nested

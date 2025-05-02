@@ -139,7 +139,7 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
-        @DisplayName("sSould return true when withdrawing from a wallet with many investments")
+        @DisplayName("Should return true when withdrawing from a wallet with many investments")
         void shouldReturnTrueWhenWithdrawingFromAWalletWithManyInvestments(){
             Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)));
             Investment investment2 = new Investment(150, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)));

@@ -2,6 +2,7 @@ package br.ifsp.demo.domain;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Investment {
@@ -72,5 +73,17 @@ public class Investment {
 
     public void setWithdrawDate(LocalDate withdrawDate) {
         this.withdrawDate = withdrawDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Investment that = (Investment) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

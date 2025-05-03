@@ -11,9 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static br.ifsp.demo.domain.AssetType.*;
@@ -483,7 +481,15 @@ class WalletServiceTest {
                 sut.withdrawInvestment(wallet.getId(), investment.getId(), date);
             });
 
-            assertThat(sut.filterHistory(wallet.getId(), assetType)).isEqualTo(expectedResult);
+            List<Investment> actualImmutable = sut.filterHistory(wallet.getId(), assetType);
+            Comparator<Investment> byId = Comparator.comparing(Investment::getId);
+
+            List<Investment> actual = new ArrayList<>(actualImmutable);
+            List<Investment> expected = new ArrayList<>(expectedResult);
+            actual.sort(byId);
+            expected.sort(byId);
+
+            assertThat(actual).isEqualTo(expected);
         }
 
         public static Stream<Arguments> getDataToListOfInvestmentsAndTypeFilter(){
@@ -620,7 +626,15 @@ class WalletServiceTest {
                 sut.addInvestment(wallet.getId(), investment);
             });
 
-            assertThat(sut.filterActiveInvestments(wallet.getId(), assetType)).isEqualTo(expectedResult);
+            Comparator<Investment> byId = Comparator.comparing(Investment::getId);
+            List<Investment> actualImmutable = sut.filterActiveInvestments(wallet.getId(), assetType);
+
+            List<Investment> actual = new ArrayList<>(actualImmutable);
+            List<Investment> expected = new ArrayList<>(expectedResult);
+            actual.sort(byId);
+            expected.sort(byId);
+
+            assertThat(actual).isEqualTo(expected);
         }
 
         public static Stream<Arguments> getDataToListOfInvestmentsAndTypeFilter(){

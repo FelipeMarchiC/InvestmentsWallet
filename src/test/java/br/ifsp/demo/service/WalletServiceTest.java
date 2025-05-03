@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import static br.ifsp.demo.domain.AssetType.*;
 import static br.ifsp.demo.domain.InvestmentFactory.createInvestmentWithPurchaseDate;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.in;
 import static org.junit.jupiter.api.Assertions.*;
 
 class WalletServiceTest {
@@ -449,7 +450,7 @@ class WalletServiceTest {
             );
         }
 
-        // Unit Tests
+        // Unit Tests by type
         @Test
         @Tag("UnitTest")
         @DisplayName("Should return NoSuchElementException if wallet does not exists")
@@ -520,6 +521,38 @@ class WalletServiceTest {
             return Stream.of(
                     Arguments.of(List.of(investmentCDB, investmentLCI), CDB, List.of(investmentCDB)),
                     Arguments.of(List.of(investmentCDB, investmentCDB2, investmentLCI), CDB, List.of(investmentCDB, investmentCDB2))
+            );
+        }
+
+        // Unit Tests by Date
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should return NoSuchElementException if wallet does not exists when filter by date")
+        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExistsWhenFilterByDate(){
+            assertThrows(NoSuchElementException.class, () -> {
+                sut.filterHistory(UUID.randomUUID(), date.plusMonths(1), date.plusMonths(2));
+            });
+        }
+
+        @ParameterizedTest
+        @Tag("UnitTest")
+        @MethodSource("getInvalidDataToFilterHistory")
+        @DisplayName("Should return NoSuchElementException when some parameter is null")
+        void shouldReturnNoSuchElementExceptionWhenSomeParameterIsNull(UUID walletId, LocalDate initialDate, LocalDate finalDate){
+            assertThrows(NullPointerException.class, () -> {
+                sut.filterHistory(walletId, initialDate, finalDate);
+            });
+        }
+
+        public static Stream<Arguments> getInvalidDataToFilterHistory(){
+            Wallet wallet = new Wallet();
+            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
+            inMemoryRepository.save(wallet);
+
+            return Stream.of(
+                    Arguments.of(null, LocalDate.of(2025, 4, 25), LocalDate.of(2025, 5, 25)),
+                    Arguments.of(wallet.getId(), null, LocalDate.of(2025, 5, 25)),
+                    Arguments.of(wallet.getId(), LocalDate.of(2025, 4, 25), null)
             );
         }
     }

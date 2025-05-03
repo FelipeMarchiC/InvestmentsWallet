@@ -730,6 +730,15 @@ class WalletServiceTest {
             });
         }
 
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should return an empty list when investments is empty")
+        void shouldReturnAnEmptyListWhenInvestmentsIsEmpty(){
+            List<Investment> result = sut.filterActiveInvestments(wallet.getId(), LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(2));
+
+            assertThat(result).isEqualTo(List.of());
+        }
+
         public static Stream<Arguments> getInvalidDataToFilterHistory(){
             Wallet wallet = new Wallet();
             WalletRepository inMemoryRepository = new InMemoryWalletRepository();

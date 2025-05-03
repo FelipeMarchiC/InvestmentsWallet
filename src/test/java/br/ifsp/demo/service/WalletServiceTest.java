@@ -798,17 +798,17 @@ class WalletServiceTest {
         @DisplayName("Should return NoSuchElementException if wallet does not exists when filter by date")
         void shouldReturnNoSuchElementExceptionIfWalletDoesNotExistsWhenFilterByDate(){
             assertThrows(NoSuchElementException.class, () -> {
-                sut.filterHistory(UUID.randomUUID(), date.plusMonths(1), date.plusMonths(2));
+                sut.filterActiveInvestments(UUID.randomUUID(), date.plusMonths(1), date.plusMonths(2));
             });
         }
 
         @ParameterizedTest
         @Tag("UnitTest")
-        @MethodSource("getInvalidDataToFilterHistory")
+        @MethodSource("getInvalidDataToFilterInvestments")
         @DisplayName("Should return NoSuchElementException when some parameter is null")
         void shouldReturnNoSuchElementExceptionWhenSomeParameterIsNull(UUID walletId, LocalDate initialDate, LocalDate finalDate){
             assertThrows(NullPointerException.class, () -> {
-                sut.filterHistory(walletId, initialDate, finalDate);
+                sut.filterActiveInvestments(walletId, initialDate, finalDate);
             });
         }
 
@@ -821,7 +821,7 @@ class WalletServiceTest {
             assertThat(result).isEqualTo(List.of());
         }
 
-        public static Stream<Arguments> getInvalidDataToFilterHistory(){
+        public static Stream<Arguments> getInvalidDataToFilterInvestments(){
             Wallet wallet = new Wallet();
             WalletRepository inMemoryRepository = new InMemoryWalletRepository();
             inMemoryRepository.save(wallet);
@@ -830,6 +830,84 @@ class WalletServiceTest {
                     Arguments.of(null, LocalDate.of(2025, 4, 25), LocalDate.of(2025, 5, 25)),
                     Arguments.of(wallet.getId(), null, LocalDate.of(2025, 5, 25)),
                     Arguments.of(wallet.getId(), LocalDate.of(2025, 4, 25), null)
+            );
+        }
+
+        @ParameterizedTest
+        @Tag("UnitTest")
+        @MethodSource("getDataToReturnEmptyListWhenFilterByDate")
+        @DisplayName("Should return an empty list when there is no data in this filter")
+        void shouldReturnAnEmptyListWhenThereIsNoDataInThisFilter(LocalDate initialDate, LocalDate finalDate){
+            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusYears(1));
+            Investment investmentCDB = new Investment(1000, assetCDB);
+            sut.addInvestment(wallet.getId(), investmentCDB);
+
+            assertThat(sut.filterActiveInvestments(wallet.getId(), initialDate, finalDate)).isEqualTo(List.of());
+        }
+
+        public static Stream<Arguments> getDataToReturnEmptyListWhenFilterByDate(){
+            return Stream.of(
+                    // um item com o withdraw um dia antes da data inicial
+                    Arguments.of(LocalDate.now().plusDays(1), LocalDate.now().plusDays(20)),
+                    // um item com o withdraw um dia depois da data final
+                    Arguments.of(LocalDate.now().minusDays(20), LocalDate.now().minusDays(1))
+
+            );
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should return a list with more then one item with this filter")
+        void shouldReturnAListWithMoreThenOneItemWithThisFilter(){
+            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusYears(1));
+            Asset assetLCI = new Asset("Banco Itau", LCI, 0.1, LocalDate.now().plusYears(1));
+            Investment investmentCDB = new Investment(1000, assetCDB);
+            Investment investmentCDB2 = new Investment(1500, assetCDB);
+            Investment investmentLCI = new Investment(1500, assetLCI);
+
+            sut.addInvestment(wallet.getId(), investmentCDB);
+            sut.addInvestment(wallet.getId(), investmentCDB2);
+            sut.addInvestment(wallet.getId(), investmentLCI);
+
+            Comparator<Investment> byId = Comparator.comparing(Investment::getId);
+
+            List<Investment> resultImmutable = sut.filterActiveInvestments(
+                    wallet.getId(),
+                    LocalDate.now().minusMonths(1),
+                    LocalDate.now().plusMonths(1));
+            List<Investment> expectedResultImmutable = List.of(investmentCDB, investmentCDB2, investmentLCI);
+
+            List<Investment> expectedResult = new ArrayList<>(expectedResultImmutable);
+            List<Investment> result = new ArrayList<>(resultImmutable);
+            expectedResult.sort(byId);
+            result.sort(byId);
+
+            assertThat(result).isEqualTo(expectedResult);
+        }
+
+        @ParameterizedTest
+        @Tag("UnitTest")
+        @MethodSource("getDataToReturnListOfOneElementWhenFilterByDate")
+        @DisplayName("Should return a list with one item when filter by limit dates")
+        void shouldReturnAListWithOneItemWhenFilterByLimitDates(LocalDate initialDate, LocalDate finalDate){
+            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusYears(1));
+            Investment investmentCDB = new Investment(1000, assetCDB);
+
+            sut.addInvestment(wallet.getId(), investmentCDB);
+
+            assertThat(sut.filterActiveInvestments(wallet.getId(), initialDate, finalDate)).isEqualTo(List.of(investmentCDB));
+        }
+
+        public static Stream<Arguments> getDataToReturnListOfOneElementWhenFilterByDate(){
+            return Stream.of(
+                    //Exatamente a mesma data inicial
+                    Arguments.of(LocalDate.now() , LocalDate.now().plusDays(15)),
+                    // Um dia depois da data inicial
+                    Arguments.of(LocalDate.now().minusDays(1), LocalDate.now().plusDays(14)),
+                    // Um dia antes da data final
+                    Arguments.of(LocalDate.now().minusDays(15), LocalDate.now().plusDays(9)),
+                    // Mesmo dia da data final
+                    Arguments.of(LocalDate.now().minusDays(13), LocalDate.now().plusDays(10))
             );
         }
     }

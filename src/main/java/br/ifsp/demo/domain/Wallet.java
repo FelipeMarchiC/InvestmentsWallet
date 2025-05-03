@@ -17,6 +17,8 @@ public class Wallet {
 
     public void addInvestment(Investment investment) {
         Objects.requireNonNull(investment, "Investment cannot be null");
+        if (investments.containsKey(investment.getId()))
+            throw new IllegalArgumentException("Investment already exists in the wallet: " + investment.getId());
         investments.put(investment.getId(), investment);
     }
 

@@ -15,14 +15,11 @@ public class WalletService {
         this.repository = repository;
     }
 
-    public boolean addInvestment(UUID walletId, Investment investment) {
-        Optional<Wallet> walletOptional = repository.findById(walletId);
-        if (walletOptional.isEmpty()) return false;
-
-        Wallet wallet = walletOptional.get();
+    public void addInvestment(UUID walletId, Investment investment) {
+        Wallet wallet = repository.findById(walletId)
+                .orElseThrow(() -> new NoSuchElementException("Wallet not found: " + walletId));
         wallet.addInvestment(investment);
         repository.save(wallet);
-        return true;
     }
 
     public boolean withdrawInvestment(UUID walletId, UUID investmentId, LocalDate withdrawDate) {

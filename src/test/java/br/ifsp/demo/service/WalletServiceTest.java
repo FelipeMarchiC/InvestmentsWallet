@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import static br.ifsp.demo.domain.AssetType.*;
 import static br.ifsp.demo.domain.InvestmentFactory.createInvestmentWithPurchaseDate;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 class WalletServiceTest {
@@ -41,18 +42,57 @@ class WalletServiceTest {
         @Test
         @Tag("UnitTest")
         @Tag("TDD")
-        @DisplayName("Should register an investment")
-        void shouldRegisterAnInvestment(){
-            Wallet wallet = new Wallet();
-            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
-            inMemoryRepository.save(wallet);
-            WalletService sut = new WalletService(inMemoryRepository);
+        @DisplayName("Should successfully register an investment")
+        void shouldSuccessfullyRegisterAnInvestment(){
+            Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
+            Investment investment1 = new Investment(100, asset);
+            Investment investment2 = new Investment(100, asset);
 
+            sut.addInvestment(wallet.getId(), investment1);
+            sut.addInvestment(wallet.getId(), investment2);
+            assertThat(sut.getInvestments(wallet.getId())
+                    .containsAll(List.of(investment1, investment2)))
+                    .isTrue();
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should throw NoSuchElementException for non existent Wallet")
+        void shouldThrowNoSuchElementExceptionForNonExistentWallet(){
             Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
             Investment investment = new Investment(100, asset);
 
-            boolean result = sut.addInvestment(wallet.getId(), investment);
-            assertThat(result).isTrue();
+            assertThrows(NoSuchElementException.class, () -> { sut.addInvestment(UUID.randomUUID(), investment); });
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should throw NullPointerException when Wallet or Investment is null")
+        void shouldThrowNullPointerExceptionWhenWalletOrInvestmentIsNull(){
+            Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
+            Investment investment = new Investment(100, asset);
+            SoftAssertions softly = new SoftAssertions();
+
+            softly.assertThatThrownBy(() -> sut.addInvestment(null, investment))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("Wallet id cannot be null");
+            softly.assertThatThrownBy(() -> sut.addInvestment(wallet.getId(), null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("Investment cannot be null");
+            softly.assertAll();
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should throw IllegalArgumentException when Investment id already exists on Wallet")
+        void shouldThrowIllegalArgumentExceptionWhenInvestmentIdAlreadyExistsInWallet(){
+            Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
+            Investment investment = new Investment(100, asset);
+
+            sut.addInvestment(wallet.getId(), investment);
+            assertThatThrownBy(() -> sut.addInvestment(wallet.getId(), investment))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Investment already exists in the wallet: " + investment.getId());
         }
     }
 
@@ -64,11 +104,6 @@ class WalletServiceTest {
         @Tag("TDD")
         @DisplayName("Should withdraw an investment")
         void shouldWithdrawAnInvestment(){
-            Wallet wallet = new Wallet();
-            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
-            inMemoryRepository.save(wallet);
-            WalletService sut = new WalletService(inMemoryRepository);
-
             Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
             Investment investment = new Investment(100, asset);
             sut.addInvestment(wallet.getId(), investment);
@@ -82,11 +117,6 @@ class WalletServiceTest {
         @Tag("TDD")
         @DisplayName("Should return NoSuchElementException if the investment does not exist")
         void shouldReturnNoSuchElementExceptionIfTheInvestmentDoesNotExist(){
-            Wallet wallet = new Wallet();
-            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
-            inMemoryRepository.save(wallet);
-            WalletService sut = new WalletService(inMemoryRepository);
-
             Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
             Investment investment = new Investment(100, asset);
             sut.addInvestment(wallet.getId(), investment);
@@ -101,11 +131,6 @@ class WalletServiceTest {
         @Tag("TDD")
         @DisplayName("Should return NoSuchElementException if the wallet does not exist")
         void shouldReturnNoSuchElementExceptionIfTheWalletDoesNotExist(){
-            Wallet wallet = new Wallet();
-            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
-            inMemoryRepository.save(wallet);
-            WalletService sut = new WalletService(inMemoryRepository);
-
             Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
             Investment investment = new Investment(100, asset);
             sut.addInvestment(wallet.getId(), investment);

@@ -54,8 +54,9 @@ public class WalletService {
     }
 
     public List<Investment> getHistoryInvestments(UUID walletId) {
+        Objects.requireNonNull(walletId, "walletId cannot be null");
         Optional<Wallet> walletOptional = repository.findById(walletId);
-        if (walletOptional.isEmpty()) return List.of();
+        if (walletOptional.isEmpty()) throw new NoSuchElementException("Wallet not found: " + walletId);
 
         Wallet wallet = walletOptional.get();
         return wallet.getHistoryInvestments();

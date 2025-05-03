@@ -78,6 +78,9 @@ public class WalletService {
     }
 
     public List<Investment> filterHistory(UUID walletId, LocalDate initialDate, LocalDate finalDate) {
+        Objects.requireNonNull(walletId, "walletId cannot be null");
+        Objects.requireNonNull(initialDate, "initialDate cannot be null");
+        Objects.requireNonNull(finalDate, "finalDate cannot be null");
         return getHistoryInvestments(walletId).stream()
                 .filter(investment -> investment.getPurchaseDate().isAfter(initialDate)
                         && investment.getPurchaseDate().isBefore(finalDate) )
@@ -93,6 +96,9 @@ public class WalletService {
     }
 
     public List<Investment> filterActiveInvestments(UUID walletId, LocalDate initialDate, LocalDate finalDate) {
+        Objects.requireNonNull(walletId, "walletId cannot be null");
+        Objects.requireNonNull(initialDate, "initialDate cannot be null");
+        Objects.requireNonNull(finalDate, "finalDate cannot be null");
         return getInvestments(walletId).stream()
                 .filter(investment -> investment.getPurchaseDate().isAfter(initialDate)
                         && investment.getPurchaseDate().isBefore(finalDate) )

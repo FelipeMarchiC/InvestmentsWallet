@@ -216,6 +216,50 @@ class WalletServiceTest {
             List<Investment> result = sut.getInvestments(wallet.getId());
             assertThat(result).isEqualTo(List.of());
         }
+
+        // Unit Tests
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should return NoSuchElementException if wallet does not exists")
+        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExists(){
+            assertThrows(NoSuchElementException.class, () -> {
+                sut.getInvestments(UUID.randomUUID());
+            });
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should return NullPointerException if wallet id is null")
+        void shouldReturnNullPointerExceptionIfWalletIdIsNull(){
+            assertThrows(NullPointerException.class, () -> {
+                sut.getInvestments(null);
+            });
+        }
+
+        @ParameterizedTest
+        @Tag("UnitTest")
+        @MethodSource("getDataToGetInvestmentsTests")
+        @DisplayName("should correct return the list of investments")
+        void shouldCorrectReturnTheListOfInvestments(List<Investment> investments){
+            investments.forEach(investment -> sut.addInvestment(wallet.getId(), investment));
+            assertThat(sut.getInvestments(wallet.getId())).isEqualTo(investments);
+        }
+
+        public static Stream<Arguments> getDataToGetInvestmentsTests(){
+            return Stream.of(
+                    // Nenhum
+                    Arguments.of(List.of()),
+                    // Um investimento
+                    Arguments.of(List.of(new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1))))),
+                    // 3 investimentos
+                    Arguments.of(List.of(
+                                    new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1)))),
+                            new Investment(2000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1))),
+                            new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, LocalDate.now().plusYears(1)))
+                    )
+
+            );
+        }
     }
 
     @Nested

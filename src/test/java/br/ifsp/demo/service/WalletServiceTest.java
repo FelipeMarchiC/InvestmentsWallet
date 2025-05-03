@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -19,6 +20,8 @@ import static br.ifsp.demo.domain.AssetType.*;
 import static br.ifsp.demo.domain.InvestmentFactory.createInvestmentWithPurchaseDate;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class WalletServiceTest {
     private Wallet wallet;
@@ -179,6 +182,24 @@ class WalletServiceTest {
             softly.assertThat(history.getFirst()).isEqualTo(investment);
             softly.assertThat(history.getFirst().getWithdrawDate()).isNotNull();
             softly.assertAll();
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should throw IllegalArgumentException if addToHistory fails")
+        void shouldThrowIllegalArgumentExceptionIfAddToHistoryFails(){
+            Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
+            sut.addInvestment(wallet.getId(), investment);
+
+            boolean firstWithdraw = sut.withdrawInvestment(wallet.getId(), investment.getId(), date);
+            assertThat(firstWithdraw).isTrue();
+
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+                sut.withdrawInvestment(wallet.getId(), UUID.randomUUID(), date);
+            });
+
+            assertThat(exception).isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Could not move investment to history");
         }
 
         static Stream<Arguments> provideScenariosToNullPointerException(){

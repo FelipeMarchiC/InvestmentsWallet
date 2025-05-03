@@ -52,22 +52,26 @@ public class WalletService {
     }
 
     public List<Investment> getInvestments(UUID walletId) {
+        Objects.requireNonNull(walletId, "walletId cannot be null");
         Optional<Wallet> walletOptional = repository.findById(walletId);
-        if (walletOptional.isEmpty()) return List.of();
+        if (walletOptional.isEmpty()) throw new NoSuchElementException("Wallet not found: " + walletId);
 
         Wallet wallet = walletOptional.get();
         return wallet.getInvestments();
     }
 
     public List<Investment> getHistoryInvestments(UUID walletId) {
+        Objects.requireNonNull(walletId, "walletId cannot be null");
         Optional<Wallet> walletOptional = repository.findById(walletId);
-        if (walletOptional.isEmpty()) return List.of();
+        if (walletOptional.isEmpty()) throw new NoSuchElementException("Wallet not found: " + walletId);
 
         Wallet wallet = walletOptional.get();
         return wallet.getHistoryInvestments();
     }
 
     public List<Investment> filterHistory(UUID walletId, AssetType assetType) {
+        Objects.requireNonNull(walletId, "walletId cannot be null");
+        Objects.requireNonNull(assetType, "assetType cannot be null");
         return getHistoryInvestments(walletId).stream()
                 .filter(investment -> investment.getAsset().getAssetType() == assetType)
                 .toList();
@@ -81,6 +85,8 @@ public class WalletService {
     }
 
     public List<Investment> filterActiveInvestments(UUID walletId, AssetType assetType) {
+        Objects.requireNonNull(walletId, "walletId cannot be null");
+        Objects.requireNonNull(assetType, "assetType cannot be null");
         return getInvestments(walletId).stream()
                 .filter(investment -> investment.getAsset().getAssetType() == assetType)
                 .toList();

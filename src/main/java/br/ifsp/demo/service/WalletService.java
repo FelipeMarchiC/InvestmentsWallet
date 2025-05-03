@@ -63,6 +63,8 @@ public class WalletService {
     }
 
     public List<Investment> filterHistory(UUID walletId, AssetType assetType) {
+        Objects.requireNonNull(walletId, "walletId cannot be null");
+        Objects.requireNonNull(assetType, "assetType cannot be null");
         return getHistoryInvestments(walletId).stream()
                 .filter(investment -> investment.getAsset().getAssetType() == assetType)
                 .toList();
@@ -76,6 +78,8 @@ public class WalletService {
     }
 
     public List<Investment> filterActiveInvestments(UUID walletId, AssetType assetType) {
+        Objects.requireNonNull(walletId, "walletId cannot be null");
+        Objects.requireNonNull(assetType, "assetType cannot be null");
         return getInvestments(walletId).stream()
                 .filter(investment -> investment.getAsset().getAssetType() == assetType)
                 .toList();

@@ -35,13 +35,20 @@ public class WalletService {
         Investment investment = wallet.getInvestmentById(investmentId)
                 .orElseThrow(() -> new NoSuchElementException("Investment not found: " + investmentId));
 
-        boolean added = wallet.addInvestmentOnHistory(investment);
-        if (!added) return false;
+        wallet.addInvestmentOnHistory(investment);
 
-        investment.setWithdrawDate(withdrawDate);
-        wallet.removeInvestment(investment);
-        repository.save(wallet);
-        return true;
+        try {
+            investment.setWithdrawDate(withdrawDate);
+            wallet.removeInvestment(investment);
+            repository.save(wallet);
+            return true;
+        } catch (Exception e) {
+            wallet.undoAddInvestmentOnHistory(investment);
+            investment.setWithdrawDate(null);
+            wallet.addInvestment(investment);
+
+            throw new IllegalStateException("Failed to execute withdrawInvestment: rollback applied", e);
+        }
     }
 
     public List<Investment> getInvestments(UUID walletId) {

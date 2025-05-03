@@ -23,9 +23,13 @@ public class Wallet {
         investments.remove(investment.getId());
     }
 
-    public boolean addInvestmentOnHistory(Investment investment) {
+    public void addInvestmentOnHistory(Investment investment) {
         Optional<Investment> added = Optional.ofNullable(history.put(investment.getId(), investment));
-        return added.isEmpty();
+        if (added.isPresent()) throw new IllegalArgumentException("Could not move investment to history");
+    }
+
+    public void undoAddInvestmentOnHistory(Investment investment) {
+        history.remove(investment.getId());
     }
 
     public double getTotalBalance(LocalDate withdrawDate) {

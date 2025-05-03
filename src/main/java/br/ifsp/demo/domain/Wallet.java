@@ -16,6 +16,7 @@ public class Wallet {
     }
 
     public void addInvestment(Investment investment) {
+        Objects.requireNonNull(investment, "Investment cannot be null");
         investments.put(investment.getId(), investment);
     }
 
@@ -64,6 +65,7 @@ public class Wallet {
     }
 
     public Optional<Investment> getInvestmentById(UUID investmentId) {
+        Objects.requireNonNull(investmentId, "Investment id cannot be null");
         return Optional.ofNullable(investments.get(investmentId));
     }
 

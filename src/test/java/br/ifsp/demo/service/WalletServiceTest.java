@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 import static br.ifsp.demo.domain.AssetType.*;
 import static br.ifsp.demo.domain.InvestmentFactory.createInvestmentWithPurchaseDate;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.in;
 import static org.junit.jupiter.api.Assertions.*;
 
 class WalletServiceTest {
@@ -155,14 +154,20 @@ class WalletServiceTest {
             assertThat(result).isTrue();
         }
         
-        @ParameterizedTest
-        @MethodSource("provideScenariosToNullPointerException")
+        @Test
         @Tag("UnitTest")
         @DisplayName("Should return NullPointerException when some parameter is null")
-        void shouldReturnNullPointerExceptionWhenSomeParameterIsNull(UUID walletId, UUID investmentId){
-            assertThrows(NullPointerException.class, () -> {
-                sut.withdrawInvestment(walletId, investmentId, date);
-            });
+        void shouldReturnNullPointerExceptionWhenSomeParameterIsNull(){
+            UUID investmentId = UUID.randomUUID();
+            SoftAssertions softly = new SoftAssertions();
+
+            softly.assertThatThrownBy(() -> sut.withdrawInvestment(null, investmentId, date))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("Wallet id cannot be null");
+            softly.assertThatThrownBy(() -> sut.withdrawInvestment(wallet.getId(), null, date))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("Investment id cannot be null");
+            softly.assertAll();
         }
 
         @Test
@@ -200,12 +205,6 @@ class WalletServiceTest {
                     .hasMessage("Could not move investment to history");
         }
 
-        static Stream<Arguments> provideScenariosToNullPointerException(){
-            return Stream.of(
-                    Arguments.of(null, UUID.randomUUID()),
-                    Arguments.of(UUID.randomUUID(), null)
-            );
-        }
     }
 
     @Nested

@@ -2,10 +2,7 @@ package br.ifsp.demo.repository;
 
 import br.ifsp.demo.domain.Wallet;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class InMemoryWalletRepository implements WalletRepository {
     private final Map<UUID, Wallet> walletContainer;
@@ -16,11 +13,14 @@ public class InMemoryWalletRepository implements WalletRepository {
 
     @Override
     public Optional<Wallet> findById(UUID walletId) {
+        Objects.requireNonNull(walletId, "Wallet id cannot be null");
         return Optional.ofNullable(walletContainer.get(walletId));
     }
 
+
     @Override
     public void save(Wallet wallet) {
+        Objects.requireNonNull(wallet, "Wallet cannot be null");
         walletContainer.put(wallet.getId(), wallet);
     }
 }

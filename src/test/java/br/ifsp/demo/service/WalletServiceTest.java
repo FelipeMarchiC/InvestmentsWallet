@@ -544,6 +544,15 @@ class WalletServiceTest {
             });
         }
 
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should return an empty list when history is empty")
+        void shouldReturnAnEmptyListWhenHistoryIsEmpty(){
+            List<Investment> result = sut.filterHistory(wallet.getId(), LocalDate.now().plusMonths(1), LocalDate.now().plusMonths(2));
+
+            assertThat(result).isEqualTo(List.of());
+        }
+
         public static Stream<Arguments> getInvalidDataToFilterHistory(){
             Wallet wallet = new Wallet();
             WalletRepository inMemoryRepository = new InMemoryWalletRepository();

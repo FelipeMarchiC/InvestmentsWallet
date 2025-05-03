@@ -570,6 +570,70 @@ class WalletServiceTest {
                     Arguments.of(List.of(investment1, investment2), date.plusMonths(1), date.plusMonths(2))
             );
         }
+
+        // Unit Tests
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should return NoSuchElementException if wallet does not exists")
+        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExists(){
+            assertThrows(NoSuchElementException.class, () -> {
+                sut.filterActiveInvestments(UUID.randomUUID(), CDB);
+            });
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should return NullPointerException if wallet id is null")
+        void shouldReturnNullPointerExceptionIfWalletIdIsNull(){
+            assertThrows(NullPointerException.class, () -> {
+                sut.filterActiveInvestments(null, CDB);
+            });
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should return NullPointerException if asset type is null")
+        void shouldReturnNullPointerExceptionIfAssetTypeIsNull(){
+            assertThrows(NullPointerException.class, () -> {
+                sut.filterActiveInvestments(wallet.getId(), null);
+            });
+        }
+
+        @ParameterizedTest
+        @Tag("UnitTest")
+        @MethodSource("provideScenariosForEmptyTypeFilterActiveInvestments")
+        @DisplayName("Should an empty list when has no data with this filter")
+        void shouldAnEmptyListWhenHasNoDataWithThisFilter(List<Investment> investments, AssetType assetType){
+            investments.forEach(investment -> {
+                sut.addInvestment(wallet.getId(), investment);
+            });
+
+            assertThat(sut.filterActiveInvestments(wallet.getId(), assetType)).isEqualTo(List.of());
+        }
+
+        @ParameterizedTest
+        @Tag("UnitTest")
+        @MethodSource("getDataToListOfInvestmentsAndTypeFilter")
+        @DisplayName("Should correct return the list of investments with this filter")
+        void shouldCorrectReturnTheListOfInvestmentsWithThisFilter(List<Investment> investments, AssetType assetType, List<Investment> expectedResult){
+            investments.forEach(investment -> {
+                sut.addInvestment(wallet.getId(), investment);
+            });
+
+            assertThat(sut.filterActiveInvestments(wallet.getId(), assetType)).isEqualTo(expectedResult);
+        }
+
+        public static Stream<Arguments> getDataToListOfInvestmentsAndTypeFilter(){
+            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.of(2026, 1, 1));
+            Investment investmentCDB = new Investment(1000, assetCDB);
+            Investment investmentCDB2 = new Investment(1500, assetCDB);
+            Asset assetLCI = new Asset("Banco Itau", LCI, 0.1, LocalDate.of(2026, 1, 1));
+            Investment investmentLCI = new Investment(1000, assetLCI);
+            return Stream.of(
+                    Arguments.of(List.of(investmentCDB, investmentLCI), CDB, List.of(investmentCDB)),
+                    Arguments.of(List.of(investmentCDB, investmentCDB2, investmentLCI), CDB, List.of(investmentCDB, investmentCDB2))
+            );
+        }
     }
 
     @Nested

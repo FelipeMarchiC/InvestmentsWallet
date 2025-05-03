@@ -638,7 +638,7 @@ class WalletServiceTest {
             );
         }
 
-        // Unit Tests
+        // Unit Tests by type
         @Test
         @Tag("UnitTest")
         @DisplayName("Should return NoSuchElementException if wallet does not exists")
@@ -720,7 +720,27 @@ class WalletServiceTest {
             });
         }
 
+        @ParameterizedTest
+        @Tag("UnitTest")
+        @MethodSource("getInvalidDataToFilterHistory")
+        @DisplayName("Should return NoSuchElementException when some parameter is null")
+        void shouldReturnNoSuchElementExceptionWhenSomeParameterIsNull(UUID walletId, LocalDate initialDate, LocalDate finalDate){
+            assertThrows(NullPointerException.class, () -> {
+                sut.filterHistory(walletId, initialDate, finalDate);
+            });
+        }
 
+        public static Stream<Arguments> getInvalidDataToFilterHistory(){
+            Wallet wallet = new Wallet();
+            WalletRepository inMemoryRepository = new InMemoryWalletRepository();
+            inMemoryRepository.save(wallet);
+
+            return Stream.of(
+                    Arguments.of(null, LocalDate.of(2025, 4, 25), LocalDate.of(2025, 5, 25)),
+                    Arguments.of(wallet.getId(), null, LocalDate.of(2025, 5, 25)),
+                    Arguments.of(wallet.getId(), LocalDate.of(2025, 4, 25), null)
+            );
+        }
     }
 
     @Nested

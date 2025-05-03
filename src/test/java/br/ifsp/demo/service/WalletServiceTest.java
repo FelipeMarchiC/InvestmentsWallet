@@ -709,6 +709,18 @@ class WalletServiceTest {
                     Arguments.of(List.of(investmentCDB, investmentCDB2, investmentLCI), CDB, List.of(investmentCDB, investmentCDB2))
             );
         }
+
+        // Unit Tests by Date
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should return NoSuchElementException if wallet does not exists when filter by date")
+        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExistsWhenFilterByDate(){
+            assertThrows(NoSuchElementException.class, () -> {
+                sut.filterHistory(UUID.randomUUID(), date.plusMonths(1), date.plusMonths(2));
+            });
+        }
+
+
     }
 
     @Nested

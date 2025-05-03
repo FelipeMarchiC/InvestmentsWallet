@@ -103,6 +103,7 @@ public class WalletService {
     public String generateReport(UUID walletId, LocalDate relativeDate) {
         Wallet wallet = repository.findById(walletId)
                 .orElseThrow(() -> new NoSuchElementException("Wallet not found: " + walletId));
-        return wallet.generateReport(relativeDate);
+        WalletReportService walletReportService = new WalletReportService(wallet);
+        return walletReportService.generateReport(relativeDate);
     }
 }

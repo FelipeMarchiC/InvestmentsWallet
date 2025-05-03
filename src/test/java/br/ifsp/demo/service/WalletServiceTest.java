@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -18,6 +19,7 @@ import java.util.stream.Stream;
 import static br.ifsp.demo.domain.AssetType.*;
 import static br.ifsp.demo.domain.InvestmentFactory.createInvestmentWithPurchaseDate;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.in;
 import static org.junit.jupiter.api.Assertions.*;
 
 class WalletServiceTest {
@@ -427,6 +429,72 @@ class WalletServiceTest {
             return Stream.of(
                     Arguments.of(List.of(), date.plusMonths(1), date.plusMonths(2)),
                     Arguments.of(List.of(investment1, investment2), date.plusMonths(1), date.plusMonths(2))
+            );
+        }
+
+        // Unit Tests
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should return NoSuchElementException if wallet does not exists")
+        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExists(){
+            assertThrows(NoSuchElementException.class, () -> {
+                sut.filterHistory(UUID.randomUUID(), CDB);
+            });
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should return NullPointerException if wallet id is null")
+        void shouldReturnNullPointerExceptionIfWalletIdIsNull(){
+            assertThrows(NullPointerException.class, () -> {
+                sut.filterHistory(null, CDB);
+            });
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("Should return NullPointerException if asset type is null")
+        void shouldReturnNullPointerExceptionIfAssetTypeIsNull(){
+            assertThrows(NullPointerException.class, () -> {
+                sut.filterHistory(wallet.getId(), null);
+            });
+        }
+
+        @ParameterizedTest
+        @Tag("UnitTest")
+        @MethodSource("provideScenariosForEmptyTypeFilterHistory")
+        @DisplayName("Should an empty list when has no history data with this filter")
+        void shouldAnEmptyListWhenHasNoHistoryDataWithThisFilter(List<Investment> investments, AssetType assetType){
+            investments.forEach(investment -> {
+                sut.addInvestment(wallet.getId(), investment);
+                sut.withdrawInvestment(wallet.getId(), investment.getId(), date);
+            });
+
+            assertThat(sut.filterHistory(wallet.getId(), assetType)).isEqualTo(List.of());
+        }
+
+        @ParameterizedTest
+        @Tag("UnitTest")
+        @MethodSource("getDataToListOfInvestmentsAndTypeFilter")
+        @DisplayName("Should correct return the list of investments on history with this filter")
+        void shouldCorrectReturnTheListOfInvestmentsOnHistoryWithThisFilter(List<Investment> investments, AssetType assetType, List<Investment> expectedResult){
+            investments.forEach(investment -> {
+                sut.addInvestment(wallet.getId(), investment);
+                sut.withdrawInvestment(wallet.getId(), investment.getId(), date);
+            });
+
+            assertThat(sut.filterHistory(wallet.getId(), assetType)).isEqualTo(expectedResult);
+        }
+
+        public static Stream<Arguments> getDataToListOfInvestmentsAndTypeFilter(){
+            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.of(2026, 1, 1));
+            Investment investmentCDB = new Investment(1000, assetCDB);
+            Investment investmentCDB2 = new Investment(1500, assetCDB);
+            Asset assetLCI = new Asset("Banco Itau", LCI, 0.1, LocalDate.of(2026, 1, 1));
+            Investment investmentLCI = new Investment(1000, assetLCI);
+            return Stream.of(
+                    Arguments.of(List.of(investmentCDB, investmentLCI), CDB, List.of(investmentCDB)),
+                    Arguments.of(List.of(investmentCDB, investmentCDB2, investmentLCI), CDB, List.of(investmentCDB, investmentCDB2))
             );
         }
     }

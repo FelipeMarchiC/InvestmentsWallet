@@ -191,11 +191,10 @@ class WalletServiceTest {
             Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
             sut.addInvestment(wallet.getId(), investment);
 
-            boolean firstWithdraw = sut.withdrawInvestment(wallet.getId(), investment.getId(), date);
-            assertThat(firstWithdraw).isTrue();
+            wallet.addInvestmentOnHistory(investment);
 
             IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-                sut.withdrawInvestment(wallet.getId(), UUID.randomUUID(), date);
+                sut.withdrawInvestment(wallet.getId(), investment.getId(), date);
             });
 
             assertThat(exception).isInstanceOf(IllegalArgumentException.class)

@@ -519,20 +519,13 @@ class WalletServiceTest {
         @Tag("UnitTest")
         @MethodSource("getDataToListOfInvestmentsAndTypeFilter")
         @DisplayName("Should correct return the list of investments on history with this filter")
-        void shouldCorrectReturnTheListOfInvestmentsOnHistoryWithThisFilter(List<Investment> investments, AssetType assetType, List<Investment> expectedResult){
+        void shouldCorrectReturnTheListOfInvestmentsOnHistoryWithThisFilter(List<Investment> investments, AssetType assetType, List<Investment> expected){
             investments.forEach(investment -> {
                 sut.addInvestment(wallet.getId(), investment);
                 sut.withdrawInvestment(wallet.getId(), investment.getId(), date);
             });
 
-            List<Investment> actualImmutable = sut.filterHistory(wallet.getId(), assetType);
-            Comparator<Investment> byId = Comparator.comparing(Investment::getId);
-
-            List<Investment> actual = new ArrayList<>(actualImmutable);
-            List<Investment> expected = new ArrayList<>(expectedResult);
-            actual.sort(byId);
-            expected.sort(byId);
-
+            List<Investment> actual = sut.filterHistory(wallet.getId(), assetType);
             assertThat(actual).isEqualTo(expected);
         }
 
@@ -629,20 +622,13 @@ class WalletServiceTest {
             sut.withdrawInvestment(wallet.getId(), investmentCDB2.getId(), LocalDate.now().plusDays(10));
             sut.withdrawInvestment(wallet.getId(), investmentLCI.getId(), LocalDate.now().plusDays(1));
 
-            Comparator<Investment> byId = Comparator.comparing(Investment::getId);
-
-            List<Investment> resultImmutable = sut.filterHistory(
+            List<Investment> result = sut.filterHistory(
                     wallet.getId(),
                     LocalDate.now().minusMonths(1),
                     LocalDate.now().plusMonths(1));
-            List<Investment> expectedResultImmutable = List.of(investmentCDB, investmentCDB2, investmentLCI);
+            List<Investment> expected = List.of(investmentCDB, investmentCDB2, investmentLCI);
 
-            List<Investment> expectedResult = new ArrayList<>(expectedResultImmutable);
-            List<Investment> result = new ArrayList<>(resultImmutable);
-            expectedResult.sort(byId);
-            result.sort(byId);
-
-            assertThat(result).isEqualTo(expectedResult);
+            assertThat(result).isEqualTo(expected);
         }
 
         @ParameterizedTest
@@ -810,19 +796,12 @@ class WalletServiceTest {
         @Tag("UnitTest")
         @MethodSource("getDataToListOfInvestmentsAndTypeFilter")
         @DisplayName("Should correct return the list of investments with this filter")
-        void shouldCorrectReturnTheListOfInvestmentsWithThisFilter(List<Investment> investments, AssetType assetType, List<Investment> expectedResult){
+        void shouldCorrectReturnTheListOfInvestmentsWithThisFilter(List<Investment> investments, AssetType assetType, List<Investment> expected){
             investments.forEach(investment -> {
                 sut.addInvestment(wallet.getId(), investment);
             });
 
-            Comparator<Investment> byId = Comparator.comparing(Investment::getId);
-            List<Investment> actualImmutable = sut.filterActiveInvestments(wallet.getId(), assetType);
-
-            List<Investment> actual = new ArrayList<>(actualImmutable);
-            List<Investment> expected = new ArrayList<>(expectedResult);
-            actual.sort(byId);
-            expected.sort(byId);
-
+            List<Investment> actual = sut.filterActiveInvestments(wallet.getId(), assetType);
             assertThat(actual).isEqualTo(expected);
         }
 
@@ -915,20 +894,13 @@ class WalletServiceTest {
             sut.addInvestment(wallet.getId(), investmentCDB2);
             sut.addInvestment(wallet.getId(), investmentLCI);
 
-            Comparator<Investment> byId = Comparator.comparing(Investment::getId);
-
-            List<Investment> resultImmutable = sut.filterActiveInvestments(
+            List<Investment> result = sut.filterActiveInvestments(
                     wallet.getId(),
                     LocalDate.now().minusMonths(1),
                     LocalDate.now().plusMonths(1));
-            List<Investment> expectedResultImmutable = List.of(investmentCDB, investmentCDB2, investmentLCI);
+            List<Investment> expected = List.of(investmentCDB, investmentCDB2, investmentLCI);
 
-            List<Investment> expectedResult = new ArrayList<>(expectedResultImmutable);
-            List<Investment> result = new ArrayList<>(resultImmutable);
-            expectedResult.sort(byId);
-            result.sort(byId);
-
-            assertThat(result).isEqualTo(expectedResult);
+            assertThat(result).isEqualTo(expected);
         }
 
         @ParameterizedTest

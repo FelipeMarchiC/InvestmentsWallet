@@ -79,10 +79,6 @@ public class Investment {
         return this.id;
     }
 
-    public double getInitialValue() {
-        return initialValue;
-    }
-
     public LocalDate getPurchaseDate() {
         return purchaseDate;
     }

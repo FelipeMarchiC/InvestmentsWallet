@@ -671,6 +671,27 @@ class WalletServiceTest {
                     Arguments.of(LocalDate.now().minusDays(13), LocalDate.now().plusDays(10))
             );
         }
+
+        @Test
+        @Tag("UnitTest")
+        @DisplayName("ShouldReturn2of3InvestmentsOnHistoryWithThisFilter")
+        void shouldReturn2Of3InvestmentsOnHistoryWithThisFilter(){
+            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusYears(1));
+            Asset assetLCI = new Asset("Banco Itau", LCI, 0.1, LocalDate.now().plusYears(1));
+            Investment investmentCDB = InvestmentFactory.createInvestmentWithPurchaseDate(1000, assetCDB, LocalDate.now().minusYears(1));
+            Investment investmentCDB2 = new Investment(1500, assetCDB);
+            Investment investmentLCI = new Investment(1000, assetLCI);
+
+            sut.addInvestment(wallet.getId(), investmentCDB);
+            sut.addInvestment(wallet.getId(), investmentCDB2);
+            sut.addInvestment(wallet.getId(), investmentLCI);
+            sut.withdrawInvestment(wallet.getId(), investmentCDB.getId(), LocalDate.now().minusMonths(5));
+            sut.withdrawInvestment(wallet.getId(), investmentCDB2.getId(), LocalDate.now().plusDays(10));
+            sut.withdrawInvestment(wallet.getId(), investmentLCI.getId(), LocalDate.now().plusDays(10));
+
+            List<Investment> result = sut.filterHistory(wallet.getId(), LocalDate.now().minusDays(5), LocalDate.now().plusDays(5));
+            assertThat(result.size()).isEqualTo(2);
+        }
     }
 
     @Nested

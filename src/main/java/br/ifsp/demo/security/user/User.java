@@ -1,5 +1,6 @@
 package br.ifsp.demo.security.user;
 
+import br.ifsp.demo.domain.Wallet;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -31,6 +32,9 @@ public class User implements UserDetails {
     private String email;
     @NonNull @Column(nullable = false)
     private String password;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "wallet_id")
+    private Wallet wallet;
 
     @Enumerated(EnumType.STRING)
     private Role role;

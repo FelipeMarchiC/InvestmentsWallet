@@ -1,17 +1,34 @@
 package br.ifsp.demo.domain;
 
 import br.ifsp.demo.util.DateFormatter;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
 
+import java.sql.Types;
 import java.time.LocalDate;
+import java.util.UUID;
 
+@Entity
+@NoArgsConstructor
+@Getter
 public class Asset {
-    private final String name;
-    private final AssetType assetType;
-    private final double profitability;
-    private final LocalDate maturityDate;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @JdbcTypeCode(Types.VARCHAR)
+    private UUID id;
+    private String name;
+    @Column(name = "asset_type")
+    @Enumerated(EnumType.STRING)
+    private AssetType assetType;
+    private double profitability;
+    @Column(name = "maturity_date")
+    private LocalDate maturityDate;
 
     public Asset(String name, AssetType assetType, double profitability, LocalDate maturityDate) {
         verifyAsset(name, assetType, profitability, maturityDate);
+        this.id = UUID.randomUUID();
         this.name = name;
         this.assetType = assetType;
         this.profitability = profitability;
@@ -35,21 +52,5 @@ public class Asset {
                 + String.format("%.2f%%", profitability * 100)
                 + " | Asset maturity date = "
                 +  DateFormatter.formatDateToSlash(maturityDate);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public AssetType getAssetType() {
-        return assetType;
-    }
-
-    public double getProfitability() {
-        return profitability;
-    }
-
-    public LocalDate getMaturityDate() {
-        return maturityDate;
     }
 }

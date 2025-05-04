@@ -1,46 +1,63 @@
 package br.ifsp.demo.domain;
 
+import br.ifsp.demo.security.user.User;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.JdbcTypeCode;
+
 import java.math.BigDecimal;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.util.*;
 
+@Entity
+@Getter
 public class Wallet {
-    private final UUID id;
-    private final Map<UUID, Investment> investments;
-    private final Map<UUID, Investment> history;
+    @Id
+    @JdbcTypeCode(Types.VARCHAR)
+    private UUID id;
+    @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Investment> investments;
+    @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Investment> history;
+    @OneToOne(mappedBy = "wallet")
+    private User user;
 
     public Wallet() {
         id = UUID.randomUUID();
-        investments = new LinkedHashMap<>();
-        history = new LinkedHashMap<>();
+        investments = new LinkedHashSet<>();
+        history = new LinkedHashSet<>();
     }
 
     public void addInvestment(Investment investment) {
         Objects.requireNonNull(investment, "Investment cannot be null");
-        if (investments.containsKey(investment.getId()))
+        if (investments.contains(investment))
             throw new IllegalArgumentException("Investment already exists in the wallet: " + investment.getId());
-        investments.put(investment.getId(), investment);
+        investments.add(investment);
     }
 
     public void removeInvestment(Investment investment) {
-        investments.remove(investment.getId());
+        investments.remove(investment);
     }
 
     public void addInvestmentOnHistory(Investment investment) {
-        Optional<Investment> added = Optional.ofNullable(history.put(investment.getId(), investment));
-        if (added.isPresent()) throw new IllegalArgumentException("Could not move investment to history");
+        if (!history.add(investment)) throw new IllegalArgumentException("Could not move investment to history");
     }
 
     public void undoAddInvestmentOnHistory(Investment investment) {
-        history.remove(investment.getId());
+        history.remove(investment);
     }
 
     public double getTotalBalance(LocalDate withdrawDate) {
         double total = 0.0;
-        for (Investment investment : history.values()) {
+        for (Investment investment : history){
             total += investment.calculateBalanceAt(null);
         }
-        for (Investment investment : investments.values()) {
+        for (Investment investment : investments) {
             total += investment.calculateBalanceAt(withdrawDate);
         }
         return total;
@@ -48,7 +65,7 @@ public class Wallet {
 
     public double getFutureBalance() {
         double futureBalance = 0.0;
-        for (Investment investment : investments.values()) {
+        for (Investment investment : investments) {
             futureBalance += investment.calculateBalanceAt(investment.getMaturityDate());
         }
         return futureBalance;
@@ -66,21 +83,19 @@ public class Wallet {
         return Objects.hashCode(id);
     }
 
-    public UUID getId() {
-        return id;
-    }
-
     public List<Investment> getInvestments() {
-        return new ArrayList<>(investments.values());
+        return new ArrayList<>(investments);
     }
 
     public List<Investment> getHistoryInvestments() {
-        return new ArrayList<>(history.values());
+        return new ArrayList<>(history);
     }
 
     public Optional<Investment> getInvestmentById(UUID investmentId) {
         Objects.requireNonNull(investmentId, "Investment id cannot be null");
-        return Optional.ofNullable(investments.get(investmentId));
+        return investments.stream()
+                .filter(investment -> investment.getId().equals(investmentId))
+                .findFirst();
     }
 
     public Map<AssetType, Double> filterInvestmentsByTypeAndPercentage(List<Investment> investmentStorage) {

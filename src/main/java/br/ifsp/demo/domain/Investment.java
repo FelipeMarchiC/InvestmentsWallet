@@ -1,32 +1,53 @@
 package br.ifsp.demo.domain;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.UUID;
 
+@Entity
+@NoArgsConstructor
+@Getter
 public class Investment {
-    private final double initialValue;
-    private final Asset asset;
-    private final UUID id;
-    private final LocalDate purchaseDate;
+    @Id
+    @JdbcTypeCode(Types.VARCHAR)
+    private UUID id;
+    @Column(name = "initial_value")
+    private double initialValue;
+    @ManyToOne
+    @JoinColumn(name = "asset_id", nullable = false)
+    private Asset asset;
+    @Column(name = "purchase_date")
+    private LocalDate purchaseDate;
+    @Setter
+    @Column(name = "withdraw_date")
     private LocalDate withdrawDate;
+    @ManyToOne
+    @JoinColumn(name = "wallet_id")
+    private Wallet wallet;
 
     public Investment(double initialValue, Asset asset) {
+        this.id = UUID.randomUUID();
         this.purchaseDate = LocalDate.now();
         verifyInvestment(initialValue, asset, purchaseDate);
         this.initialValue = initialValue;
         this.asset = asset;
-        this.id = UUID.randomUUID();
     }
 
     Investment(double initialValue, Asset asset, LocalDate purchaseDate) {
+        this.id = UUID.randomUUID();
         verifyInvestment(initialValue, asset, purchaseDate);
         this.initialValue = initialValue;
         this.asset = asset;
-        this.id = UUID.randomUUID();
         this.purchaseDate = purchaseDate;
     }
 
@@ -75,27 +96,8 @@ public class Investment {
         return Objects.hashCode(id);
     }
 
-    public UUID getId() {
-        return this.id;
-    }
-
-    public LocalDate getPurchaseDate() {
-        return purchaseDate;
-    }
-
     public LocalDate getMaturityDate() {
         return asset.getMaturityDate();
     }
 
-    public Asset getAsset() {
-        return asset;
-    }
-
-    public LocalDate getWithdrawDate() {
-        return withdrawDate;
-    }
-
-    public void setWithdrawDate(LocalDate withdrawDate) {
-        this.withdrawDate = withdrawDate;
-    }
 }

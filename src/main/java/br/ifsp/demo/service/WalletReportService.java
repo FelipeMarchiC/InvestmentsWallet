@@ -17,7 +17,7 @@ public class WalletReportService {
 
     public String generateReport(LocalDate relativeDate) {
         if (wallet.getInvestments().isEmpty() && wallet.getHistoryInvestments().isEmpty()) {
-            throw new NoSuchElementException("No investments found");
+            throw new NoSuchElementException("There are no investments in this wallet");
         }
 
         StringBuilder report = new StringBuilder();
@@ -51,11 +51,15 @@ public class WalletReportService {
         Map<AssetType, Double> activeInvestmentsPerTypePercentage = wallet.filterInvestmentsByTypeAndPercentage(wallet.getInvestments());
         Map<AssetType, Double> historicalPerTypePercentage = wallet.filterInvestmentsByTypeAndPercentage(wallet.getHistoryInvestments());
 
-        investmentsByType.append("- Active investments by type: ").append("\n");
-        formatInvestmentTypePercentages(investmentsByType, activeInvestmentsPerTypePercentage);
-        investmentsByType.append("\n");
-        investmentsByType.append("- Historical investments by type: ").append("\n");
-        formatInvestmentTypePercentages(investmentsByType, historicalPerTypePercentage);
+        if (!wallet.getInvestments().isEmpty()) {
+            investmentsByType.append("- Active investments by type: ").append("\n");
+            formatInvestmentTypePercentages(investmentsByType, activeInvestmentsPerTypePercentage);
+            investmentsByType.append("\n");
+        }
+        if (!wallet.getHistoryInvestments().isEmpty()) {
+            investmentsByType.append("- Historical investments by type: ").append("\n");
+            formatInvestmentTypePercentages(investmentsByType, historicalPerTypePercentage);
+        }
         return investmentsByType.toString();
     }
 

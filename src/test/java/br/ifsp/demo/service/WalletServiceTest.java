@@ -942,63 +942,134 @@ class WalletServiceTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
-        @DisplayName("Should throw NoSuchElementException when there is no investments")
-        void shouldThrowNoSuchElementExceptionWhenThereIsNoInvestments(){
-            assertThrows(NoSuchElementException.class, () -> {
-                sut.generateReport(wallet.getId(), date);
-            });
+        @DisplayName("Should throw NoSuchElementException when there are no investments")
+        void shouldThrowNoSuchElementExceptionWhenThereAreNoInvestments(){
+            assertThatThrownBy(() -> { sut.generateReport(wallet.getId(), date);})
+                    .isInstanceOf(NoSuchElementException.class)
+                    .hasMessage("There are no investments in this wallet");
         }
 
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
-        @DisplayName("Should throw NoSuchElementException when there is no wallet registered")
-        void shouldThrowNoSuchElementExceptionWhenThereIsNoWalletRegistered(){
-            assertThrows(NoSuchElementException.class, () -> {
-                sut.generateReport(UUID.randomUUID(), date);
-            });
+        @DisplayName("Should throw NoSuchElementException when Wallet does not exist")
+        void shouldThrowNoSuchElementExceptionWhenWalletDoesNotExist(){
+            UUID walletId = UUID.randomUUID();
+            assertThatThrownBy(() -> { sut.generateReport(walletId, date);})
+                    .isInstanceOf(NoSuchElementException.class)
+                    .hasMessage("Wallet not found: " + walletId);
         }
 
         @Test
+        @Tag("UnitTest")
+        @DisplayName("Should throw NullPointerException when Wallet id is null")
+        void shouldThrowNullPointerExceptionWhenWalletIdIsNull(){
+            assertThatThrownBy(() -> { sut.generateReport(null, date);})
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("Wallet id cannot be null");
+        }
+
+        @ParameterizedTest
         @Tag("TDD")
         @Tag("UnitTest")
+        @MethodSource("provideWalletScenarios")
         @DisplayName("Should return report when there is investments")
-        void shouldReturnReportWhenThereIsInvestments(){
-            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, date.plusMonths(2));
-            Asset assetTesouroDireto = new Asset("Banco BMG", TESOURO_DIRETO, 0.1, date.plusMonths(2));
-            Investment investmentCDB1 = createInvestmentWithPurchaseDate(1000, assetCDB, date);
-            Investment investmentCDB2 = createInvestmentWithPurchaseDate(1500, assetCDB, date);
-            Investment investmentTS1 = createInvestmentWithPurchaseDate(1500, assetTesouroDireto, date);
-            Investment investmentTS2 = createInvestmentWithPurchaseDate(1500, assetTesouroDireto, date);
-            Investment investmentTS3 = createInvestmentWithPurchaseDate(1500, assetTesouroDireto, date);
-
-            sut.addInvestment(wallet.getId(), investmentCDB1);
-            sut.addInvestment(wallet.getId(), investmentCDB2);
-            sut.addInvestment(wallet.getId(), investmentTS1);
-            sut.addInvestment(wallet.getId(), investmentTS2);
-            sut.addInvestment(wallet.getId(), investmentTS3);
-            sut.withdrawInvestment(wallet.getId(), investmentTS1.getId(), date);
-            sut.withdrawInvestment(wallet.getId(), investmentCDB2.getId(), date);
-
+        void shouldReturnReportWhenThereIsInvestments(Wallet wallet, List<String> expectedParts){
+            InMemoryWalletRepository inMemoryRepository = new InMemoryWalletRepository();
+            inMemoryRepository.save(wallet);
+            WalletService sut = new WalletService(inMemoryRepository);
             SoftAssertions softly = new SoftAssertions();
+
             String report = sut.generateReport(wallet.getId(), date);
 
-            softly.assertThat(report).contains(investmentCDB1.toString());
-            softly.assertThat(report).contains(investmentTS1.toString());
-            softly.assertThat(report).contains("> Current Total Balance: R$ 7000,00");
-            softly.assertThat(report).contains("> Future Investments Balance: R$ 4855,41");
-            softly.assertThat(report).contains("> Total Balance (Current + Future): R$ 11855,41");
-
-            softly.assertThat(report).contains("CRA: 0,00%");
-            softly.assertThat(report).contains("CRI: 0,00%");
-            softly.assertThat(report).contains("TESOURO_DIRETO: 66,67%");
-            softly.assertThat(report).contains("TESOURO_DIRETO: 50,00%");
-            softly.assertThat(report).contains("LCI: 0,00%");
-            softly.assertThat(report).contains("CDB: 33,33%");
-            softly.assertThat(report).contains("CDB: 50,00%");
-            softly.assertThat(report).contains("LCA: 0,00%");
-
+            expectedParts.forEach(expectedPart -> {
+                softly.assertThat(report).contains(expectedPart);
+            });
             softly.assertAll();
+        }
+
+        private static Stream<Arguments> provideWalletScenarios() {
+            return Stream.of(
+                    Arguments.of(walletWithHistoryOnly(), expectedReportWithHistoryOnly()),
+                    Arguments.of(walletWithActiveInvestmentsOnly(), expectedReportWithInvestmentsOnly()),
+                    Arguments.of(walletWithEverything(), expectedCompleteReport())
+            );
+        }
+
+        private static Wallet walletWithHistoryOnly() {
+            LocalDate date = LocalDate.of(2025, 4, 25);
+            Wallet wallet = new Wallet();
+
+            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, date.plusMonths(2));
+            Asset assetTesouro = new Asset("Banco Inter", TESOURO_DIRETO, 0.1, date.plusMonths(2));
+
+            Investment investmentCDB = createInvestmentWithPurchaseDate(1000, assetCDB, date);
+            Investment investmentTesouro = createInvestmentWithPurchaseDate(1500, assetTesouro, date);
+            investmentCDB.setWithdrawDate(date);
+            investmentTesouro.setWithdrawDate(date);
+
+            wallet.addInvestmentOnHistory(investmentCDB);
+            wallet.addInvestmentOnHistory(investmentTesouro);
+            return wallet;
+        }
+
+        private static Wallet walletWithActiveInvestmentsOnly() {
+            LocalDate date = LocalDate.of(2025, 4, 25);
+            Wallet wallet = new Wallet();
+
+            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, date.plusMonths(2));
+            Asset assetTesouro = new Asset("Banco Inter", TESOURO_DIRETO, 0.1, date.plusMonths(2));
+
+            Investment investmentCDB = createInvestmentWithPurchaseDate(2000, assetCDB, date);
+            Investment investmentTesouro = createInvestmentWithPurchaseDate(3000, assetTesouro, date);
+
+            wallet.addInvestment(investmentCDB);
+            wallet.addInvestment(investmentTesouro);
+            return wallet;
+        }
+
+        private static Wallet walletWithEverything() {
+            Wallet wallet = walletWithHistoryOnly();
+            Wallet investmentOnlyWallet = walletWithActiveInvestmentsOnly();
+
+            investmentOnlyWallet.getInvestments().forEach(wallet::addInvestment);
+            return wallet;
+        }
+
+        private static List<String> expectedReportWithHistoryOnly() {
+            return List.of(
+                    "Initial value = R$ 1000,00 | Asset name = Banco Inter | Type: CDB",
+                    "Initial value = R$ 1500,00 | Asset name = Banco Inter | Type: TESOURO_DIRETO",
+                    "Current Total Balance: R$ 2500,00",
+                    "Future Investments Balance: R$ 0,00",
+                    "Total Balance (Current + Future): R$ 2500,00",
+                    "| TESOURO_DIRETO: 50,00% | CDB: 50,00% | LCI: 0,00% | LCA: 0,00% | CRI: 0,00% | CRA: 0,00%"
+            );
+        }
+
+        private static List<String> expectedReportWithInvestmentsOnly() {
+            return List.of(
+                    "Initial value = R$ 2000,00 | Asset name = Banco Inter | Type: CDB",
+                    "Initial value = R$ 3000,00 | Asset name = Banco Inter | Type: TESOURO_DIRETO",
+                    "Current Total Balance: R$ 5000,00",
+                    "Future Investments Balance: R$ 6069,25",
+                    "Total Balance (Current + Future): R$ 11069,25",
+                    "| TESOURO_DIRETO: 50,00% | CDB: 50,00% | LCI: 0,00% | LCA: 0,00% | CRI: 0,00% | CRA: 0,00%"
+            );
+        }
+
+        private static List<String> expectedCompleteReport() {
+            return List.of(
+                    "Initial value = R$ 2000,00 | Asset name = Banco Inter | Type: CDB",
+                    "Initial value = R$ 3000,00 | Asset name = Banco Inter | Type: TESOURO_DIRETO",
+                    "Initial value = R$ 1000,00 | Asset name = Banco Inter | Type: CDB",
+                    "Initial value = R$ 1500,00 | Asset name = Banco Inter | Type: TESOURO_DIRETO",
+                    "Current Total Balance: R$ 7500,00",
+                    "Future Investments Balance: R$ 6069,25",
+                    "Total Balance (Current + Future): R$ 13569,25",
+                    "| TESOURO_DIRETO: 50,00% | CDB: 50,00% | LCI: 0,00% | LCA: 0,00% | CRI: 0,00% | CRA: 0,00%",
+                    "| TESOURO_DIRETO: 50,00% | CDB: 50,00% | LCI: 0,00% | LCA: 0,00% | CRI: 0,00% | CRA: 0,00%"
+            );
         }
     }
 }

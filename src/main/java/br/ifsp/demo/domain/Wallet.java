@@ -11,8 +11,8 @@ public class Wallet {
 
     public Wallet() {
         id = UUID.randomUUID();
-        investments = new HashMap<>();
-        history = new HashMap<>();
+        investments = new LinkedHashMap<>();
+        history = new LinkedHashMap<>();
     }
 
     public void addInvestment(Investment investment) {
@@ -72,10 +72,13 @@ public class Wallet {
     }
 
     public Map<AssetType, Double> filterInvestmentsByTypeAndPercentage(List<Investment> investmentStorage) {
+        Objects.requireNonNull(investmentStorage, "Investment storage cannot be null");
         double totalStorage = investmentStorage.size();
-        Map<AssetType, Double> typesCount = new HashMap<>();
+        if (totalStorage == 0) return Collections.emptyMap();
+
+        Map<AssetType, Double> typesCount = new LinkedHashMap<>();
         AssetType[] types = AssetType.values();
-        Arrays.stream(types).toList().forEach(type -> {
+        Arrays.stream(types).forEach(type -> {
             long totalByType = investmentStorage.stream().filter(investment -> investment.getAsset().getAssetType() == type).count();
             Double percentage = ((totalByType / totalStorage) * 100.0);
             typesCount.put(type, percentage);

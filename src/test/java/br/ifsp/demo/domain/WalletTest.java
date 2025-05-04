@@ -1,105 +1,121 @@
 package br.ifsp.demo.domain;
 
-import br.ifsp.demo.repository.InMemoryWalletRepository;
 import br.ifsp.demo.repository.WalletRepository;
 import br.ifsp.demo.service.WalletService;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Optional;
+import java.util.UUID;
 
-import static br.ifsp.demo.domain.AssetType.CDB;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class WalletTest {
-    private Wallet wallet;
-    private WalletService sut;
-    private LocalDate date;
+
+    @Mock
+    private WalletRepository repository;
+    @InjectMocks
+    private WalletService walletService;
+
+    private Wallet sut;
+    private UUID walletId;
+    private LocalDate baseDate;
 
     @BeforeEach
-    public void setUp() {
-        wallet = new Wallet();
-        WalletRepository inMemoryRepository = new InMemoryWalletRepository();
-        inMemoryRepository.save(wallet);
-        sut = new WalletService(inMemoryRepository);
-        date = LocalDate.of(2025, 4, 25);
+    void setUp() {
+        sut = new Wallet();
+        walletId = sut.getId();
+        baseDate = LocalDate.of(2025, 4, 25);
     }
 
     @Nested
+    @DisplayName("Balance Calculation")
     class BalanceCalculation {
 
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
         @DisplayName("Should calculate total balance with active investments")
-        void shouldCalculateTotalBalanceWithActiveInvestments(){
-            LocalDate purchaseDate = date.minusMonths(1).minusDays(10);
-            Asset asset = new Asset("Banco Inter", CDB, 0.1, date.plusMonths(2));
+        void shouldCalculateTotalBalanceWithActiveInvestments() {
+            when(repository.findById(walletId)).thenReturn(Optional.ofNullable(sut));
+
+            LocalDate purchaseDate = baseDate.minusMonths(1).minusDays(10);
+            Asset asset = new Asset("Banco Inter", AssetType.CDB, 0.1, baseDate.plusMonths(2));
             Investment investment = new Investment(1000, asset, purchaseDate);
 
-            sut.addInvestment(wallet.getId(), investment);
-            double totalBalance = wallet.getTotalBalance(date);
-            double expectedBalance = 1139.12;
+            walletService.addInvestment(walletId, investment);
+            double total = sut.getTotalBalance(baseDate);
 
-            assertThat(totalBalance).isEqualTo(expectedBalance);
+            assertThat(total).isEqualTo(1139.12);
         }
 
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
         @DisplayName("Should calculate total balance with history investments")
-        void shouldCalculateTotalBalanceWithHistoryInvestments(){
-            LocalDate purchaseDate = date.minusMonths(1).minusDays(10);
-            Asset asset = new Asset("Banco Inter", CDB, 0.1, date.plusMonths(2));
+        void shouldCalculateTotalBalanceWithHistoryInvestments() {
+            when(repository.findById(walletId)).thenReturn(Optional.ofNullable(sut));
+
+            LocalDate purchaseDate = baseDate.minusMonths(1).minusDays(10);
+            Asset asset = new Asset("Banco Inter", AssetType.CDB, 0.1, baseDate.plusMonths(2));
             Investment investment = new Investment(1000, asset, purchaseDate);
 
-            sut.addInvestment(wallet.getId(), investment);
-            sut.withdrawInvestment(wallet.getId(), investment.getId(), date);
+            walletService.addInvestment(walletId, investment);
+            walletService.withdrawInvestment(walletId, investment.getId(), baseDate);
+            double total = sut.getTotalBalance(null);
 
-            double totalBalance = wallet.getTotalBalance(null);
-            double expectedBalance = 1139.12;
-
-            assertThat(totalBalance).isEqualTo(expectedBalance);
+            assertThat(total).isEqualTo(1139.12);
         }
 
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
         @DisplayName("Should calculate total balance with no investments")
-        void shouldCalculateTotalBalanceWithNoInvestments(){
-            double totalBalance = wallet.getTotalBalance(null);
-            double expectedBalance = 0.0;
-            assertThat(totalBalance).isEqualTo(expectedBalance);
+        void shouldCalculateTotalBalanceWithNoInvestments() {
+            double total = sut.getTotalBalance(null);
+            assertThat(total).isZero();
         }
     }
 
     @Nested
+    @DisplayName("Future Balance Calculation")
     class FutureBalanceCalculation {
 
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
         @DisplayName("Should calculate future balance with active investments")
-        void shouldCalculateFutureBalanceWithActiveInvestments(){
-            LocalDate purchaseDate = date;
-            Asset asset = new Asset("Banco Inter", CDB, 0.1, date.plusMonths(2));
+        void shouldCalculateFutureBalanceWithActiveInvestments() {
+            when(repository.findById(walletId)).thenReturn(Optional.ofNullable(sut));
+
+            LocalDate purchaseDate = baseDate;
+            Asset asset = new Asset("Banco Inter", AssetType.CDB, 0.1, baseDate.plusMonths(2));
             Investment investment = new Investment(1000, asset, purchaseDate);
 
-            wallet.addInvestment(investment);
-            double futureBalance = wallet.getFutureBalance();
-            double expectedBalance = 1213.85;
+            walletService.addInvestment(walletId, investment);
+            double futureBalance = sut.getFutureBalance();
 
-            assertThat(futureBalance).isEqualTo(expectedBalance);
+            assertThat(futureBalance).isEqualTo(1213.85);
         }
 
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
         @DisplayName("Should return zero when calculate future balance with no active investments")
-        void shouldReturnZeroWhenCalculateFutureBalanceWithNoActiveInvestments(){
-            double futureBalance = wallet.getFutureBalance();
-            double expectedBalance = 0.0;
+        void shouldReturnZeroWhenNoActiveInvestments() {
+            double futureBalance = sut.getFutureBalance();
 
-            assertThat(futureBalance).isEqualTo(expectedBalance);
+            assertThat(futureBalance).isZero();
         }
     }
 }

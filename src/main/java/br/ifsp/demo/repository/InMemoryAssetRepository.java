@@ -3,7 +3,10 @@ package br.ifsp.demo.repository;
 import br.ifsp.demo.domain.Asset;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static br.ifsp.demo.domain.AssetType.CDB;
 

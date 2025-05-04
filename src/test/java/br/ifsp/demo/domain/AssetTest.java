@@ -71,16 +71,6 @@ class AssetTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
-        @DisplayName("Should return error when maturity date is in the past")
-        void shouldReturnErrorWhenMaturityDateIsInThePast(){
-            assertThrows(IllegalArgumentException.class, () -> {
-                Asset asset = new Asset("Banco Inter", CDB, 0.01, LocalDate.now().minusDays(1));
-            });
-        }
-
-        @Test
-        @Tag("TDD")
-        @Tag("UnitTest")
         @DisplayName("Should return error when maturity date is null")
         void shouldReturnErrorWhenMaturityDateIsNull(){
             assertThrows(IllegalArgumentException.class, () -> {

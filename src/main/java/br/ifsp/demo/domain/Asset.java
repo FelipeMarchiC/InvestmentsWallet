@@ -24,7 +24,6 @@ public class Asset {
         if (profitability <= 0) throw new IllegalArgumentException("Asset profitability must be greater than zero");
         if (profitability < 0.01) throw new IllegalArgumentException("Asset profitability must be greater or equal 0.01");
         if (maturityDate == null) throw new IllegalArgumentException("Asset maturity date cannot be null");
-        if (maturityDate.isBefore(LocalDate.now())) throw new IllegalArgumentException("Asset maturity date cannot be in the past");
     }
 
     @Override

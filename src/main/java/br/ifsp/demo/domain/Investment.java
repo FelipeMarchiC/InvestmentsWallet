@@ -30,10 +30,18 @@ public class Investment {
         this.purchaseDate = purchaseDate;
     }
 
+    private void verifyInvestment(double initialValue, Asset asset, LocalDate purchaseDate){
+        if (initialValue <= 0) throw new IllegalArgumentException("Initial value must be greater than zero");
+        if (asset == null) throw new IllegalArgumentException("Asset cannot be null");
+        if (purchaseDate == null) throw new IllegalArgumentException("Purchase date cannot be null");
+        if (purchaseDate.isAfter(asset.getMaturityDate())) throw new IllegalArgumentException("Purchase date cannot be after maturity date");
+    }
+
     public double calculateBalanceAt(LocalDate referenceDate) {
         BigDecimal balance = BigDecimal.ZERO;
 
         LocalDate effectiveWithdrawDate = withdrawDate != null ? withdrawDate : referenceDate;
+        Objects.requireNonNull(effectiveWithdrawDate, "Effective withdraw date cannot be null");
 
         long days = ChronoUnit.DAYS.between(this.purchaseDate, effectiveWithdrawDate);
         BigDecimal time = BigDecimal.valueOf(days)
@@ -53,13 +61,6 @@ public class Investment {
     @Override
     public String toString() {
         return "Initial value = R$ " + String.format("%.2f", initialValue) + " | " + asset.toString();
-    }
-
-    private void verifyInvestment(double initialValue, Asset asset, LocalDate purchaseDate){
-        if (initialValue <= 0) throw new IllegalArgumentException("Initial value must be greater than zero");
-        if (asset == null) throw new IllegalArgumentException("Asset cannot be null");
-        if (purchaseDate == null) throw new IllegalArgumentException("Purchase date cannot be null");
-        if (purchaseDate.isAfter(LocalDate.now())) throw new IllegalArgumentException("Purchase date cannot be in the future");
     }
 
     @Override

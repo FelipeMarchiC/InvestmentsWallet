@@ -2,7 +2,9 @@ package br.ifsp.demo.controller;
 
 import br.ifsp.demo.domain.AssetType;
 import br.ifsp.demo.domain.Investment;
+import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.WalletRepository;
+import br.ifsp.demo.security.auth.AuthenticationInfoService;
 import br.ifsp.demo.service.WalletService;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,12 +15,14 @@ import java.util.UUID;
 @RequestMapping(path = "/api/v1/wallet")
 public class WalletController {
 
-    WalletService walletService;
-    WalletRepository repository;
+    private final WalletService walletService;
+    private final WalletRepository repository;
+    private final AuthenticationInfoService authService;
 
-    public WalletController(WalletService walletService, WalletRepository repository) {
+    public WalletController(WalletService walletService, WalletRepository repository, AuthenticationInfoService authService) {
         this.walletService = walletService;
         this.repository = repository;
+        this.authService = authService;
     }
 
     @PostMapping("/create")

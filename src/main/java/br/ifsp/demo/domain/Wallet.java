@@ -1,15 +1,11 @@
 package br.ifsp.demo.domain;
 
+import br.ifsp.demo.exception.EntityAlreadyExistsException;
 import br.ifsp.demo.security.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.JdbcTypeCode;
 
-import java.math.BigDecimal;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.util.*;
@@ -36,19 +32,22 @@ public class Wallet {
     public void addInvestment(Investment investment) {
         Objects.requireNonNull(investment, "Investment cannot be null");
         if (investments.contains(investment))
-            throw new IllegalArgumentException("Investment already exists in the wallet: " + investment.getId());
+            throw new EntityAlreadyExistsException("Investment already exists in the wallet: " + investment.getId());
         investments.add(investment);
     }
 
     public void removeInvestment(Investment investment) {
+        Objects.requireNonNull(investment, "Investment cannot be null");
         investments.remove(investment);
     }
 
     public void addInvestmentOnHistory(Investment investment) {
-        if (!history.add(investment)) throw new IllegalArgumentException("Could not move investment to history");
+        Objects.requireNonNull(investment, "Investment cannot be null");
+        if (!history.add(investment)) throw new EntityAlreadyExistsException("Investment already exists in the wallet: " + investment.getId());
     }
 
     public void undoAddInvestmentOnHistory(Investment investment) {
+        Objects.requireNonNull(investment, "Investment cannot be null");
         history.remove(investment);
     }
 

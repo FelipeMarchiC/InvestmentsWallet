@@ -1,6 +1,7 @@
 package br.ifsp.demo.service;
 
 import br.ifsp.demo.domain.*;
+import br.ifsp.demo.exception.EntityAlreadyExistsException;
 import br.ifsp.demo.repository.WalletRepository;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
@@ -99,8 +100,8 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
-        @DisplayName("Should throw IllegalArgumentException when Investment id already exists on Wallet")
-        void shouldThrowIllegalArgumentExceptionWhenInvestmentIdAlreadyExistsInWallet(){
+        @DisplayName("Should throw EntityAlreadyExistsException when Investment id already exists on Wallet")
+        void shouldThrowEntityAlreadyExistsExceptionWhenInvestmentIdAlreadyExistsInWallet(){
             when(repository.findById(wallet.getId())).thenReturn(Optional.of(wallet));
 
             Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
@@ -108,7 +109,7 @@ class WalletServiceTest {
 
             sut.addInvestment(wallet.getId(), investment);
             assertThatThrownBy(() -> sut.addInvestment(wallet.getId(), investment))
-                    .isInstanceOf(IllegalArgumentException.class)
+                    .isInstanceOf(EntityAlreadyExistsException.class)
                     .hasMessage("Investment already exists in the wallet: " + investment.getId());
         }
     }
@@ -247,22 +248,21 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
-        @DisplayName("Should throw IllegalArgumentException if addToHistory fails")
-        void shouldThrowIllegalArgumentExceptionIfAddToHistoryFails(){
+        @DisplayName("Should throw EntityAlreadyExistsException if addToHistory fails")
+        void shouldThrowEntityAlreadyExistsExceptionIfAddToHistoryFails(){
             when(repository.findById(wallet.getId())).thenReturn(Optional.of(wallet));
             Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
             sut.addInvestment(wallet.getId(), investment);
 
             wallet.addInvestmentOnHistory(investment);
 
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            EntityAlreadyExistsException exception = assertThrows(EntityAlreadyExistsException.class, () -> {
                 sut.withdrawInvestment(wallet.getId(), investment.getId(), date);
             });
 
-            assertThat(exception).isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("Could not move investment to history");
+            assertThat(exception).isInstanceOf(EntityAlreadyExistsException.class)
+                    .hasMessage("Investment already exists in the wallet: " + investment.getId());
         }
-
     }
 
     @Nested

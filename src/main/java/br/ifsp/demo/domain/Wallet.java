@@ -4,6 +4,7 @@ import br.ifsp.demo.exception.EntityAlreadyExistsException;
 import br.ifsp.demo.security.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 
 import java.sql.Types;
@@ -20,6 +21,7 @@ public class Wallet {
     private Set<Investment> investments;
     @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Investment> history;
+    @Setter
     @OneToOne(mappedBy = "wallet")
     private User user;
 

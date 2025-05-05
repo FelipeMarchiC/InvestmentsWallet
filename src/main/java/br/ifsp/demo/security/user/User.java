@@ -73,4 +73,11 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
     }
+
+    public void setWallet(Wallet wallet) {
+        this.wallet = wallet;
+        if (wallet != null) {
+            wallet.setUser(this);
+        }
+    }
 }

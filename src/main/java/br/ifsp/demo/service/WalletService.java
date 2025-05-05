@@ -4,6 +4,9 @@ import br.ifsp.demo.domain.AssetType;
 import br.ifsp.demo.domain.Investment;
 import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.WalletRepository;
+import br.ifsp.demo.security.user.JpaUserRepository;
+import br.ifsp.demo.security.user.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -12,9 +15,21 @@ import java.util.*;
 @Service
 public class WalletService {
     private final WalletRepository repository;
+    private final JpaUserRepository jpaUserRepository;
 
-    public WalletService(WalletRepository repository) {
+    public WalletService(WalletRepository repository, JpaUserRepository jpaUserRepository) {
         this.repository = repository;
+        this.jpaUserRepository = jpaUserRepository;
+    }
+
+    public Wallet createWallet(UUID userId) {
+        Objects.requireNonNull(userId, "User id cannot be null");
+        User user = jpaUserRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
+        Wallet wallet = new Wallet();
+        user.setWallet(wallet);
+        repository.save(wallet);
+        return wallet;
     }
 
     public void addInvestment(UUID walletId, Investment investment) {

@@ -17,6 +17,7 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @Getter
+@Setter
 public class Investment {
     @Id
     @JdbcTypeCode(Types.VARCHAR)
@@ -90,6 +91,8 @@ public class Investment {
         Investment that = (Investment) o;
         return Objects.equals(id, that.id);
     }
+
+
 
     @Override
     public int hashCode() {

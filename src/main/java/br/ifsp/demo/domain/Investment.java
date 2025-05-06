@@ -70,7 +70,6 @@ public class Investment {
         BigDecimal balance = BigDecimal.ZERO;
 
         LocalDate effectiveWithdrawDate = withdrawDate != null ? withdrawDate : referenceDate;
-        Objects.requireNonNull(effectiveWithdrawDate, "Effective withdraw date cannot be null");
 
         long days = ChronoUnit.DAYS.between(this.purchaseDate, effectiveWithdrawDate);
         BigDecimal time = BigDecimal.valueOf(days)

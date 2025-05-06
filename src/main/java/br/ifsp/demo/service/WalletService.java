@@ -171,7 +171,6 @@ public class WalletService {
 
     public double getTotalBalance(UUID userId, LocalDate withdrawDate) {
         Objects.requireNonNull(userId, "User id cannot be null");
-        Objects.requireNonNull(withdrawDate, "withdrawDate cannot be null");
 
         Wallet wallet = getWallet(userId);
         return wallet.getTotalBalance(withdrawDate);

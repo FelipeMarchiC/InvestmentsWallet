@@ -172,7 +172,7 @@ public class WalletController {
     }
 
     @GetMapping("/totalBalance")
-    public ResponseEntity<Double> getTotalBalance(@RequestParam LocalDate withdrawDate){
+    public ResponseEntity<Double> getTotalBalance(@RequestParam(required = false) LocalDate withdrawDate){
         UUID userId = authenticationInfoService.getAuthenticatedUserId();
         double balance = walletService.getTotalBalance(userId, withdrawDate);
 
@@ -182,8 +182,7 @@ public class WalletController {
     @GetMapping("/futureBalance")
     public ResponseEntity<Double> getFutureBalance(){
         UUID userId = authenticationInfoService.getAuthenticatedUserId();
-        Wallet wallet = walletService.getWallet(userId);
-        double balance = wallet.getFutureBalance();
+        double balance = walletService.getFutureBalance(userId);
 
         return ResponseEntity.ok().body(balance);
     }

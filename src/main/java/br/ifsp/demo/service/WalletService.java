@@ -6,11 +6,13 @@ import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.repository.WalletRepository;
 import br.ifsp.demo.security.user.JpaUserRepository;
 import br.ifsp.demo.security.user.User;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class WalletService {
@@ -63,7 +65,6 @@ public class WalletService {
         repository.save(wallet);
     }
 
-    @Transactional
     public void withdrawInvestment(UUID userId, UUID investmentId, LocalDate withdrawDate) {
         Objects.requireNonNull(userId, "User id cannot be null");
         Objects.requireNonNull(investmentId, "Investment id cannot be null");
@@ -75,10 +76,7 @@ public class WalletService {
         Investment investment = wallet.getInvestmentById(investmentId)
                 .orElseThrow(() -> new NoSuchElementException("Investment not found: " + investmentId));
 
-        wallet.addInvestmentOnHistory(investment);
         investment.setWithdrawDate(withdrawDate);
-        wallet.removeInvestment(investment);
-
         repository.save(wallet);
     }
 
@@ -102,10 +100,7 @@ public class WalletService {
         Objects.requireNonNull(userId, "User id cannot be null");
         Objects.requireNonNull(assetType, "AssetType cannot be null");
 
-        Wallet wallet = repository.findByUser_Id(userId)
-                .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
-
-        return getHistoryInvestments(wallet.getId()).stream()
+        return getHistoryInvestments(userId).stream()
                 .filter(investment -> investment.getAsset().getAssetType() == assetType)
                 .toList();
     }
@@ -115,10 +110,7 @@ public class WalletService {
         Objects.requireNonNull(initialDate, "initialDate cannot be null");
         Objects.requireNonNull(finalDate, "finalDate cannot be null");
 
-        Wallet wallet = repository.findByUser_Id(userId)
-                .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
-
-        return getHistoryInvestments(wallet.getId()).stream()
+        return getHistoryInvestments(userId).stream()
                 .filter(investment -> {
                     LocalDate d = investment.getPurchaseDate();
                     // d >= initialDate  &&  d <= finalDate
@@ -131,10 +123,7 @@ public class WalletService {
         Objects.requireNonNull(userId, "User id cannot be null");
         Objects.requireNonNull(assetType, "assetType cannot be null");
 
-        Wallet wallet = repository.findByUser_Id(userId)
-                .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
-
-        return getInvestments(wallet.getId()).stream()
+        return getInvestments(userId).stream()
                 .filter(investment -> investment.getAsset().getAssetType() == assetType)
                 .toList();
     }
@@ -143,11 +132,8 @@ public class WalletService {
         Objects.requireNonNull(userId, "User id cannot be null");
         Objects.requireNonNull(initialDate, "initialDate cannot be null");
         Objects.requireNonNull(finalDate, "finalDate cannot be null");
-
-        Wallet wallet = repository.findByUser_Id(userId)
-                .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
-
-        return getInvestments(wallet.getId()).stream()
+        
+        return getInvestments(userId).stream()
                 .filter(investment -> {
                     LocalDate d = investment.getPurchaseDate();
                     // d >= initialDate  &&  d <= finalDate

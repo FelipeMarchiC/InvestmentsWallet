@@ -62,6 +62,10 @@ public class Investment {
         if (purchaseDate.isAfter(asset.getMaturityDate())) throw new IllegalArgumentException("Purchase date cannot be after maturity date");
     }
 
+    public boolean isWithdrawn() {
+        return withdrawDate != null;
+    }
+
     public double calculateBalanceAt(LocalDate referenceDate) {
         BigDecimal balance = BigDecimal.ZERO;
 

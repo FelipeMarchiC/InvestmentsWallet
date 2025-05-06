@@ -19,8 +19,6 @@ public class Wallet {
     private UUID id;
     @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Investment> investments;
-    @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Investment> history;
     @Setter
     @OneToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false, unique = true,
@@ -30,7 +28,6 @@ public class Wallet {
     public Wallet() {
         id = UUID.randomUUID();
         investments = new LinkedHashSet<>();
-        history = new LinkedHashSet<>();
     }
 
     public void addInvestment(Investment investment) {
@@ -45,19 +42,9 @@ public class Wallet {
         investments.remove(investment);
     }
 
-    public void addInvestmentOnHistory(Investment investment) {
-        Objects.requireNonNull(investment, "Investment cannot be null");
-        if (!history.add(investment)) throw new EntityAlreadyExistsException("Investment already exists in the wallet: " + investment.getId());
-    }
-
-    public void undoAddInvestmentOnHistory(Investment investment) {
-        Objects.requireNonNull(investment, "Investment cannot be null");
-        history.remove(investment);
-    }
-
     public double getTotalBalance(LocalDate withdrawDate) {
         double total = 0.0;
-        for (Investment investment : history){
+        for (Investment investment : getHistoryInvestments()){
             total += investment.calculateBalanceAt(null);
         }
         for (Investment investment : investments) {
@@ -87,11 +74,11 @@ public class Wallet {
     }
 
     public List<Investment> getInvestments() {
-        return new ArrayList<>(investments);
+        return investments.stream().filter(investment -> !investment.isWithdrawn()).toList();
     }
 
     public List<Investment> getHistoryInvestments() {
-        return new ArrayList<>(history);
+        return investments.stream().filter(Investment::isWithdrawn).toList();
     }
 
     public Optional<Investment> getInvestmentById(UUID investmentId) {

@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@NoArgsConstructor
 @Getter
 public class Asset {
     @Id
@@ -33,6 +32,10 @@ public class Asset {
         this.assetType = assetType;
         this.profitability = profitability;
         this.maturityDate = maturityDate;
+    }
+
+    public Asset() {
+        this.id = UUID.randomUUID();
     }
 
     private void verifyAsset(String name, AssetType assetType, double profitability, LocalDate maturityDate){

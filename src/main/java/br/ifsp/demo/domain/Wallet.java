@@ -22,7 +22,9 @@ public class Wallet {
     @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Investment> history;
     @Setter
-    @OneToOne(mappedBy = "wallet")
+    @OneToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true,
+            foreignKey = @ForeignKey(name = "fk_wallet_user"))
     private User user;
 
     public Wallet() {

@@ -1,7 +1,5 @@
 package br.ifsp.demo.dto.investment;
 
-import br.ifsp.demo.dto.asset.AssetResponseDTO;
-
 import java.time.LocalDate;
 import java.util.UUID;
 

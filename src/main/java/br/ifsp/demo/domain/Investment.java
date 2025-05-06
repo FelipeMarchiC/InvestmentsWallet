@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@NoArgsConstructor
 @Getter
 @Setter
 public class Investment {
@@ -50,6 +49,10 @@ public class Investment {
         this.initialValue = initialValue;
         this.asset = asset;
         this.purchaseDate = purchaseDate;
+    }
+
+    public Investment() {
+        this.id = UUID.randomUUID();
     }
 
     private void verifyInvestment(double initialValue, Asset asset, LocalDate purchaseDate){

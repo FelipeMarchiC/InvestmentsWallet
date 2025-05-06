@@ -1,18 +1,18 @@
 package br.ifsp.demo.controller;
 
+import br.ifsp.demo.domain.Asset;
 import br.ifsp.demo.domain.AssetType;
 import br.ifsp.demo.domain.Investment;
 import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.dto.investment.InvestmentRequestDTO;
 import br.ifsp.demo.dto.investment.InvestmentResponseDTO;
-import br.ifsp.demo.dto.investment.InvestmentWithdrawRequestDTO;
 import br.ifsp.demo.dto.wallet.WalletResponseDTO;
 import br.ifsp.demo.mapper.InvestmentMapper;
 import br.ifsp.demo.mapper.WalletMapper;
 import br.ifsp.demo.security.auth.AuthenticationInfoService;
+import br.ifsp.demo.service.AssetService;
 import br.ifsp.demo.service.WalletService;
 import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,10 +27,14 @@ public class WalletController {
 
     private final WalletService walletService;
     private final AuthenticationInfoService authenticationInfoService;
+    private final AssetService assetService;
 
-    public WalletController(WalletService walletService, AuthenticationInfoService authenticationInfoService) {
+    public WalletController(WalletService walletService,
+                            AuthenticationInfoService authenticationInfoService,
+                            AssetService assetService) {
         this.walletService = walletService;
         this.authenticationInfoService = authenticationInfoService;
+        this.assetService = assetService;
     }
 
     @PostMapping()
@@ -38,8 +42,8 @@ public class WalletController {
         UUID userId = authenticationInfoService.getAuthenticatedUserId();
         Wallet wallet = walletService.createWallet(userId);
 
-        List<Investment> investments = walletService.getInvestments(wallet.getId());
-        List<Investment> history = walletService.getHistoryInvestments(wallet.getId());
+        List<Investment> investments = walletService.getInvestments(userId);
+        List<Investment> history = walletService.getHistoryInvestments(userId);
 
         WalletResponseDTO walletResponseDTO = WalletMapper.toResponseDTO(wallet, investments, history);
         return ResponseEntity.status(HttpStatus.CREATED).body(walletResponseDTO);
@@ -50,8 +54,8 @@ public class WalletController {
         UUID userId = authenticationInfoService.getAuthenticatedUserId();
         Wallet wallet = walletService.getWallet(userId);
 
-        List<Investment> investments = walletService.getInvestments(wallet.getId());
-        List<Investment> history = walletService.getHistoryInvestments(wallet.getId());
+        List<Investment> investments = walletService.getInvestments(userId);
+        List<Investment> history = walletService.getHistoryInvestments(userId);
 
         WalletResponseDTO walletResponseDTO = WalletMapper.toResponseDTO(wallet, investments, history);
         return ResponseEntity.ok().body(walletResponseDTO);
@@ -67,13 +71,19 @@ public class WalletController {
     }
 
     @PostMapping("/investment")
-    public ResponseEntity<HttpStatus> addInvestment(@RequestBody @Valid InvestmentRequestDTO investmentRequestDTO) {
+    public ResponseEntity<HttpStatus> addInvestment(@RequestBody @Valid InvestmentRequestDTO dto) {
         UUID userId = authenticationInfoService.getAuthenticatedUserId();
         Wallet wallet = walletService.getWallet(userId);
+        Asset asset = assetService.getAssetById(dto.assetId());
 
-        Investment investment = new Investment();
-        BeanUtils.copyProperties(investmentRequestDTO, investment);
-        walletService.addInvestment(wallet.getId(), investment);
+        Investment investment = new Investment(
+                dto.initialValue(),
+                asset
+        );
+
+        investment.setWallet(wallet);
+
+        walletService.addInvestment(userId, investment);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -84,13 +94,11 @@ public class WalletController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/investment/withdraw")
-    public ResponseEntity<HttpStatus> withdrawInvestment(@RequestBody @Valid InvestmentWithdrawRequestDTO dto) {
+    @PostMapping("/investment/withdraw/{investmentId}")
+    public ResponseEntity<HttpStatus> withdrawInvestment(@PathVariable UUID investmentId) {
         UUID userId = authenticationInfoService.getAuthenticatedUserId();
-        UUID investmentId = dto.investmentId();
-        LocalDate withdrawDate = dto.withdrawDate();
 
-        walletService.withdrawInvestment(userId, investmentId, withdrawDate);
+        walletService.withdrawInvestment(userId, investmentId, LocalDate.now());
         return ResponseEntity.noContent().build();
     }
 

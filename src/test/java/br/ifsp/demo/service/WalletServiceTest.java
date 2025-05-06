@@ -127,8 +127,8 @@ class WalletServiceTest {
             Investment investment = new Investment(100, asset);
             sut.addInvestment(wallet.getId(), investment);
 
-            boolean result = sut.withdrawInvestment(wallet.getId(), investment.getId(), date);
-            assertThat(result).isTrue();
+            sut.withdrawInvestment(wallet.getId(), investment.getId(), date);;
+            assertThat(sut.getHistoryInvestments().contains(investment)).isTrue();
         }
 
         @Test

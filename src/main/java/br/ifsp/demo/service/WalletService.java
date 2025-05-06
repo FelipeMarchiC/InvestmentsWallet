@@ -24,53 +24,54 @@ public class WalletService {
 
     public Wallet createWallet(UUID userId) {
         Objects.requireNonNull(userId, "User id cannot be null");
+
         User user = jpaUserRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
 
-        if (user.getWallet() != null) throw new IllegalStateException("User already has a wallet");
+        if (user.getWallet() != null) {
+            throw new IllegalStateException("User already has a wallet: " + userId);
+        }
 
         Wallet wallet = new Wallet();
-        user.setWallet(wallet);
-        jpaUserRepository.save(user);
-        return user.getWallet();
+        wallet.setUser(user);
+//        user.setWallet(wallet);
+        return repository.save(wallet);
     }
 
     public void addInvestment(UUID userId, Investment investment) {
         Objects.requireNonNull(userId, "User id cannot be null");
         Objects.requireNonNull(investment, "Investment cannot be null");
 
-        User user = jpaUserRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
+        Wallet wallet = repository.findByUser_Id(userId)
+                .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
 
-        user.getWallet().addInvestment(investment);
-        jpaUserRepository.save(user);
+        wallet.addInvestment(investment);
+        repository.save(wallet);
     }
 
     public void removeInvestment(UUID userId, UUID investmentId) {
         Objects.requireNonNull(userId, "User id cannot be null");
         Objects.requireNonNull(investmentId, "Investment id cannot be null");
 
-        User user = jpaUserRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
+        Wallet wallet = repository.findByUser_Id(userId)
+                .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
 
-        Wallet wallet = getWallet(userId);
         Investment investment = wallet.getInvestmentById(investmentId)
                 .orElseThrow(() -> new NoSuchElementException("Investment not found: " + investmentId));
 
         wallet.removeInvestment(investment);
-        jpaUserRepository.save(user);
+        repository.save(wallet);
     }
 
     @Transactional
     public void withdrawInvestment(UUID userId, UUID investmentId, LocalDate withdrawDate) {
         Objects.requireNonNull(userId, "User id cannot be null");
         Objects.requireNonNull(investmentId, "Investment id cannot be null");
-        Objects.requireNonNull(withdrawDate, "Withdraw date cannot be null");
+        Objects.requireNonNull(withdrawDate, "withdrawDate cannot be null");
 
-        User user = jpaUserRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
+        Wallet wallet = repository.findByUser_Id(userId)
+                .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
 
-        Wallet wallet = getWallet(userId);
         Investment investment = wallet.getInvestmentById(investmentId)
                 .orElseThrow(() -> new NoSuchElementException("Investment not found: " + investmentId));
 
@@ -78,24 +79,22 @@ public class WalletService {
         investment.setWithdrawDate(withdrawDate);
         wallet.removeInvestment(investment);
 
-        jpaUserRepository.save(user);
+        repository.save(wallet);
     }
 
     public List<Investment> getInvestments(UUID userId) {
         Objects.requireNonNull(userId, "User id cannot be null");
-        User user = jpaUserRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
+        Wallet wallet = repository.findByUser_Id(userId)
+                .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
 
-        Wallet wallet = getWallet(userId);
         return wallet.getInvestments();
     }
 
     public List<Investment> getHistoryInvestments(UUID userId) {
         Objects.requireNonNull(userId, "User id cannot be null");
-        User user = jpaUserRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
+        Wallet wallet = repository.findByUser_Id(userId)
+                .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
 
-        Wallet wallet = getWallet(userId);
         return wallet.getHistoryInvestments();
     }
 
@@ -103,9 +102,8 @@ public class WalletService {
         Objects.requireNonNull(userId, "User id cannot be null");
         Objects.requireNonNull(assetType, "AssetType cannot be null");
 
-        User user = jpaUserRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
-        Wallet wallet = user.getWallet();
+        Wallet wallet = repository.findByUser_Id(userId)
+                .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
 
         return getHistoryInvestments(wallet.getId()).stream()
                 .filter(investment -> investment.getAsset().getAssetType() == assetType)
@@ -117,9 +115,8 @@ public class WalletService {
         Objects.requireNonNull(initialDate, "initialDate cannot be null");
         Objects.requireNonNull(finalDate, "finalDate cannot be null");
 
-        User user = jpaUserRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
-        Wallet wallet = user.getWallet();
+        Wallet wallet = repository.findByUser_Id(userId)
+                .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
 
         return getHistoryInvestments(wallet.getId()).stream()
                 .filter(investment -> {
@@ -134,9 +131,8 @@ public class WalletService {
         Objects.requireNonNull(userId, "User id cannot be null");
         Objects.requireNonNull(assetType, "assetType cannot be null");
 
-        User user = jpaUserRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
-        Wallet wallet = user.getWallet();
+        Wallet wallet = repository.findByUser_Id(userId)
+                .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
 
         return getInvestments(wallet.getId()).stream()
                 .filter(investment -> investment.getAsset().getAssetType() == assetType)
@@ -148,9 +144,8 @@ public class WalletService {
         Objects.requireNonNull(initialDate, "initialDate cannot be null");
         Objects.requireNonNull(finalDate, "finalDate cannot be null");
 
-        User user = jpaUserRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
-        Wallet wallet = user.getWallet();
+        Wallet wallet = repository.findByUser_Id(userId)
+                .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
 
         return getInvestments(wallet.getId()).stream()
                 .filter(investment -> {
@@ -165,10 +160,9 @@ public class WalletService {
         Objects.requireNonNull(userId, "User id cannot be null");
         Objects.requireNonNull(relativeDate, "Relative date cannot be null");
 
-        User user = jpaUserRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
+        Wallet wallet = repository.findByUser_Id(userId)
+                .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
 
-        Wallet wallet = getWallet(userId);
         WalletReportService walletReportService = new WalletReportService(wallet);
         return walletReportService.generateReport(relativeDate);
     }
@@ -176,11 +170,8 @@ public class WalletService {
     public Wallet getWallet(UUID userId) {
         Objects.requireNonNull(userId, "User id cannot be null");
 
-        User user = jpaUserRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
-
-        if (user.getWallet() == null) throw new IllegalStateException("User does not have an associated wallet");
-        return user.getWallet();
+        return repository.findByUser_Id(userId)
+                .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
     }
 
     public Investment getInvestmentById(UUID userId, UUID investmentId) {

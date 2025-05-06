@@ -32,8 +32,7 @@ public class User implements UserDetails {
     private String email;
     @NonNull @Column(nullable = false)
     private String password;
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "wallet_id")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Wallet wallet;
 
     @Enumerated(EnumType.STRING)
@@ -72,12 +71,5 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
-    }
-
-    public void setWallet(Wallet wallet) {
-        this.wallet = wallet;
-        if (wallet != null) {
-            wallet.setUser(this);
-        }
     }
 }

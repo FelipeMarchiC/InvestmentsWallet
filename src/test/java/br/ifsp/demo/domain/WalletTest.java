@@ -1,6 +1,7 @@
 package br.ifsp.demo.domain;
 
 import br.ifsp.demo.repository.WalletRepository;
+import br.ifsp.demo.security.user.User;
 import br.ifsp.demo.service.WalletService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,14 +29,15 @@ class WalletTest {
     private WalletService walletService;
 
     private Wallet sut;
-    private UUID walletId;
     private LocalDate baseDate;
+    private User user;
 
     @BeforeEach
     void setUp() {
         sut = new Wallet();
-        walletId = sut.getId();
         baseDate = LocalDate.of(2025, 4, 25);
+        user = new User();
+        user.setId(UUID.randomUUID());
     }
 
     @Nested
@@ -47,13 +49,13 @@ class WalletTest {
         @Tag("UnitTest")
         @DisplayName("Should calculate total balance with active investments")
         void shouldCalculateTotalBalanceWithActiveInvestments() {
-            when(repository.findById(walletId)).thenReturn(Optional.ofNullable(sut));
+            when(repository.findByUser_Id(user.getId())).thenReturn(Optional.ofNullable(sut));
 
             LocalDate purchaseDate = baseDate.minusMonths(1).minusDays(10);
             Asset asset = new Asset("Banco Inter", AssetType.CDB, 0.1, baseDate.plusMonths(2));
             Investment investment = new Investment(1000, asset, purchaseDate);
 
-            walletService.addInvestment(walletId, investment);
+            walletService.addInvestment(user.getId(), investment);
             double total = sut.getTotalBalance(baseDate);
 
             assertThat(total).isEqualTo(1139.12);
@@ -64,14 +66,14 @@ class WalletTest {
         @Tag("UnitTest")
         @DisplayName("Should calculate total balance with history investments")
         void shouldCalculateTotalBalanceWithHistoryInvestments() {
-            when(repository.findById(walletId)).thenReturn(Optional.ofNullable(sut));
+            when(repository.findByUser_Id(user.getId())).thenReturn(Optional.ofNullable(sut));
 
             LocalDate purchaseDate = baseDate.minusMonths(1).minusDays(10);
             Asset asset = new Asset("Banco Inter", AssetType.CDB, 0.1, baseDate.plusMonths(2));
             Investment investment = new Investment(1000, asset, purchaseDate);
 
-            walletService.addInvestment(walletId, investment);
-            walletService.withdrawInvestment(walletId, investment.getId(), baseDate);
+            walletService.addInvestment(user.getId(), investment);
+            walletService.withdrawInvestment(user.getId(), investment.getId(), baseDate);
             double total = sut.getTotalBalance(null);
 
             assertThat(total).isEqualTo(1139.12);
@@ -96,13 +98,13 @@ class WalletTest {
         @Tag("UnitTest")
         @DisplayName("Should calculate future balance with active investments")
         void shouldCalculateFutureBalanceWithActiveInvestments() {
-            when(repository.findById(walletId)).thenReturn(Optional.ofNullable(sut));
+            when(repository.findByUser_Id(user.getId())).thenReturn(Optional.ofNullable(sut));
 
             LocalDate purchaseDate = baseDate;
             Asset asset = new Asset("Banco Inter", AssetType.CDB, 0.1, baseDate.plusMonths(2));
             Investment investment = new Investment(1000, asset, purchaseDate);
 
-            walletService.addInvestment(walletId, investment);
+            walletService.addInvestment(user.getId(), investment);
             double futureBalance = sut.getFutureBalance();
 
             assertThat(futureBalance).isEqualTo(1213.85);

@@ -47,7 +47,7 @@ public class Wallet {
         for (Investment investment : getHistoryInvestments()){
             total += investment.calculateBalanceAt(null);
         }
-        for (Investment investment : investments) {
+        for (Investment investment : getInvestments()) {
             total += investment.calculateBalanceAt(withdrawDate);
         }
         return total;
@@ -55,7 +55,7 @@ public class Wallet {
 
     public double getFutureBalance() {
         double futureBalance = 0.0;
-        for (Investment investment : investments) {
+        for (Investment investment : getInvestments()) {
             futureBalance += investment.calculateBalanceAt(investment.getMaturityDate());
         }
         return futureBalance;

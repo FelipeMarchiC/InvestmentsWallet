@@ -132,7 +132,7 @@ public class WalletService {
         Objects.requireNonNull(userId, "User id cannot be null");
         Objects.requireNonNull(initialDate, "initialDate cannot be null");
         Objects.requireNonNull(finalDate, "finalDate cannot be null");
-        
+
         return getInvestments(userId).stream()
                 .filter(investment -> {
                     LocalDate d = investment.getPurchaseDate();

@@ -1,10 +1,7 @@
 package br.ifsp.demo.mapper;
 
 import br.ifsp.demo.domain.Asset;
-import br.ifsp.demo.domain.Investment;
-import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.dto.asset.AssetResponseDTO;
-import br.ifsp.demo.dto.investment.InvestmentResponseDTO;
 
 import java.util.List;
 

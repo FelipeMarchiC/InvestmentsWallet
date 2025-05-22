@@ -3,7 +3,6 @@ package br.ifsp.demo.domain;
 import br.ifsp.demo.util.DateFormatter;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 
 import java.sql.Types;

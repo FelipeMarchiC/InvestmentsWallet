@@ -2,7 +2,6 @@ package br.ifsp.demo.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 
@@ -16,7 +15,6 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Setter
 public class Investment {
     @Id
     @JdbcTypeCode(Types.VARCHAR)
@@ -31,6 +29,7 @@ public class Investment {
     @Setter
     @Column(name = "withdraw_date")
     private LocalDate withdrawDate;
+    @Setter
     @ManyToOne
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;

@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -123,6 +124,33 @@ class WalletTest {
             double futureBalance = sut.getFutureBalance();
 
             assertThat(futureBalance).isZero();
+        }
+    }
+
+    @Nested
+    class StructuralTests {
+        @Test
+        @Tag("Structural")
+        @Tag("UnitTest")
+        @DisplayName("Wallet should be equal the same wallet")
+        void walletShouldBeEqualTheSameWallet(){
+            assertThat(sut).isEqualTo(sut);
+        }
+        @Test
+
+        @Tag("Structural")
+        @Tag("UnitTest")
+        @DisplayName("Wallet should be different null")
+        void walletShouldBeDifferentNull(){
+            assertThat(sut).isNotEqualTo(null);
+        }
+
+        @Test
+        @Tag("Structural")
+        @Tag("UnitTest")
+        @DisplayName("Wallet should be different another class")
+        void walletShouldBeDifferentAnotherClass(){
+            assertThat(sut).isNotEqualTo(new Object());
         }
     }
 }

@@ -45,7 +45,7 @@ public class Wallet {
     public double getTotalBalance(LocalDate withdrawDate) {
         double total = 0.0;
         for (Investment investment : getHistoryInvestments()){
-            total += investment.calculateBalanceAt(null);
+             total += investment.calculateBalanceAt(null);
         }
         for (Investment investment : getInvestments()) {
             total += investment.calculateBalanceAt(withdrawDate != null ? withdrawDate : LocalDate.now());

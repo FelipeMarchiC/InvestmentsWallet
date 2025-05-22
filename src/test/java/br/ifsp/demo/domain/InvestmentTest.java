@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import static br.ifsp.demo.domain.AssetType.CDB;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class InvestmentTest {
 
@@ -118,6 +119,48 @@ class InvestmentTest {
 
             double balance = investment.calculateBalanceAt(maturityDate);
             assertThat(balance).isEqualTo(1213.85);
+        }
+    }
+
+    @Nested
+    class StructuralTests {
+        @Test
+        @Tag("Structural")
+        @Tag("UnitTest")
+        @DisplayName("ShouldThrowIllegalArgumentExceptionWhenPurchaseDateIsNull")
+        void shouldThrowIllegalArgumentExceptionWhenPurchaseDateIsNull(){
+            int year = LocalDate.now().getYear();
+            LocalDate maturityDate = LocalDate.of(year, 6, 1);
+            assertThrows(IllegalArgumentException.class, () -> {
+                Asset asset = new Asset("Banco Inter", CDB, 0.10, maturityDate);
+                Investment investment = new Investment(1000.00, asset, null);
+            });
+        }
+
+        @Test
+        @Tag("Structural")
+        @Tag("UnitTest")
+        @DisplayName("ShouldBeDifferentIfComparesWithAnotherClass")
+        void shouldBeDifferentIfComparesWithAnotherClass(){
+            int year = LocalDate.now().getYear();
+            LocalDate maturityDate = LocalDate.of(year, 6, 1);
+            LocalDate purchaseDate = LocalDate.of(year, 4, 1);
+            Asset asset = new Asset("Banco Inter", CDB, 0.10, maturityDate);
+            Investment investment = new Investment(1000.00, asset, purchaseDate);
+            assertThat(investment.equals(new Object())).isFalse();
+        }
+
+        @Test
+        @Tag("Structural")
+        @Tag("UnitTest")
+        @DisplayName("ShouldBeDifferentIfComparesWithNull")
+        void shouldBeDifferentIfComparesWithNull(){
+            int year = LocalDate.now().getYear();
+            LocalDate maturityDate = LocalDate.of(year, 6, 1);
+            LocalDate purchaseDate = LocalDate.of(year, 4, 1);
+            Asset asset = new Asset("Banco Inter", CDB, 0.10, maturityDate);
+            Investment investment = new Investment(1000.00, asset, purchaseDate);
+            assertThat(investment.equals(null)).isFalse();
         }
     }
 }

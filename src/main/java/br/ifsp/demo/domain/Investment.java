@@ -2,6 +2,7 @@ package br.ifsp.demo.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 
@@ -15,6 +16,8 @@ import java.util.UUID;
 
 @Entity
 @Getter
+@Setter
+@NoArgsConstructor
 public class Investment {
     @Id
     @JdbcTypeCode(Types.VARCHAR)
@@ -48,10 +51,6 @@ public class Investment {
         this.initialValue = initialValue;
         this.asset = asset;
         this.purchaseDate = purchaseDate;
-    }
-
-    public Investment() {
-        this.id = UUID.randomUUID();
     }
 
     private void verifyInvestment(double initialValue, Asset asset, LocalDate purchaseDate){
@@ -96,8 +95,6 @@ public class Investment {
         Investment that = (Investment) o;
         return Objects.equals(id, that.id);
     }
-
-
 
     @Override
     public int hashCode() {

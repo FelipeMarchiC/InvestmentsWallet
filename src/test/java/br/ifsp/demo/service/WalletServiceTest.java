@@ -54,9 +54,10 @@ class WalletServiceTest {
     class RegisterInvestment {
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @Tag("TDD")
         @DisplayName("Should successfully register an investment")
-        void shouldSuccessfullyRegisterAnInvestment(){
+        void shouldSuccessfullyRegisterAnInvestment() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
@@ -72,21 +73,25 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should throw NoSuchElementException for non existent Wallet")
-        void shouldThrowNoSuchElementExceptionForNonExistentWallet(){
+        void shouldThrowNoSuchElementExceptionForNonExistentWallet() {
             Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
             Investment investment = new Investment(100, asset);
 
             UUID randomId = UUID.randomUUID();
             when(repository.findByUser_Id(randomId)).thenReturn(Optional.empty());
 
-            assertThrows(NoSuchElementException.class, () -> { sut.addInvestment(randomId, investment); });
+            assertThrows(NoSuchElementException.class, () -> {
+                sut.addInvestment(randomId, investment);
+            });
         }
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should throw NullPointerException when Wallet or Investment is null")
-        void shouldThrowNullPointerExceptionWhenWalletOrInvestmentIsNull(){
+        void shouldThrowNullPointerExceptionWhenWalletOrInvestmentIsNull() {
             Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
             Investment investment = new Investment(100, asset);
             SoftAssertions softly = new SoftAssertions();
@@ -102,8 +107,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should throw EntityAlreadyExistsException when Investment id already exists on Wallet")
-        void shouldThrowEntityAlreadyExistsExceptionWhenInvestmentIdAlreadyExistsInWallet(){
+        void shouldThrowEntityAlreadyExistsExceptionWhenInvestmentIdAlreadyExistsInWallet() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
@@ -120,9 +126,10 @@ class WalletServiceTest {
     class WithdrawInvestment {
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @Tag("TDD")
         @DisplayName("Should withdraw an investment")
-        void shouldWithdrawAnInvestment(){
+        void shouldWithdrawAnInvestment() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
@@ -135,9 +142,10 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @Tag("TDD")
         @DisplayName("Should return NoSuchElementException if the investment does not exist")
-        void shouldReturnNoSuchElementExceptionIfTheInvestmentDoesNotExist(){
+        void shouldReturnNoSuchElementExceptionIfTheInvestmentDoesNotExist() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
@@ -151,8 +159,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NoSuchElementException if the wallet does not exist")
-        void shouldReturnNoSuchElementExceptionIfTheWalletDoesNotExist(){
+        void shouldReturnNoSuchElementExceptionIfTheWalletDoesNotExist() {
             UUID randomId = UUID.randomUUID();
             when(repository.findByUser_Id(randomId)).thenReturn(Optional.empty());
 
@@ -166,8 +175,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NoSuchElementException when wallet has no investment")
-        void shouldReturnNoSuchElementExceptionWhenWalletHasNoInvestment(){
+        void shouldReturnNoSuchElementExceptionWhenWalletHasNoInvestment() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
@@ -179,8 +189,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should mark investment as withdrawn and move to history when single investment in wallet")
-        void shouldMarkInvestmentAsWithdrawnAndMoveToHistoryWhenSingleInvestmentInWallet(){
+        void shouldMarkInvestmentAsWithdrawnAndMoveToHistoryWhenSingleInvestmentInWallet() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
@@ -195,8 +206,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should mark investment as withdrawn and move to history when many investments in wallet")
-        void shouldMarkInvestmentAsWithdrawnAndMoveToHistoryWhenManyInvestmentsInWallet(){
+        void shouldMarkInvestmentAsWithdrawnAndMoveToHistoryWhenManyInvestmentsInWallet() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
@@ -215,8 +227,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NullPointerException when some parameter is null")
-        void shouldReturnNullPointerExceptionWhenSomeParameterIsNull(){
+        void shouldReturnNullPointerExceptionWhenSomeParameterIsNull() {
             UUID investmentId = UUID.randomUUID();
             SoftAssertions softly = new SoftAssertions();
 
@@ -231,8 +244,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should move investment to history when withdrawing")
-        void shouldMoveInvestmentToHistoryWhenWithdrawing(){
+        void shouldMoveInvestmentToHistoryWhenWithdrawing() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
             SoftAssertions softly = new SoftAssertions();
 
@@ -250,8 +264,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should throw EntityAlreadyExistsException if addToHistory fails")
-        void shouldThrowEntityAlreadyExistsExceptionIfAddToHistoryFails(){
+        void shouldThrowEntityAlreadyExistsExceptionIfAddToHistoryFails() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
             Investment investment = new Investment(100, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
 
@@ -273,6 +288,7 @@ class WalletServiceTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return all investments on wallet")
         void shouldReturnAllInvestmentsOnWallet() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
@@ -290,8 +306,9 @@ class WalletServiceTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("shouldReturnAnEmptyListWhenThereIsNoInvestments")
-        void shouldReturnAnEmptyListWhenThereIsNoInvestments(){
+        void shouldReturnAnEmptyListWhenThereIsNoInvestments() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             List<Investment> result = sut.getInvestments(user.getId());
@@ -300,8 +317,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NoSuchElementException if wallet does not exists")
-        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExists(){
+        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExists() {
             UUID randomId = UUID.randomUUID();
             when(repository.findByUser_Id(randomId)).thenReturn(Optional.empty());
 
@@ -312,8 +330,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NullPointerException if wallet id is null")
-        void shouldReturnNullPointerExceptionIfWalletIdIsNull(){
+        void shouldReturnNullPointerExceptionIfWalletIdIsNull() {
             assertThrows(NullPointerException.class, () -> {
                 sut.getInvestments(null);
             });
@@ -321,9 +340,10 @@ class WalletServiceTest {
 
         @ParameterizedTest
         @Tag("UnitTest")
+        @Tag("Functional")
         @MethodSource("getDataToGetInvestmentsTests")
         @DisplayName("should correct return the list of investments")
-        void shouldCorrectReturnTheListOfInvestments(List<Investment> investments){
+        void shouldCorrectReturnTheListOfInvestments(List<Investment> investments) {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
@@ -331,7 +351,7 @@ class WalletServiceTest {
             assertThat(sut.getInvestments(user.getId())).isEqualTo(investments);
         }
 
-        public static Stream<Arguments> getDataToGetInvestmentsTests(){
+        public static Stream<Arguments> getDataToGetInvestmentsTests() {
             return Stream.of(
                     Arguments.of(List.of()),
                     Arguments.of(List.of(new Investment(1000, new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1))))),
@@ -349,6 +369,7 @@ class WalletServiceTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return all history investments on wallet")
         void shouldReturnAllHistoryInvestmentsOnWallet() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
@@ -368,8 +389,9 @@ class WalletServiceTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("shouldReturnAnEmptyListWhenThereIsNoHistoryInvestments")
-        void shouldReturnAnEmptyListWhenThereIsNoHistoryInvestments(){
+        void shouldReturnAnEmptyListWhenThereIsNoHistoryInvestments() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             List<Investment> result = sut.getHistoryInvestments(user.getId());
@@ -378,8 +400,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NoSuchElementException if wallet does not exists")
-        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExists(){
+        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExists() {
             UUID randomId = UUID.randomUUID();
             when(repository.findByUser_Id(randomId)).thenReturn(Optional.empty());
             assertThrows(NoSuchElementException.class, () -> {
@@ -389,8 +412,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NullPointerException if wallet id is null")
-        void shouldReturnNullPointerExceptionIfWalletIdIsNull(){
+        void shouldReturnNullPointerExceptionIfWalletIdIsNull() {
             assertThrows(NullPointerException.class, () -> {
                 sut.getHistoryInvestments(null);
             });
@@ -398,9 +422,10 @@ class WalletServiceTest {
 
         @ParameterizedTest
         @Tag("UnitTest")
+        @Tag("Functional")
         @MethodSource("getDataToGetHistoryInvestmentsTests")
         @DisplayName("Should correct return the list of investments on history")
-        void shouldCorrectReturnTheListOfInvestmentsOnHistory(List<Investment> investments){
+        void shouldCorrectReturnTheListOfInvestmentsOnHistory(List<Investment> investments) {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             investments.forEach(investment -> {
@@ -427,9 +452,10 @@ class WalletServiceTest {
     class HistoryFilter {
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @Tag("TDD")
         @DisplayName("Should return investments when filtered by asset type")
-        void shouldReturnInvestmentsWhenFilteredByAssetType(){
+        void shouldReturnInvestmentsWhenFilteredByAssetType() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
@@ -451,9 +477,10 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @Tag("TDD")
         @DisplayName("Should return investments when filtered by date")
-        void shouldReturnInvestmentsWhenFilteredByDate(){
+        void shouldReturnInvestmentsWhenFilteredByDate() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             LocalDate initialDate = date.minusMonths(1);
@@ -471,9 +498,10 @@ class WalletServiceTest {
         @ParameterizedTest
         @MethodSource("provideScenariosForEmptyTypeFilterHistory")
         @Tag("UnitTest")
+        @Tag("Functional")
         @Tag("TDD")
         @DisplayName("Should return an empty list when filter has no match")
-        void shouldReturnAnEmptyListWhenTypeFilterHasNoMatch(List<Investment> investments, AssetType assetType){
+        void shouldReturnAnEmptyListWhenTypeFilterHasNoMatch(List<Investment> investments, AssetType assetType) {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             investments.forEach(investment -> sut.addInvestment(user.getId(), investment));
@@ -487,9 +515,10 @@ class WalletServiceTest {
         @ParameterizedTest
         @MethodSource("provideScenariosForEmptyDateFilterHistory")
         @Tag("UnitTest")
+        @Tag("Functional")
         @Tag("TDD")
         @DisplayName("Should return an empty list when date filter has no match")
-        void shouldReturnAnEmptyListWhenDateFilterHasNoMatch(List<Investment> investments, LocalDate initialDate, LocalDate finalDate){
+        void shouldReturnAnEmptyListWhenDateFilterHasNoMatch(List<Investment> investments, LocalDate initialDate, LocalDate finalDate) {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             investments.forEach(investment -> sut.addInvestment(user.getId(), investment));
@@ -500,7 +529,7 @@ class WalletServiceTest {
             assertThat(result).isEqualTo(List.of());
         }
 
-        private static Stream<Arguments> provideScenariosForEmptyTypeFilterHistory(){
+        private static Stream<Arguments> provideScenariosForEmptyTypeFilterHistory() {
             LocalDate date = LocalDate.of(2025, 4, 25);
             Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
             Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)));
@@ -511,7 +540,7 @@ class WalletServiceTest {
             );
         }
 
-        private static Stream<Arguments> provideScenariosForEmptyDateFilterHistory(){
+        private static Stream<Arguments> provideScenariosForEmptyDateFilterHistory() {
             LocalDate date = LocalDate.of(2025, 4, 25);
             Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
             Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)));
@@ -524,8 +553,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NoSuchElementException if wallet does not exists")
-        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExists(){
+        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExists() {
             UUID randomId = UUID.randomUUID();
             when(repository.findByUser_Id(randomId)).thenReturn(Optional.empty());
             assertThrows(NoSuchElementException.class, () -> {
@@ -535,8 +565,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NullPointerException if wallet id is null")
-        void shouldReturnNullPointerExceptionIfWalletIdIsNull(){
+        void shouldReturnNullPointerExceptionIfWalletIdIsNull() {
             assertThrows(NullPointerException.class, () -> {
                 sut.filterHistory(null, CDB);
             });
@@ -544,8 +575,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NullPointerException if asset type is null")
-        void shouldReturnNullPointerExceptionIfAssetTypeIsNull(){
+        void shouldReturnNullPointerExceptionIfAssetTypeIsNull() {
             assertThrows(NullPointerException.class, () -> {
                 sut.filterHistory(user.getId(), null);
             });
@@ -554,8 +586,9 @@ class WalletServiceTest {
         @ParameterizedTest
         @MethodSource("provideScenariosForEmptyTypeFilterHistory")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should an empty list when has no history data with this filter")
-        void shouldAnEmptyListWhenHasNoHistoryDataWithThisFilter(List<Investment> investments, AssetType assetType){
+        void shouldAnEmptyListWhenHasNoHistoryDataWithThisFilter(List<Investment> investments, AssetType assetType) {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             investments.forEach(investment -> {
@@ -569,8 +602,9 @@ class WalletServiceTest {
         @ParameterizedTest
         @MethodSource("getDataToListOfInvestmentsAndTypeFilter")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should correct return the list of investments on history with this filter")
-        void shouldCorrectReturnTheListOfInvestmentsOnHistoryWithThisFilter(List<Investment> investments, AssetType assetType, List<Investment> expected){
+        void shouldCorrectReturnTheListOfInvestmentsOnHistoryWithThisFilter(List<Investment> investments, AssetType assetType, List<Investment> expected) {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             investments.forEach(investment -> {
@@ -582,7 +616,7 @@ class WalletServiceTest {
             assertThat(actual).isEqualTo(expected);
         }
 
-        public static Stream<Arguments> getDataToListOfInvestmentsAndTypeFilter(){
+        public static Stream<Arguments> getDataToListOfInvestmentsAndTypeFilter() {
             Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.of(2026, 1, 1));
             Investment investmentCDB = new Investment(1000, assetCDB);
             Investment investmentCDB2 = new Investment(1500, assetCDB);
@@ -596,8 +630,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NoSuchElementException if wallet does not exists when filter by date")
-        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExistsWhenFilterByDate(){
+        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExistsWhenFilterByDate() {
             LocalDate start = date.plusMonths(1);
             LocalDate end = date.plusMonths(2);
             UUID randomId = UUID.randomUUID();
@@ -610,8 +645,9 @@ class WalletServiceTest {
         @ParameterizedTest
         @MethodSource("getInvalidDataToFilterHistory")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NoSuchElementException when some parameter is null")
-        void shouldReturnNoSuchElementExceptionWhenSomeParameterIsNull(UUID walletId, LocalDate initialDate, LocalDate finalDate){
+        void shouldReturnNoSuchElementExceptionWhenSomeParameterIsNull(UUID walletId, LocalDate initialDate, LocalDate finalDate) {
             assertThrows(NullPointerException.class, () -> {
                 sut.filterHistory(walletId, initialDate, finalDate);
             });
@@ -619,8 +655,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return an empty list when history is empty")
-        void shouldReturnAnEmptyListWhenHistoryIsEmpty(){
+        void shouldReturnAnEmptyListWhenHistoryIsEmpty() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             LocalDate start = LocalDate.now().plusMonths(1);
@@ -631,7 +668,7 @@ class WalletServiceTest {
             assertThat(result).isEqualTo(List.of());
         }
 
-        public static Stream<Arguments> getInvalidDataToFilterHistory(){
+        public static Stream<Arguments> getInvalidDataToFilterHistory() {
             return Stream.of(
                     Arguments.of(null, LocalDate.of(2025, 4, 25), LocalDate.of(2025, 5, 25)),
                     Arguments.of(new Wallet().getId(), null, LocalDate.of(2025, 5, 25)),
@@ -642,8 +679,9 @@ class WalletServiceTest {
         @ParameterizedTest
         @MethodSource("getDataToReturnEmptyListWhenFilterByDate")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return an empty list when there is no history data in this filter")
-        void shouldReturnAnEmptyListWhenThereIsNoHistoryDataInThisFilter(LocalDate initialDate, LocalDate finalDate){
+        void shouldReturnAnEmptyListWhenThereIsNoHistoryDataInThisFilter(LocalDate initialDate, LocalDate finalDate) {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusYears(1));
@@ -654,7 +692,7 @@ class WalletServiceTest {
             assertThat(sut.filterHistory(user.getId(), initialDate, finalDate)).isEqualTo(List.of());
         }
 
-        public static Stream<Arguments> getDataToReturnEmptyListWhenFilterByDate(){
+        public static Stream<Arguments> getDataToReturnEmptyListWhenFilterByDate() {
             return Stream.of(
                     Arguments.of(LocalDate.now().plusDays(1), LocalDate.now().plusDays(20)),
                     Arguments.of(LocalDate.now().minusDays(20), LocalDate.now().minusDays(1))
@@ -663,8 +701,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return a list with more then one item with this filter")
-        void shouldReturnAListWithMoreThenOneItemWithThisFilter(){
+        void shouldReturnAListWithMoreThenOneItemWithThisFilter() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusYears(1));
@@ -693,8 +732,9 @@ class WalletServiceTest {
         @ParameterizedTest
         @MethodSource("getDataToReturnListOfOneElementWhenFilterByDate")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return a list with one item when filter by limit dates")
-        void shouldReturnAListWithOneItemWhenFilterByLimitDates(LocalDate initialDate, LocalDate finalDate){
+        void shouldReturnAListWithOneItemWhenFilterByLimitDates(LocalDate initialDate, LocalDate finalDate) {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusYears(1));
@@ -706,7 +746,7 @@ class WalletServiceTest {
             assertThat(sut.filterHistory(user.getId(), initialDate, finalDate)).isEqualTo(List.of(investmentCDB));
         }
 
-        public static Stream<Arguments> getDataToReturnListOfOneElementWhenFilterByDate(){
+        public static Stream<Arguments> getDataToReturnListOfOneElementWhenFilterByDate() {
             return Stream.of(
                     Arguments.of(LocalDate.now(), LocalDate.now().plusDays(15)),
                     Arguments.of(LocalDate.now().minusDays(1), LocalDate.now().plusDays(14)),
@@ -717,8 +757,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("ShouldReturn2of3InvestmentsOnHistoryWithThisFilter")
-        void shouldReturn2Of3InvestmentsOnHistoryWithThisFilter(){
+        void shouldReturn2Of3InvestmentsOnHistoryWithThisFilter() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusYears(1));
@@ -744,9 +785,10 @@ class WalletServiceTest {
         @ParameterizedTest
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @MethodSource("provideScenariosForEmptyTypeFilterActiveInvestments")
         @DisplayName("Should return an empty list if there is no active investments when filter by type")
-        void shouldReturnAnEmptyListIfThereIsNoActiveInvestmentsWhenFilterByType(List<Investment> registeredInvestments, AssetType assetType){
+        void shouldReturnAnEmptyListIfThereIsNoActiveInvestmentsWhenFilterByType(List<Investment> registeredInvestments, AssetType assetType) {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             registeredInvestments.forEach(investment -> sut.addInvestment(user.getId(), investment));
@@ -758,9 +800,10 @@ class WalletServiceTest {
         @ParameterizedTest
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @MethodSource("provideScenariosForEmptyDateFilterActiveInvestments")
         @DisplayName("Should return an empty list if there is no active investments when filter by date")
-        void shouldReturnAnEmptyListIfThereIsNoActiveInvestmentsWhenFilterByDate(List<Investment> registeredInvestments, LocalDate initialDate, LocalDate finalDate){
+        void shouldReturnAnEmptyListIfThereIsNoActiveInvestmentsWhenFilterByDate(List<Investment> registeredInvestments, LocalDate initialDate, LocalDate finalDate) {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             registeredInvestments.forEach(investment -> sut.addInvestment(user.getId(), investment));
@@ -772,8 +815,9 @@ class WalletServiceTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return the active investments found when filter by type")
-        void shouldReturnTheActiveInvestmentsFoundWhenFilterByType(){
+        void shouldReturnTheActiveInvestmentsFoundWhenFilterByType() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, date.plusMonths(2));
@@ -786,8 +830,9 @@ class WalletServiceTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return the active investments found when filter by date")
-        void shouldReturnTheActiveInvestmentsFoundWhenFilterByDate(){
+        void shouldReturnTheActiveInvestmentsFoundWhenFilterByDate() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, date.plusMonths(2));
@@ -797,7 +842,7 @@ class WalletServiceTest {
             assertThat(result.size()).isEqualTo(1);
         }
 
-        private static Stream<Arguments> provideScenariosForEmptyTypeFilterActiveInvestments(){
+        private static Stream<Arguments> provideScenariosForEmptyTypeFilterActiveInvestments() {
             LocalDate date = LocalDate.of(2025, 4, 25);
             Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
             Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)));
@@ -808,7 +853,7 @@ class WalletServiceTest {
             );
         }
 
-        private static Stream<Arguments> provideScenariosForEmptyDateFilterActiveInvestments(){
+        private static Stream<Arguments> provideScenariosForEmptyDateFilterActiveInvestments() {
             LocalDate date = LocalDate.of(2025, 4, 25);
             Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
             Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)));
@@ -821,8 +866,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NoSuchElementException if wallet does not exists")
-        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExists(){
+        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExists() {
             UUID randomId = UUID.randomUUID();
             when(repository.findByUser_Id(randomId)).thenReturn(Optional.empty());
             assertThrows(NoSuchElementException.class, () -> {
@@ -832,8 +878,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NullPointerException if wallet id is null")
-        void shouldReturnNullPointerExceptionIfWalletIdIsNull(){
+        void shouldReturnNullPointerExceptionIfWalletIdIsNull() {
             assertThrows(NullPointerException.class, () -> {
                 sut.filterActiveInvestments(null, CDB);
             });
@@ -841,8 +888,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NullPointerException if asset type is null")
-        void shouldReturnNullPointerExceptionIfAssetTypeIsNull(){
+        void shouldReturnNullPointerExceptionIfAssetTypeIsNull() {
             assertThrows(NullPointerException.class, () -> {
                 sut.filterActiveInvestments(user.getId(), null);
             });
@@ -851,8 +899,9 @@ class WalletServiceTest {
         @ParameterizedTest
         @MethodSource("provideScenariosForEmptyTypeFilterActiveInvestments")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should an empty list when has no data with this filter")
-        void shouldAnEmptyListWhenHasNoDataWithThisFilter(List<Investment> investments, AssetType assetType){
+        void shouldAnEmptyListWhenHasNoDataWithThisFilter(List<Investment> investments, AssetType assetType) {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             investments.forEach(investment -> sut.addInvestment(user.getId(), investment));
@@ -863,8 +912,9 @@ class WalletServiceTest {
         @ParameterizedTest
         @MethodSource("getDataToListOfInvestmentsAndTypeFilter")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should correct return the list of investments with this filter")
-        void shouldCorrectReturnTheListOfInvestmentsWithThisFilter(List<Investment> investments, AssetType assetType, List<Investment> expected){
+        void shouldCorrectReturnTheListOfInvestmentsWithThisFilter(List<Investment> investments, AssetType assetType, List<Investment> expected) {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             investments.forEach(investment -> sut.addInvestment(user.getId(), investment));
@@ -873,7 +923,7 @@ class WalletServiceTest {
             assertThat(actual).isEqualTo(expected);
         }
 
-        public static Stream<Arguments> getDataToListOfInvestmentsAndTypeFilter(){
+        public static Stream<Arguments> getDataToListOfInvestmentsAndTypeFilter() {
             Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.of(2026, 1, 1));
             Investment investmentCDB = new Investment(1000, assetCDB);
             Investment investmentCDB2 = new Investment(1500, assetCDB);
@@ -887,8 +937,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NoSuchElementException if wallet does not exists when filter by date")
-        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExistsWhenFilterByDate(){
+        void shouldReturnNoSuchElementExceptionIfWalletDoesNotExistsWhenFilterByDate() {
             UUID randomId = UUID.randomUUID();
             LocalDate start = date.plusMonths(1);
             LocalDate end = date.plusMonths(2);
@@ -901,8 +952,9 @@ class WalletServiceTest {
         @ParameterizedTest
         @MethodSource("getInvalidDataToFilterInvestments")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return NoSuchElementException when some parameter is null")
-        void shouldReturnNoSuchElementExceptionWhenSomeParameterIsNull(UUID walletId, LocalDate initialDate, LocalDate finalDate){
+        void shouldReturnNoSuchElementExceptionWhenSomeParameterIsNull(UUID walletId, LocalDate initialDate, LocalDate finalDate) {
             assertThrows(NullPointerException.class, () -> {
                 sut.filterActiveInvestments(walletId, initialDate, finalDate);
             });
@@ -910,8 +962,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return an empty list when investments is empty")
-        void shouldReturnAnEmptyListWhenInvestmentsIsEmpty(){
+        void shouldReturnAnEmptyListWhenInvestmentsIsEmpty() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             LocalDate start = LocalDate.now().plusMonths(1);
@@ -922,7 +975,7 @@ class WalletServiceTest {
             assertThat(result).isEqualTo(List.of());
         }
 
-        public static Stream<Arguments> getInvalidDataToFilterInvestments(){
+        public static Stream<Arguments> getInvalidDataToFilterInvestments() {
             return Stream.of(
                     Arguments.of(null, LocalDate.of(2025, 4, 25), LocalDate.of(2025, 5, 25)),
                     Arguments.of(new Wallet().getId(), null, LocalDate.of(2025, 5, 25)),
@@ -933,8 +986,9 @@ class WalletServiceTest {
         @ParameterizedTest
         @MethodSource("getDataToReturnEmptyListWhenFilterByDate")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return an empty list when there is no data in this filter")
-        void shouldReturnAnEmptyListWhenThereIsNoDataInThisFilter(LocalDate initialDate, LocalDate finalDate){
+        void shouldReturnAnEmptyListWhenThereIsNoDataInThisFilter(LocalDate initialDate, LocalDate finalDate) {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusYears(1));
@@ -944,7 +998,7 @@ class WalletServiceTest {
             assertThat(sut.filterActiveInvestments(user.getId(), initialDate, finalDate)).isEqualTo(List.of());
         }
 
-        public static Stream<Arguments> getDataToReturnEmptyListWhenFilterByDate(){
+        public static Stream<Arguments> getDataToReturnEmptyListWhenFilterByDate() {
             return Stream.of(
                     Arguments.of(LocalDate.now().plusDays(1), LocalDate.now().plusDays(20)),
                     Arguments.of(LocalDate.now().minusDays(20), LocalDate.now().minusDays(1))
@@ -953,8 +1007,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return a list with more then one item with this filter")
-        void shouldReturnAListWithMoreThenOneItemWithThisFilter(){
+        void shouldReturnAListWithMoreThenOneItemWithThisFilter() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusYears(1));
@@ -979,8 +1034,9 @@ class WalletServiceTest {
         @ParameterizedTest
         @MethodSource("getDataToReturnListOfOneElementWhenFilterByDate")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return a list with one item when filter by limit dates")
-        void shouldReturnAListWithOneItemWhenFilterByLimitDates(LocalDate initialDate, LocalDate finalDate){
+        void shouldReturnAListWithOneItemWhenFilterByLimitDates(LocalDate initialDate, LocalDate finalDate) {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusYears(1));
@@ -991,7 +1047,7 @@ class WalletServiceTest {
             assertThat(sut.filterActiveInvestments(user.getId(), initialDate, finalDate)).isEqualTo(List.of(investmentCDB));
         }
 
-        public static Stream<Arguments> getDataToReturnListOfOneElementWhenFilterByDate(){
+        public static Stream<Arguments> getDataToReturnListOfOneElementWhenFilterByDate() {
             return Stream.of(
                     Arguments.of(LocalDate.now(), LocalDate.now().plusDays(15)),
                     Arguments.of(LocalDate.now().minusDays(1), LocalDate.now().plusDays(14)),
@@ -1002,13 +1058,14 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("ShouldReturn2of3InvestmentsWithThisFilter")
-        void shouldReturn2Of3InvestmentsWithThisFilter(){
+        void shouldReturn2Of3InvestmentsWithThisFilter() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.now().plusYears(1));
             Asset assetLCI = new Asset("Banco Itau", LCI, 0.1, LocalDate.now().plusYears(1));
-            Investment investmentCDB =  new Investment(1000, assetCDB);
+            Investment investmentCDB = new Investment(1000, assetCDB);
             Investment investmentCDB2 = new Investment(1500, assetCDB);
             Investment investmentLCI = new Investment(1000, assetLCI);
 
@@ -1027,8 +1084,9 @@ class WalletServiceTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should throw NoSuchElementException when there are no investments")
-        void shouldThrowNoSuchElementExceptionWhenThereAreNoInvestments(){
+        void shouldThrowNoSuchElementExceptionWhenThereAreNoInvestments() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             assertThatThrownBy(() -> sut.generateReport(user.getId(), date))
@@ -1039,8 +1097,9 @@ class WalletServiceTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should throw NoSuchElementException when Wallet does not exist")
-        void shouldThrowNoSuchElementExceptionWhenWalletDoesNotExist(){
+        void shouldThrowNoSuchElementExceptionWhenWalletDoesNotExist() {
             UUID userId = UUID.randomUUID();
             when(repository.findByUser_Id(userId)).thenReturn(Optional.empty());
 
@@ -1051,8 +1110,9 @@ class WalletServiceTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should throw NullPointerException when Wallet id is null")
-        void shouldThrowNullPointerExceptionWhenWalletIdIsNull(){
+        void shouldThrowNullPointerExceptionWhenWalletIdIsNull() {
             assertThatThrownBy(() -> sut.generateReport(null, date))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("User id cannot be null");
@@ -1061,9 +1121,10 @@ class WalletServiceTest {
         @ParameterizedTest
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @MethodSource("provideWalletScenarios")
         @DisplayName("Should return report when there is investments")
-        void shouldReturnReportWhenThereIsInvestments(Wallet wallet, List<String> expectedParts){
+        void shouldReturnReportWhenThereIsInvestments(Wallet wallet, List<String> expectedParts) {
             user.setWallet(wallet);
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 

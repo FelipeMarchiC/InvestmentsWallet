@@ -23,6 +23,7 @@ class AssetTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @DisplayName("Should correctly return toString of an Asset")
     void shouldCorrectlyReturnToStringOfAnAsset() {
         Asset asset = new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1));
@@ -35,8 +36,11 @@ class AssetTest {
                                 "| Asset maturity date = " +
                                 DateFormatter.formatDateToSlash(asset.getMaturityDate()));
     }
-    
+
     @Test
+    @Tag("TDD")
+    @Tag("UnitTest")
+    @Tag("Functional")
     @DisplayName("Should return IllegalArgumentException if type is null")
     void shouldReturnIllegalArgumentExceptionIfTypeIsNull(){
         assertThrows(IllegalArgumentException.class, () -> {
@@ -49,6 +53,7 @@ class AssetTest {
         @ParameterizedTest
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @NullAndEmptySource
         @DisplayName("Should return error when name is null or empty")
         void shouldReturnErrorWhenNameIsNullOrEmpty(String name) {
@@ -60,6 +65,7 @@ class AssetTest {
         @ParameterizedTest
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @CsvSource({"Banco Inter, -0.01", "Banco Inter, 0.0", "Banco Inter, 0.001"})
         @DisplayName("Should return error when profitability is invalid")
         void shouldReturnErrorWhenProfitabilityIsInvalid(String name, double profitability) {
@@ -71,6 +77,7 @@ class AssetTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return error when maturity date is null")
         void shouldReturnErrorWhenMaturityDateIsNull(){
             assertThrows(IllegalArgumentException.class, () -> {

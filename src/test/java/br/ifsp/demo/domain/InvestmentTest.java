@@ -32,9 +32,10 @@ class InvestmentTest {
         @ParameterizedTest
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @MethodSource("getInvalidParameters")
         @DisplayName("Should return error when try to create investment with invalid parameters")
-        void shouldReturnErrorWhenTryToCreateInvestmentWithInvalidParameters(double initialValue, Asset asset, LocalDate purchaseDate){
+        void shouldReturnErrorWhenTryToCreateInvestmentWithInvalidParameters(double initialValue, Asset asset, LocalDate purchaseDate) {
             assertThrows(IllegalArgumentException.class, () -> {
                 Investment investment = new Investment(initialValue, asset, purchaseDate);
             });
@@ -43,8 +44,9 @@ class InvestmentTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should correctly return toString of an investment")
-        void shouldCorrectlyReturnToStringOfAnInvestment(){
+        void shouldCorrectlyReturnToStringOfAnInvestment() {
             Asset asset = new Asset("Banco Inter", CDB, 0.01, LocalDate.now().plusYears(1));
             Investment investment = new Investment(100, asset);
             String result = investment.toString();
@@ -63,8 +65,9 @@ class InvestmentTest {
         @MethodSource("investmentBalanceTestData")
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should calculate balance at given reference date correctly")
-        void shouldCalculateBalanceAtGivenReferenceDateCorrectly(LocalDate purchaseDate, LocalDate maturityDate, double expectedBalance){
+        void shouldCalculateBalanceAtGivenReferenceDateCorrectly(LocalDate purchaseDate, LocalDate maturityDate, double expectedBalance) {
             Asset asset = new Asset("Banco Inter", CDB, 0.1, maturityDate);
             Investment sut = new Investment(1000, asset, purchaseDate);
 
@@ -79,12 +82,13 @@ class InvestmentTest {
                     Arguments.of(LocalDate.of(year, 1, 15), LocalDate.of(year, 2, 15), 1103.50), // 1 month
                     Arguments.of(LocalDate.of(year, 2, 1), LocalDate.of(year, 3, 1), 1093.03), // Leap year
                     Arguments.of(LocalDate.of(year, 5, 10), LocalDate.of(year, 11, 10), 1794.22), // 6 months
-                    Arguments.of(LocalDate.of(year, 12, 15), LocalDate.of(year+1, 1, 15), 1103.50)  // Year change and 31-day month
+                    Arguments.of(LocalDate.of(year, 12, 15), LocalDate.of(year + 1, 1, 15), 1103.50)  // Year change and 31-day month
             );
         }
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should use withdrawDate instead of referenceDate if set")
         void shouldUseWithdrawDateWhenPresent() {
             int year = LocalDate.now().getYear();
@@ -102,8 +106,9 @@ class InvestmentTest {
 
         @Test
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should use referenceDate if withdrawDate not defined")
-        void shouldUseReferenceDateIfWithdrawDateNotDefined(){
+        void shouldUseReferenceDateIfWithdrawDateNotDefined() {
             int year = LocalDate.now().getYear();
             LocalDate purchaseDate = LocalDate.of(year, 4, 1);
             LocalDate maturityDate = LocalDate.of(year, 6, 1);

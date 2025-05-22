@@ -47,6 +47,7 @@ class WalletTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should calculate total balance with active investments")
         void shouldCalculateTotalBalanceWithActiveInvestments() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.ofNullable(sut));
@@ -64,6 +65,7 @@ class WalletTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should calculate total balance with history investments")
         void shouldCalculateTotalBalanceWithHistoryInvestments() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.ofNullable(sut));
@@ -82,6 +84,7 @@ class WalletTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should calculate total balance with no investments")
         void shouldCalculateTotalBalanceWithNoInvestments() {
             double total = sut.getTotalBalance(null);
@@ -96,6 +99,7 @@ class WalletTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should calculate future balance with active investments")
         void shouldCalculateFutureBalanceWithActiveInvestments() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.ofNullable(sut));
@@ -113,6 +117,7 @@ class WalletTest {
         @Test
         @Tag("TDD")
         @Tag("UnitTest")
+        @Tag("Functional")
         @DisplayName("Should return zero when calculate future balance with no active investments")
         void shouldReturnZeroWhenNoActiveInvestments() {
             double futureBalance = sut.getFutureBalance();

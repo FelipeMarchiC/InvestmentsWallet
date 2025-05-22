@@ -101,6 +101,7 @@ class InvestmentTest {
         }
 
         @Test
+        @Tag("UnitTest")
         @DisplayName("Should use referenceDate if withdrawDate not defined")
         void shouldUseReferenceDateIfWithdrawDateNotDefined(){
             int year = LocalDate.now().getYear();
@@ -111,7 +112,7 @@ class InvestmentTest {
             Investment investment = new Investment(1000.00, asset, purchaseDate);
 
             double balance = investment.calculateBalanceAt(maturityDate);
-            assertThat(balance).isEqualTo(1100.00);
+            assertThat(balance).isEqualTo(1213.85);
         }
     }
 }

@@ -162,5 +162,14 @@ class InvestmentTest {
             Investment investment = new Investment(1000.00, asset, purchaseDate);
             assertThat(investment.equals(null)).isFalse();
         }
+
+        @Test
+        @Tag("Structural")
+        @Tag("UnitTest")
+        @DisplayName("ShouldCreateInvestmentWithNoParameters")
+        void shouldCreateInvestmentWithNoParameters(){
+            Investment investment = new Investment();
+            assertThat(investment).isNotNull();
+        }
     }
 }

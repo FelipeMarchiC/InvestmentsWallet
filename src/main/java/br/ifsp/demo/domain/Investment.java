@@ -63,7 +63,7 @@ public class Investment {
         this.initialValue = initialValue;
         this.asset = asset;
         this.purchaseDate = purchaseDate;
-        this.dateResolver = resolver != null ? resolver : new EffectiveWithdrawDateResolver();
+        this.dateResolver = resolver;
     }
 
     public Investment() {

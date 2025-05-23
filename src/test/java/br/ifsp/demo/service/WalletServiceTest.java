@@ -6,6 +6,7 @@ import br.ifsp.demo.domain.Investment;
 import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.exception.EntityAlreadyExistsException;
 import br.ifsp.demo.repository.WalletRepository;
+import br.ifsp.demo.security.user.JpaUserRepository;
 import br.ifsp.demo.security.user.User;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
@@ -30,6 +31,7 @@ import static br.ifsp.demo.domain.InvestmentFactory.createInvestmentWithPurchase
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,6 +42,8 @@ class WalletServiceTest {
 
     @Mock
     private WalletRepository repository;
+    @Mock
+    private JpaUserRepository userRepository;
     @InjectMocks
     private WalletService sut;
 
@@ -1220,6 +1224,38 @@ class WalletServiceTest {
                     "| TESOURO_DIRETO: 50,00% | CDB: 50,00% | LCI: 0,00% | LCA: 0,00% | CRI: 0,00% | CRA: 0,00%",
                     "| TESOURO_DIRETO: 50,00% | CDB: 50,00% | LCI: 0,00% | LCA: 0,00% | CRI: 0,00% | CRA: 0,00%"
             );
+        }
+    }
+
+    @Nested
+    class GetWallet {
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Functional")
+        @DisplayName("Should return NullPointerException if userId is null")
+        void shouldReturnNullPointerExceptionIfUserIdIsNull() {
+            assertThrows(NullPointerException.class, () -> sut.getWallet(null));
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Functional")
+        @DisplayName("Should return a wallet")
+        void shouldReturnAWallet(){
+            when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
+            Wallet wallet = sut.getWallet(user.getId());
+            assertThat(sut.getWallet(user.getId())).isEqualTo(wallet);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Functional")
+        @DisplayName("Should return NoSuchElementException if returns an empty wallet")
+        void shouldReturnNoSuchElementExceptionIfReturnsAnEmptyWallet() {
+            when(repository.findByUser_Id(user.getId())).thenReturn(Optional.empty());
+
+            assertThrows(NoSuchElementException.class, () -> sut.getWallet(user.getId()));
         }
     }
 

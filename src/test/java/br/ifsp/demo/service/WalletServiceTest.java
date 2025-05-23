@@ -32,6 +32,8 @@ import static br.ifsp.demo.domain.InvestmentFactory.createInvestmentWithPurchase
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -1226,7 +1228,6 @@ class WalletServiceTest {
             );
         }
 
-
     }
 
     @Nested
@@ -1422,6 +1423,21 @@ class WalletServiceTest {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
             sut.removeInvestment(user.getId(), investment.getId());
             assertThat(sut.getInvestments(user.getId()).size()).isEqualTo(0);
+        }
+    }
+
+    @Nested
+    class MutationTests {
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @Test
+        @DisplayName("Should throw exception when wallet not found on removeInvestment")
+        void shouldThrowExceptionWhenWalletNotFoundOnRemoveInvestment() {
+            Investment investment = new Investment(1000, new Asset("Banco Inter", CDB, 0.1, LocalDate.now()));
+            UUID randomUserId = UUID.randomUUID();
+            assertThatThrownBy(() -> sut.removeInvestment(randomUserId, investment.getId()))
+                    .isInstanceOf(NoSuchElementException.class)
+                    .hasMessage("This user has not a wallet: " + randomUserId);
         }
     }
 }

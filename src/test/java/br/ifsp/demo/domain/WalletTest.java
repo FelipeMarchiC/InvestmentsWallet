@@ -169,5 +169,12 @@ class WalletTest {
             assertThat(sut.equals(wallet)).isFalse();
         }
 
+        @Test
+        @Tag("Mutation")
+        @Tag("UnitTest")
+        @DisplayName("Wallet hashcode should be different of zero")
+        void walletHashcodeShouldBeDifferentOfZero(){
+            assertThat(sut.hashCode()).isNotZero();
+        }
     }
 }

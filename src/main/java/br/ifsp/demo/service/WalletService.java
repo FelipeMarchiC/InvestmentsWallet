@@ -142,15 +142,14 @@ public class WalletService {
                 .toList();
     }
 
-    public String generateReport(UUID userId, LocalDate relativeDate) {
+    public String generateReport(UUID userId) {
         Objects.requireNonNull(userId, "User id cannot be null");
-        Objects.requireNonNull(relativeDate, "Relative date cannot be null");
 
         Wallet wallet = repository.findByUser_Id(userId)
                 .orElseThrow(() -> new NoSuchElementException("This user has not a wallet: " + userId));
 
         WalletReportService walletReportService = new WalletReportService(wallet);
-        return walletReportService.generateReport(relativeDate);
+        return walletReportService.generateReport();
     }
 
     public Wallet getWallet(UUID userId) {
@@ -169,11 +168,11 @@ public class WalletService {
                 .orElseThrow(() -> new NoSuchElementException("Investment not found: " + investmentId));
     }
 
-    public double getTotalBalance(UUID userId, LocalDate withdrawDate) {
+    public double getTotalBalance(UUID userId) {
         Objects.requireNonNull(userId, "User id cannot be null");
 
         Wallet wallet = getWallet(userId);
-        return wallet.getTotalBalance(withdrawDate);
+        return wallet.getTotalBalance();
     }
 
     public double getFutureBalance(UUID userId) {

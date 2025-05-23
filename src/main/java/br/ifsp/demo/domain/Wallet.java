@@ -42,13 +42,13 @@ public class Wallet {
         investments.remove(investment);
     }
 
-    public double getTotalBalance(LocalDate withdrawDate) {
+    public double getTotalBalance() {
         double total = 0.0;
         for (Investment investment : getHistoryInvestments()){
-             total += investment.calculateBalanceAt(null);
+            total += investment.calculateCurrentBalance();
         }
         for (Investment investment : getInvestments()) {
-            total += investment.calculateBalanceAt(withdrawDate != null ? withdrawDate : LocalDate.now());
+            total += investment.calculateCurrentBalance();
         }
         return total;
     }
@@ -56,7 +56,7 @@ public class Wallet {
     public double getFutureBalance() {
         double futureBalance = 0.0;
         for (Investment investment : getInvestments()) {
-            futureBalance += investment.calculateBalanceAt(investment.getMaturityDate());
+            futureBalance += investment.calculateFutureBalance();
         }
         return futureBalance;
     }

@@ -105,7 +105,7 @@ public class WalletController {
     @GetMapping("/report")
     public ResponseEntity<String> generateReport(@RequestParam LocalDate relativeDate) {
         UUID userId = authenticationInfoService.getAuthenticatedUserId();
-        String report = walletService.generateReport(userId, relativeDate);
+        String report = walletService.generateReport(userId);
 
         return ResponseEntity.ok().body(report);
     }
@@ -172,9 +172,9 @@ public class WalletController {
     }
 
     @GetMapping("/totalBalance")
-    public ResponseEntity<Double> getTotalBalance(@RequestParam(required = false) LocalDate withdrawDate){
+    public ResponseEntity<Double> getTotalBalance(){
         UUID userId = authenticationInfoService.getAuthenticatedUserId();
-        double balance = walletService.getTotalBalance(userId, withdrawDate);
+        double balance = walletService.getTotalBalance(userId);
 
         return ResponseEntity.ok().body(balance);
     }

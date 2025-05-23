@@ -1,5 +1,6 @@
 package br.ifsp.demo.domain;
 
+import br.ifsp.demo.util.EffectiveWithdrawDateResolver;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,8 @@ public class Investment {
     @ManyToOne
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
+    @Transient
+    private EffectiveWithdrawDateResolver dateResolver;
 
     public Investment(double initialValue, Asset asset) {
         this.id = UUID.randomUUID();
@@ -42,6 +45,7 @@ public class Investment {
         verifyInvestment(initialValue, asset, purchaseDate);
         this.initialValue = initialValue;
         this.asset = asset;
+        this.dateResolver = new EffectiveWithdrawDateResolver();
     }
 
     Investment(double initialValue, Asset asset, LocalDate purchaseDate) {
@@ -50,6 +54,16 @@ public class Investment {
         this.initialValue = initialValue;
         this.asset = asset;
         this.purchaseDate = purchaseDate;
+        this.dateResolver = new EffectiveWithdrawDateResolver();
+    }
+
+     Investment(double initialValue, Asset asset, LocalDate purchaseDate, EffectiveWithdrawDateResolver resolver) {
+        this.id = UUID.randomUUID();
+        verifyInvestment(initialValue, asset, purchaseDate);
+        this.initialValue = initialValue;
+        this.asset = asset;
+        this.purchaseDate = purchaseDate;
+        this.dateResolver = resolver != null ? resolver : new EffectiveWithdrawDateResolver();
     }
 
     public Investment() {
@@ -67,12 +81,10 @@ public class Investment {
         return withdrawDate != null;
     }
 
-    public double calculateBalanceAt(LocalDate referenceDate) {
+    private double calculateBalanceAt(LocalDate date) {
         BigDecimal balance = BigDecimal.ZERO;
 
-        LocalDate effectiveWithdrawDate = withdrawDate != null ? withdrawDate : referenceDate;
-
-        long days = ChronoUnit.DAYS.between(this.purchaseDate, effectiveWithdrawDate);
+        long days = ChronoUnit.DAYS.between(this.purchaseDate, date);
         BigDecimal time = BigDecimal.valueOf(days)
                 .divide(BigDecimal.valueOf(30.0), 10, RoundingMode.HALF_UP);
 
@@ -85,6 +97,14 @@ public class Investment {
         BigDecimal finalValue = initialValue.multiply(compound);
         balance = balance.add(finalValue);
         return balance.setScale(2, RoundingMode.HALF_UP).doubleValue();
+    }
+
+    public double calculateCurrentBalance() {
+        return calculateBalanceAt(dateResolver.resolve(withdrawDate));
+    }
+
+    public double calculateFutureBalance() {
+        return calculateBalanceAt(asset.getMaturityDate());
     }
 
     @Override

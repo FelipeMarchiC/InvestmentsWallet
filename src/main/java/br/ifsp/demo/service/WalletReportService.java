@@ -15,7 +15,7 @@ public class WalletReportService {
         this.wallet = wallet;
     }
 
-    public String generateReport(LocalDate relativeDate) {
+    public String generateReport() {
         if (wallet.getInvestments().isEmpty() && wallet.getHistoryInvestments().isEmpty()) {
             throw new NoSuchElementException("There are no investments in this wallet");
         }
@@ -39,9 +39,9 @@ public class WalletReportService {
             report.append("\n");
         }
 
-        report.append("> Current Total Balance: R$ ").append(String.format("%.2f", wallet.getTotalBalance(relativeDate))).append("\n");
+        report.append("> Current Total Balance: R$ ").append(String.format("%.2f", wallet.getTotalBalance())).append("\n");
         report.append("> Future Investments Balance: R$ ").append(String.format("%.2f", wallet.getFutureBalance())).append("\n");
-        report.append("> Total Balance (Current + Future): R$ ").append(String.format("%.2f", wallet.getTotalBalance(relativeDate) + wallet.getFutureBalance())).append("\n\n");
+        report.append("> Total Balance (Current + Future): R$ ").append(String.format("%.2f", wallet.getTotalBalance() + wallet.getFutureBalance())).append("\n\n");
         report.append("> Investment by Type: \n").append(generateAndFormatInvestmentsByType());
         return report.toString();
     }

@@ -1307,6 +1307,30 @@ class WalletServiceTest {
     }
 
     @Nested
+    class GetTotalBalance {
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Functional")
+        @DisplayName("Should return NullPointerException if userId is null")
+        void shouldReturnNullPointerExceptionIfUserIdIsNull() {
+            assertThrows(NullPointerException.class, () -> sut.getTotalBalance(null), "User id cannot be null");
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Functional")
+        @DisplayName("Should return total balance")
+        void shouldReturnTotalBalance(){
+            Investment investment = new Investment(1000, new Asset("Banco Inter", CDB, 0.1, LocalDate.now()));
+            wallet.addInvestment(investment);
+            when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
+
+            assertThat(sut.getTotalBalance(user.getId())).isEqualTo(wallet.getTotalBalance());
+        }
+    }
+
+    @Nested
     class StructuralTests {
 
     }

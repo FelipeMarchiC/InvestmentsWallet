@@ -157,4 +157,17 @@ class WalletTest {
             assertThat(sut).isNotEqualTo(new Object());
         }
     }
+
+    @Nested
+    class MutationTests {
+        @Test
+        @Tag("Mutation")
+        @Tag("UnitTest")
+        @DisplayName("Should return false when compare 2 different wallets")
+        void shouldReturnFalseWhenCompare2DifferentWallets(){
+            Wallet wallet = new Wallet();
+            assertThat(sut.equals(wallet)).isFalse();
+        }
+
+    }
 }

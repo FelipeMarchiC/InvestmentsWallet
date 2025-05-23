@@ -1326,7 +1326,9 @@ class WalletServiceTest {
         void shouldReturnNullPointerExceptionIfUserIdIsNull() {
             Investment investment = new Investment(1000, new Asset("Banco Inter", CDB, 0.1, LocalDate.now()));
 
-            assertThrows(NullPointerException.class, () -> sut.getInvestmentById(null, investment.getId()), "User id cannot be null");
+            assertThatThrownBy(() -> sut.getInvestmentById(null, investment.getId()))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("User id cannot be null");
         }
 
         @Test
@@ -1334,7 +1336,9 @@ class WalletServiceTest {
         @Tag("Functional")
         @DisplayName("Should return NullPointerException if investmentId is null")
         void shouldReturnNullPointerExceptionIfInvestmentIdIsNull() {
-            assertThrows(NullPointerException.class, () -> sut.getInvestmentById(user.getId(), null), "Investment id cannot be null");
+            assertThatThrownBy(() -> sut.getInvestmentById(user.getId(), null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("Investment id cannot be null");
         }
 
         @Test
@@ -1344,8 +1348,10 @@ class WalletServiceTest {
         void shouldReturnNoSuchElementExceptionIfInvestmentIsNotInTheWallet() {
             UUID randomId = UUID.randomUUID();
 
-            assertThrows(NoSuchElementException.class, () -> sut.getInvestmentById(user.getId(), randomId),
-                    "Investment not found: " + randomId);
+            when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
+            assertThatThrownBy(() -> sut.getInvestmentById(user.getId(), randomId))
+                    .isInstanceOf(NoSuchElementException.class)
+                    .hasMessage("Investment not found: " + randomId);
         }
 
         @Test
@@ -1371,7 +1377,9 @@ class WalletServiceTest {
         @Tag("Functional")
         @DisplayName("Should return NullPointerException if userId is null")
         void shouldReturnNullPointerExceptionIfUserIdIsNull() {
-            assertThrows(NullPointerException.class, () -> sut.getTotalBalance(null), "User id cannot be null");
+            assertThatThrownBy(() -> sut.getTotalBalance(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("User id cannot be null");
         }
 
         @Test
@@ -1395,7 +1403,9 @@ class WalletServiceTest {
         @Tag("Functional")
         @DisplayName("Should return NullPointerException if userId is null")
         void shouldReturnNullPointerExceptionIfUserIdIsNull() {
-            assertThrows(NullPointerException.class, () -> sut.getFutureBalance(null), "User id cannot be null");
+            assertThatThrownBy(() -> sut.getFutureBalance(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("User id cannot be null");
         }
 
         @Test

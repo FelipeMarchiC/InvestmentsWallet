@@ -1332,6 +1332,16 @@ class WalletServiceTest {
 
     @Nested
     class StructuralTests {
-
+        @Test
+        @Tag("UnitTest")
+        @Tag("Structural")
+        @DisplayName("Should remove investments saved")
+        void shouldRemoveInvestmentsSaved(){
+            Investment investment = new Investment(1000, new Asset("Banco Inter", CDB, 0.1, LocalDate.now()));
+            wallet.addInvestment(investment);
+            when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
+            sut.removeInvestment(user.getId(), investment.getId());
+            assertThat(sut.getInvestments(user.getId()).size()).isEqualTo(0);
+        }
     }
 }

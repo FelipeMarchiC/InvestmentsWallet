@@ -1428,9 +1428,9 @@ class WalletServiceTest {
 
     @Nested
     class MutationTests {
+        @Test
         @Tag("UnitTest")
         @Tag("Mutation")
-        @Test
         @DisplayName("Should throw exception when wallet not found on removeInvestment")
         void shouldThrowExceptionWhenWalletNotFoundOnRemoveInvestment() {
             Investment investment = new Investment(1000, new Asset("Banco Inter", CDB, 0.1, LocalDate.now()));
@@ -1438,6 +1438,18 @@ class WalletServiceTest {
             assertThatThrownBy(() -> sut.removeInvestment(randomUserId, investment.getId()))
                     .isInstanceOf(NoSuchElementException.class)
                     .hasMessage("This user has not a wallet: " + randomUserId);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Mutation")
+        @DisplayName("Should throw exception when investment not found on removeInvestment")
+        void shouldThrowExceptionWhenInvestmentNotFoundOnRemoveInvestment(){
+            UUID randomInvestmentId = UUID.randomUUID();
+            when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
+            assertThatThrownBy(() -> sut.removeInvestment(user.getId(), randomInvestmentId))
+                    .isInstanceOf(NoSuchElementException.class)
+                    .hasMessage("Investment not found: " + randomInvestmentId);
         }
     }
 }

@@ -1222,4 +1222,9 @@ class WalletServiceTest {
             );
         }
     }
+
+    @Nested
+    class StructuralTests {
+
+    }
 }

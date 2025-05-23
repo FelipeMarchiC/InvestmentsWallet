@@ -3,7 +3,6 @@ package br.ifsp.demo.domain;
 import br.ifsp.demo.util.EffectiveWithdrawDateResolver;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 
@@ -122,10 +121,6 @@ public class Investment {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
-    }
-
-    public LocalDate getMaturityDate() {
-        return asset.getMaturityDate();
     }
 
 }

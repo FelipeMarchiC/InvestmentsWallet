@@ -36,7 +36,6 @@ public class WalletService {
 
         Wallet wallet = new Wallet();
         wallet.setUser(user);
-//        user.setWallet(wallet);
         return repository.save(wallet);
     }
 

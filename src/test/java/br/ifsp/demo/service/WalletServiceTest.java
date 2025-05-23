@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -31,7 +32,6 @@ import static br.ifsp.demo.domain.InvestmentFactory.createInvestmentWithPurchase
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,7 +43,7 @@ class WalletServiceTest {
     @Mock
     private WalletRepository repository;
     @Mock
-    private JpaUserRepository userRepository;
+    private JpaUserRepository jpaUserRepository;
     @InjectMocks
     private WalletService sut;
 
@@ -1225,6 +1225,62 @@ class WalletServiceTest {
                     "| TESOURO_DIRETO: 50,00% | CDB: 50,00% | LCI: 0,00% | LCA: 0,00% | CRI: 0,00% | CRA: 0,00%"
             );
         }
+
+
+    }
+
+    @Nested
+    class CreateWallet {
+        @Test
+        @Tag("UnitTest")
+        @Tag("Functional")
+        @DisplayName("Should throw exception when user id is null")
+        void shouldThrowExceptionWhenUserIdIsNull(){
+            assertThatThrownBy(() -> sut.createWallet(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("User id cannot be null");
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Functional")
+        @DisplayName("Should throw NoSuchElementException when user does not exists")
+        void shouldThrowNoSuchElementExceptionWhenUserDoesNotExists() {
+            UUID randomUserId = UUID.randomUUID();
+            assertThatThrownBy(() -> sut.createWallet(randomUserId))
+                    .isInstanceOf(NoSuchElementException.class)
+                    .hasMessage("User not found: " + randomUserId);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Functional")
+        @DisplayName("Should throw IllegalArgumentException when wallet is null")
+        void shouldThrowIllegalArgumentExceptionWhenWalletIsNull() {
+            user.setWallet(new Wallet());
+            when(jpaUserRepository.findById(user.getId())).thenReturn(Optional.of(user));
+            assertThatThrownBy(() -> sut.createWallet(user.getId()))
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("User already has a wallet: " + user.getId());
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Functional")
+        @DisplayName("Should create wallet and define wallet user")
+        void shouldCreateWalletAndDefineWalletUser(){
+            when(jpaUserRepository.findById(user.getId())).thenReturn(Optional.of(user));
+            ArgumentCaptor<Wallet> walletCaptor = ArgumentCaptor.forClass(Wallet.class);
+            when(repository.save(walletCaptor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
+
+            Wallet result = sut.createWallet(user.getId());
+
+            Wallet savedWallet = walletCaptor.getValue();
+            assertThat(savedWallet.getUser()).isEqualTo(user);
+            assertThat(result).isEqualTo(savedWallet);
+        }
+
+
     }
 
     @Nested

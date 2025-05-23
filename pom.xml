@@ -167,7 +167,10 @@
                 </dependencies>
                 <configuration>
                     <targetClasses>
-                        <param>br.ifsp.demo*</param>
+                        <!--<param>br.ifsp.demo*</param>-->
+                        <param>br.ifsp.demo.service.*</param>
+                        <param>br.ifsp.demo.domain.*</param>
+                        <param>br.ifsp.demo.util.*</param>
                     </targetClasses>
                     <targetTests>
                         <param>br.ifsp.demo*</param>

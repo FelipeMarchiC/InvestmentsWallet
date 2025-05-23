@@ -3,6 +3,7 @@ package br.ifsp.demo.domain;
 import br.ifsp.demo.repository.WalletRepository;
 import br.ifsp.demo.security.user.User;
 import br.ifsp.demo.service.WalletService;
+import br.ifsp.demo.util.EffectiveWithdrawDateResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -55,10 +56,13 @@ class WalletTest {
 
             LocalDate purchaseDate = baseDate.minusMonths(1).minusDays(10);
             Asset asset = new Asset("Banco Inter", AssetType.CDB, 0.1, baseDate.plusMonths(2));
-            Investment investment = new Investment(1000, asset, purchaseDate);
 
+            EffectiveWithdrawDateResolver dateResolver = mock(EffectiveWithdrawDateResolver.class);
+            when(dateResolver.resolve(null)).thenReturn(baseDate);
+
+            Investment investment = new Investment(1000, asset, purchaseDate, dateResolver);
             walletService.addInvestment(user.getId(), investment);
-            double total = sut.getTotalBalance(baseDate);
+            double total = sut.getTotalBalance();
 
             assertThat(total).isEqualTo(1139.12);
         }
@@ -77,7 +81,7 @@ class WalletTest {
 
             walletService.addInvestment(user.getId(), investment);
             walletService.withdrawInvestment(user.getId(), investment.getId(), baseDate);
-            double total = sut.getTotalBalance(null);
+            double total = sut.getTotalBalance();
 
             assertThat(total).isEqualTo(1139.12);
         }
@@ -88,7 +92,7 @@ class WalletTest {
         @Tag("Functional")
         @DisplayName("Should calculate total balance with no investments")
         void shouldCalculateTotalBalanceWithNoInvestments() {
-            double total = sut.getTotalBalance(null);
+            double total = sut.getTotalBalance();
             assertThat(total).isZero();
         }
     }

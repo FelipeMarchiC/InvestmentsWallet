@@ -1,6 +1,7 @@
 package br.ifsp.demo.domain;
 
 import br.ifsp.demo.util.DateFormatter;
+import br.ifsp.demo.util.EffectiveWithdrawDateResolver;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -15,7 +16,8 @@ import java.util.stream.Stream;
 import static br.ifsp.demo.domain.AssetType.CDB;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class InvestmentTest {
 
@@ -70,9 +72,12 @@ class InvestmentTest {
         @DisplayName("Should calculate balance at given reference date correctly")
         void shouldCalculateBalanceAtGivenReferenceDateCorrectly(LocalDate purchaseDate, LocalDate maturityDate, double expectedBalance) {
             Asset asset = new Asset("Banco Inter", CDB, 0.1, maturityDate);
-            Investment sut = new Investment(1000, asset, purchaseDate);
 
-            double calculatedBalance = sut.calculateBalanceAt(maturityDate);
+            EffectiveWithdrawDateResolver dateResolver = mock(EffectiveWithdrawDateResolver.class);
+            when(dateResolver.resolve(null)).thenReturn(maturityDate);
+            Investment sut = new Investment(1000, asset, purchaseDate, dateResolver);
+
+            double calculatedBalance = sut.calculateCurrentBalance();
             assertThat(calculatedBalance).isEqualTo(expectedBalance);
         }
 
@@ -90,35 +95,20 @@ class InvestmentTest {
         @Test
         @Tag("UnitTest")
         @Tag("Functional")
-        @DisplayName("Should use withdrawDate instead of referenceDate if set")
-        void shouldUseWithdrawDateWhenPresent() {
+        @DisplayName("Should use withdrawDate as effective date")
+        void shouldUseWithdrawDateAsEffectiveDate() {
             int year = LocalDate.now().getYear();
             LocalDate purchaseDate = LocalDate.of(year, 4, 1);
             LocalDate withdrawDate = LocalDate.of(year, 5, 1);
             LocalDate maturityDate = LocalDate.of(year, 6, 1);
 
             Asset asset = new Asset("Banco Inter", CDB, 0.10, maturityDate);
+
             Investment investment = new Investment(1000.00, asset, purchaseDate);
             investment.setWithdrawDate(withdrawDate);
 
-            double balance = investment.calculateBalanceAt(maturityDate);
+            double balance = investment.calculateCurrentBalance();
             assertThat(balance).isEqualTo(1100.00);
-        }
-
-        @Test
-        @Tag("UnitTest")
-        @Tag("Functional")
-        @DisplayName("Should use referenceDate if withdrawDate not defined")
-        void shouldUseReferenceDateIfWithdrawDateNotDefined() {
-            int year = LocalDate.now().getYear();
-            LocalDate purchaseDate = LocalDate.of(year, 4, 1);
-            LocalDate maturityDate = LocalDate.of(year, 6, 1);
-
-            Asset asset = new Asset("Banco Inter", CDB, 0.10, maturityDate);
-            Investment investment = new Investment(1000.00, asset, purchaseDate);
-
-            double balance = investment.calculateBalanceAt(maturityDate);
-            assertThat(balance).isEqualTo(1213.85);
         }
     }
 

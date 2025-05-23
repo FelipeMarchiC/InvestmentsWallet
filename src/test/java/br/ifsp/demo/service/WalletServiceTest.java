@@ -1,14 +1,14 @@
 package br.ifsp.demo.service;
 
-import br.ifsp.demo.domain.*;
+import br.ifsp.demo.domain.Asset;
+import br.ifsp.demo.domain.AssetType;
+import br.ifsp.demo.domain.Investment;
+import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.exception.EntityAlreadyExistsException;
 import br.ifsp.demo.repository.WalletRepository;
 import br.ifsp.demo.security.user.User;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -18,17 +18,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.*;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import static br.ifsp.demo.domain.AssetType.*;
 import static br.ifsp.demo.domain.InvestmentFactory.createInvestmentWithPurchaseDate;
+import static br.ifsp.demo.domain.InvestmentFactory.createInvestmentWithPurchaseDateAndMockWithdraw;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -1089,7 +1090,7 @@ class WalletServiceTest {
         void shouldThrowNoSuchElementExceptionWhenThereAreNoInvestments() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
-            assertThatThrownBy(() -> sut.generateReport(user.getId(), date))
+            assertThatThrownBy(() -> sut.generateReport(user.getId()))
                     .isInstanceOf(NoSuchElementException.class)
                     .hasMessage("There are no investments in this wallet");
         }
@@ -1103,7 +1104,7 @@ class WalletServiceTest {
             UUID userId = UUID.randomUUID();
             when(repository.findByUser_Id(userId)).thenReturn(Optional.empty());
 
-            assertThatThrownBy(() -> sut.generateReport(userId, date))
+            assertThatThrownBy(() -> sut.generateReport(userId))
                     .isInstanceOf(NoSuchElementException.class)
                     .hasMessage("This user has not a wallet: " + userId);
         }
@@ -1113,7 +1114,7 @@ class WalletServiceTest {
         @Tag("Functional")
         @DisplayName("Should throw NullPointerException when Wallet id is null")
         void shouldThrowNullPointerExceptionWhenWalletIdIsNull() {
-            assertThatThrownBy(() -> sut.generateReport(null, date))
+            assertThatThrownBy(() -> sut.generateReport(null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("User id cannot be null");
         }
@@ -1128,9 +1129,9 @@ class WalletServiceTest {
             user.setWallet(wallet);
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
-            SoftAssertions softly = new SoftAssertions();
-            String report = sut.generateReport(user.getId(), date);
+            String report = sut.generateReport(user.getId());
 
+            SoftAssertions softly = new SoftAssertions();
             expectedParts.forEach(expectedPart -> {
                 softly.assertThat(report).contains(expectedPart);
             });
@@ -1170,8 +1171,8 @@ class WalletServiceTest {
             Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, date.plusMonths(2));
             Asset assetTesouro = new Asset("Banco Inter", TESOURO_DIRETO, 0.1, date.plusMonths(2));
 
-            Investment investmentCDB = createInvestmentWithPurchaseDate(2000, assetCDB, date);
-            Investment investmentTesouro = createInvestmentWithPurchaseDate(3000, assetTesouro, date);
+            Investment investmentCDB = createInvestmentWithPurchaseDateAndMockWithdraw(2000, assetCDB, date, date);
+            Investment investmentTesouro = createInvestmentWithPurchaseDateAndMockWithdraw(3000, assetTesouro, date, date);
 
             wallet.addInvestment(investmentCDB);
             wallet.addInvestment(investmentTesouro);

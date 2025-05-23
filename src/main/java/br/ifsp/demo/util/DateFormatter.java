@@ -8,9 +8,4 @@ public class DateFormatter {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return date.format(formatter);
     }
-
-    public static String formatDateToISO(LocalDate date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
-        return date.format(formatter);
-    }
 }

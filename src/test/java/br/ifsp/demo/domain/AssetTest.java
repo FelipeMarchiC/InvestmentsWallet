@@ -86,4 +86,16 @@ class AssetTest {
         }
 
     }
+
+    @Nested
+    class StructuralTests {
+        @Test
+        @Tag("Structural")
+        @Tag("UnitTest")
+        @DisplayName("Should correctly creat an Asset with no parameters")
+        void shouldCorrectlyCreatAnAssetWithNoParameters(){
+            Asset asset = new Asset();
+            assertThat(asset).isNotNull();
+        }
+    }
 }

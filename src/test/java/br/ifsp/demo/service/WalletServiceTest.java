@@ -1260,6 +1260,53 @@ class WalletServiceTest {
     }
 
     @Nested
+    class GetInvestmentById {
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Functional")
+        @DisplayName("Should return NullPointerException if userId is null")
+        void shouldReturnNullPointerExceptionIfUserIdIsNull() {
+            Investment investment = new Investment(1000, new Asset("Banco Inter", CDB, 0.1, LocalDate.now()));
+
+            assertThrows(NullPointerException.class, () -> sut.getInvestmentById(null, investment.getId()), "User id cannot be null");
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Functional")
+        @DisplayName("Should return NullPointerException if investmentId is null")
+        void shouldReturnNullPointerExceptionIfInvestmentIdIsNull() {
+            assertThrows(NullPointerException.class, () -> sut.getInvestmentById(user.getId(), null), "Investment id cannot be null");
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Functional")
+        @DisplayName("Should return NoSuchElementException if investment is not in the wallet")
+        void shouldReturnNoSuchElementExceptionIfInvestmentIsNotInTheWallet() {
+            UUID randomId = UUID.randomUUID();
+
+            assertThrows(NoSuchElementException.class, () -> sut.getInvestmentById(user.getId(), randomId),
+                    "Investment not found: " + randomId);
+        }
+
+        @Test
+        @Tag("UnitTest")
+        @Tag("Functional")
+        @DisplayName("Should return an investment")
+        void shouldReturnAnInvestment(){
+            Investment investment = new Investment(1000, new Asset("Banco Inter", CDB, 0.1, LocalDate.now()));
+            wallet.addInvestment(investment);
+            when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
+
+            Investment result = sut.getInvestmentById(user.getId(), investment.getId());
+
+            assertThat(result).isEqualTo(investment);
+        }
+    }
+
+    @Nested
     class StructuralTests {
 
     }

@@ -159,9 +159,11 @@ class WalletServiceTest {
             Investment investment = new Investment(100, asset);
             sut.addInvestment(user.getId(), investment);
 
-            assertThrows(NoSuchElementException.class, () -> {
-                sut.withdrawInvestment(user.getId(), UUID.randomUUID(), date);
-            });
+            UUID randomId = UUID.randomUUID();
+
+            assertThatThrownBy(() -> sut.withdrawInvestment(user.getId(), randomId, date))
+                    .isInstanceOf(NoSuchElementException.class)
+                    .hasMessage("Investment not found: " + randomId);
         }
 
         @Test
@@ -175,9 +177,9 @@ class WalletServiceTest {
             Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
             Investment investment = new Investment(100, asset);
 
-            assertThrows(NoSuchElementException.class, () -> {
-                sut.withdrawInvestment(randomId, investment.getId(), date);
-            });
+            assertThatThrownBy(() -> sut.withdrawInvestment(randomId, investment.getId(), date))
+                    .isInstanceOf(NoSuchElementException.class)
+                    .hasMessage("This user has not a wallet: " + randomId);
         }
 
         @Test
@@ -330,9 +332,9 @@ class WalletServiceTest {
             UUID randomId = UUID.randomUUID();
             when(repository.findByUser_Id(randomId)).thenReturn(Optional.empty());
 
-            assertThrows(NoSuchElementException.class, () -> {
-                sut.getInvestments(randomId);
-            });
+            assertThatThrownBy(() -> sut.getInvestments(randomId))
+                    .isInstanceOf(NoSuchElementException.class)
+                    .hasMessage("This user has not a wallet: " + randomId);
         }
 
         @Test

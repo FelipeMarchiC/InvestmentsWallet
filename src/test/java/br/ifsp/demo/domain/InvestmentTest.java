@@ -2,6 +2,7 @@ package br.ifsp.demo.domain;
 
 import br.ifsp.demo.util.DateFormatter;
 import br.ifsp.demo.util.EffectiveWithdrawDateResolver;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -15,6 +16,7 @@ import java.util.stream.Stream;
 
 import static br.ifsp.demo.domain.AssetType.CDB;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -160,6 +162,47 @@ class InvestmentTest {
         void shouldCreateInvestmentWithNoParameters(){
             Investment investment = new Investment();
             assertThat(investment).isNotNull();
+        }
+    }
+
+    @Nested
+    class MutationTests {
+        @ParameterizedTest
+        @MethodSource("provideInvalidScenariosForInvestmentWithoutPurchaseDate")
+        @DisplayName("Should validate constructors without purchaseDate")
+        void shouldValidateConstructorWithoutPurchaseDate(double initialValue, Asset asset, String message) {
+            assertThatThrownBy(() -> new Investment(initialValue, asset))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage(message);
+        }
+
+        public static Stream<Arguments> provideInvalidScenariosForInvestmentWithoutPurchaseDate() {
+            return Stream.of(
+                    Arguments.of(-100, mock(Asset.class), "Initial value must be greater than zero"),
+                    Arguments.of(0, mock(Asset.class), "Initial value must be greater than zero"),
+                    Arguments.of(100, null, "Asset cannot be null")
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("provideInvalidScenariosForInvestmentWithPurchaseDate")
+        @DisplayName("Should validate constructor with purchaseDate")
+        void shouldValidateConstructorWithPurchaseDate(double initialValue, Asset asset, LocalDate purchaseDate ,String message) {
+            assertThatThrownBy(() -> new Investment(initialValue, asset, purchaseDate, mock(EffectiveWithdrawDateResolver.class)))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage(message);
+        }
+
+        public static Stream<Arguments> provideInvalidScenariosForInvestmentWithPurchaseDate() {
+            int year = LocalDate.now().getYear();
+            LocalDate maturityDate = LocalDate.of(year, 4, 1);
+            LocalDate latePurchaseDate = LocalDate.of(year, 6, 1);
+            Asset asset = new Asset("Banco Inter", CDB, 0.10, maturityDate);
+
+            return Stream.of(
+                    Arguments.of(100, mock(Asset.class), null,"Purchase date cannot be null"),
+                    Arguments.of(100, asset, latePurchaseDate,"Purchase date cannot be after maturity date")
+            );
         }
     }
 }

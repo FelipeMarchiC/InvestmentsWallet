@@ -551,8 +551,8 @@ class WalletServiceTest {
 
         private static Stream<Arguments> provideScenariosForEmptyDateFilterHistory() {
             LocalDate date = LocalDate.of(2025, 4, 25);
-            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
-            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)));
+            Investment investment1 = createInvestmentWithPurchaseDate(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)), date);
+            Investment investment2 = createInvestmentWithPurchaseDate(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)), date);
 
             return Stream.of(
                     Arguments.of(List.of(), date.plusMonths(1), date.plusMonths(2)),
@@ -864,8 +864,8 @@ class WalletServiceTest {
 
         private static Stream<Arguments> provideScenariosForEmptyDateFilterActiveInvestments() {
             LocalDate date = LocalDate.of(2025, 4, 25);
-            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
-            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)));
+            Investment investment1 = createInvestmentWithPurchaseDate(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)), date);
+            Investment investment2 = createInvestmentWithPurchaseDate(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)), date);
 
             return Stream.of(
                     Arguments.of(List.of(), date.plusMonths(1), date.plusMonths(2)),

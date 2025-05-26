@@ -299,8 +299,8 @@ class WalletServiceTest {
         void shouldReturnAllInvestmentsOnWallet() {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
             Asset asset = new Asset("Banco Inter", CDB, 0.01, date.plusYears(1));
-            Investment investment1 = new Investment(1000, asset);
-            Investment investment2 = new Investment(1500, asset);
+            Investment investment1 = createInvestmentWithPurchaseDate(1000, asset, date);
+            Investment investment2 = createInvestmentWithPurchaseDate(1500, asset, date);
 
             sut.addInvestment(user.getId(), investment1);
             sut.addInvestment(user.getId(), investment2);
@@ -389,7 +389,10 @@ class WalletServiceTest {
             sut.withdrawInvestment(user.getId(), investment1.getId(), date);
 
             List<Investment> result = sut.getHistoryInvestments(user.getId());
-            assertThat(result.size()).isEqualTo(1);
+            SoftAssertions softly = new SoftAssertions();
+            softly.assertThat(result.size()).isEqualTo(1);
+            softly.assertThat(result.getFirst()).isEqualTo(investment1);
+            softly.assertAll();
         }
 
         @Test
@@ -478,7 +481,11 @@ class WalletServiceTest {
 
             List<Investment> result = sut.filterHistory(user.getId(), CDB);
 
-            assertThat(result.size()).isEqualTo(2);
+            SoftAssertions softly = new SoftAssertions();
+            softly.assertThat(result.size()).isEqualTo(2);
+            softly.assertThat(result.get(0)).isEqualTo(investment1);
+            softly.assertThat(result.get(1)).isEqualTo(investment2);
+            softly.assertAll();
         }
 
         @Test
@@ -537,8 +544,8 @@ class WalletServiceTest {
 
         private static Stream<Arguments> provideScenariosForEmptyTypeFilterHistory() {
             LocalDate date = LocalDate.of(2025, 4, 25);
-            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
-            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)));
+            Investment investment1 = createInvestmentWithPurchaseDate(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)), date);
+            Investment investment2 = createInvestmentWithPurchaseDate(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)), date);
 
             return Stream.of(
                     Arguments.of(List.of(), CDB),
@@ -623,9 +630,10 @@ class WalletServiceTest {
         }
 
         public static Stream<Arguments> getDataToListOfInvestmentsAndTypeFilter() {
+            LocalDate date = LocalDate.of(2025, 4, 25);
             Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.of(2026, 1, 1));
-            Investment investmentCDB = new Investment(1000, assetCDB);
-            Investment investmentCDB2 = new Investment(1500, assetCDB);
+            Investment investmentCDB = createInvestmentWithPurchaseDate(1000, assetCDB, date);
+            Investment investmentCDB2 = createInvestmentWithPurchaseDate(1500, assetCDB, date);
             Asset assetLCI = new Asset("Banco Itau", LCI, 0.1, LocalDate.of(2026, 1, 1));
             Investment investmentLCI = new Investment(1000, assetLCI);
             return Stream.of(
@@ -659,6 +667,14 @@ class WalletServiceTest {
             });
         }
 
+        public static Stream<Arguments> getInvalidDataToFilterHistory() {
+            return Stream.of(
+                    Arguments.of(null, LocalDate.of(2025, 4, 25), LocalDate.of(2025, 5, 25)),
+                    Arguments.of(new Wallet().getId(), null, LocalDate.of(2025, 5, 25)),
+                    Arguments.of(new Wallet().getId(), LocalDate.of(2025, 4, 25), null)
+            );
+        }
+
         @Test
         @Tag("UnitTest")
         @Tag("Functional")
@@ -672,14 +688,6 @@ class WalletServiceTest {
             List<Investment> result = sut.filterHistory(user.getId(), start, end);
 
             assertThat(result).isEqualTo(List.of());
-        }
-
-        public static Stream<Arguments> getInvalidDataToFilterHistory() {
-            return Stream.of(
-                    Arguments.of(null, LocalDate.of(2025, 4, 25), LocalDate.of(2025, 5, 25)),
-                    Arguments.of(new Wallet().getId(), null, LocalDate.of(2025, 5, 25)),
-                    Arguments.of(new Wallet().getId(), LocalDate.of(2025, 4, 25), null)
-            );
         }
 
         @ParameterizedTest
@@ -850,8 +858,8 @@ class WalletServiceTest {
 
         private static Stream<Arguments> provideScenariosForEmptyTypeFilterActiveInvestments() {
             LocalDate date = LocalDate.of(2025, 4, 25);
-            Investment investment1 = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
-            Investment investment2 = new Investment(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)));
+            Investment investment1 = createInvestmentWithPurchaseDate(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)), date);
+            Investment investment2 = createInvestmentWithPurchaseDate(1500, new Asset("Banco Bradesco", CDB, 0.01, date.plusYears(1)), date);
 
             return Stream.of(
                     Arguments.of(List.of(), CDB),
@@ -930,9 +938,10 @@ class WalletServiceTest {
         }
 
         public static Stream<Arguments> getDataToListOfInvestmentsAndTypeFilter() {
-            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, LocalDate.of(2026, 1, 1));
-            Investment investmentCDB = new Investment(1000, assetCDB);
-            Investment investmentCDB2 = new Investment(1500, assetCDB);
+            LocalDate date = LocalDate.of(2026, 1, 1);
+            Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, date);
+            Investment investmentCDB = createInvestmentWithPurchaseDate(1000, assetCDB, date.minusYears(1));
+            Investment investmentCDB2 = createInvestmentWithPurchaseDate(1500, assetCDB, date.minusYears(1));
             Asset assetLCI = new Asset("Banco Itau", LCI, 0.1, LocalDate.of(2026, 1, 1));
             Investment investmentLCI = new Investment(1000, assetLCI);
             return Stream.of(
@@ -966,6 +975,14 @@ class WalletServiceTest {
             });
         }
 
+        public static Stream<Arguments> getInvalidDataToFilterInvestments() {
+            return Stream.of(
+                    Arguments.of(null, LocalDate.of(2025, 4, 25), LocalDate.of(2025, 5, 25)),
+                    Arguments.of(new Wallet().getId(), null, LocalDate.of(2025, 5, 25)),
+                    Arguments.of(new Wallet().getId(), LocalDate.of(2025, 4, 25), null)
+            );
+        }
+
         @Test
         @Tag("UnitTest")
         @Tag("Functional")
@@ -979,14 +996,6 @@ class WalletServiceTest {
             List<Investment> result = sut.filterActiveInvestments(user.getId(), start, end);
 
             assertThat(result).isEqualTo(List.of());
-        }
-
-        public static Stream<Arguments> getInvalidDataToFilterInvestments() {
-            return Stream.of(
-                    Arguments.of(null, LocalDate.of(2025, 4, 25), LocalDate.of(2025, 5, 25)),
-                    Arguments.of(new Wallet().getId(), null, LocalDate.of(2025, 5, 25)),
-                    Arguments.of(new Wallet().getId(), LocalDate.of(2025, 4, 25), null)
-            );
         }
 
         @ParameterizedTest

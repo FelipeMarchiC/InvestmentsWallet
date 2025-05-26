@@ -18,6 +18,7 @@ import static br.ifsp.demo.domain.AssetType.CDB;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -203,6 +204,18 @@ class InvestmentTest {
                     Arguments.of(100, mock(Asset.class), null,"Purchase date cannot be null"),
                     Arguments.of(100, asset, latePurchaseDate,"Purchase date cannot be after maturity date")
             );
+        }
+
+        @Test
+        @Tag("Mutation")
+        @Tag("UnitTest")
+        @DisplayName("Should return false when compare 2 different investments")
+        void shouldReturnFalseWhenCompare2DifferentInvestments(){
+            LocalDate date = LocalDate.of(2025, 4, 1);
+            Asset asset = new Asset("Banco Inter", CDB, 0.10, date.plusYears(1));
+            Investment investment = new Investment(1000.00, asset, date);
+            Investment otherInvestment = new Investment(1000.00, asset, date);
+            assertThat(investment.equals(otherInvestment)).isFalse();
         }
     }
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { authService } from '../../services/authService';
 import './LoginPage.css';
 import { useNavigate } from 'react-router-dom';
+import { IoWalletOutline } from "react-icons/io5";
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -25,7 +26,7 @@ function LoginPage() {
       const responseData = await authService.login(email, password);
       setLoading(false);
 
-      if (responseData.token)  {
+      if (responseData.token) {
         localStorage.setItem('authToken', responseData.token);
         navigate('/dashboard');
       }
@@ -40,7 +41,12 @@ function LoginPage() {
   return (
     <div className="login-container">
       <form onSubmit={handleSubmit} className="login-form">
-        <h2>Login</h2>
+        
+        <div className='login-logo'>
+          <IoWalletOutline size={85} color='#1e3a8a'/>
+          <h2 className="logo-text">InvestmentsWallet</h2>
+        </div>
+
         {error && <p className="error-message">{error}</p>}
         <div className="form-group">
           <label htmlFor="email">Email:</label>
@@ -69,6 +75,9 @@ function LoginPage() {
         <button type="submit" className="login-button" disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
         </button>
+        <div className="register-link">
+          <p>Don't have an account? <a href="/register">Register here</a></p>
+        </div>
       </form>
     </div>
   );

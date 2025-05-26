@@ -217,5 +217,16 @@ class InvestmentTest {
             Investment otherInvestment = new Investment(1000.00, asset, date);
             assertThat(investment.equals(otherInvestment)).isFalse();
         }
+
+        @Test
+        @Tag("Mutation")
+        @Tag("UnitTest")
+        @DisplayName("Investment hashcode should be different of zero")
+        void investmentHashcodeShouldBeDifferentOfZero(){
+            LocalDate date = LocalDate.of(2025, 4, 1);
+            Asset asset = new Asset("Banco Inter", CDB, 0.10, date.plusYears(1));
+            Investment investment = new Investment(1000.00, asset, date);
+            assertThat(investment.hashCode()).isNotEqualTo(0);
+        }
     }
 }

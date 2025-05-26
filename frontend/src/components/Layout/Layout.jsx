@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import './Layout.css';
-import './Variables.css'
+import '../Variables.css'
 import { IoWalletOutline } from "react-icons/io5";
 
 function Layout() {

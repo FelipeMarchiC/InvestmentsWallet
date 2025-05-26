@@ -1,0 +1,112 @@
+.wallet-container {
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.wallet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.wallet-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.new-investment-button {
+  background-color: var(--blue);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.new-investment-button:hover {
+  background-color: var(--blue-hover);
+}
+
+.summary-card {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 40px;
+}
+
+.summary-card h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.info-box {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.info-box.highlight-green {
+  background-color: #e6f9f0;
+}
+
+.info-box.highlight-purple {
+  background-color: #f3eefc;
+}
+
+.info-label {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.info-value {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: bold;
+}
+
+.total-profitability {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-value-profit {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #28a745;
+}
+
+.investments-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.investments-list {
+  text-align: center;
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.empty-message {
+  color: #888;
+  font-size: 1rem;
+}

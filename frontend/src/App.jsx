@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage/LoginPage';
 import DashboardPage from './pages/DashboardPage/DashboardPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import RegisterPage from './pages/RegisterPage/RegisterPage';
+import WalletPage from './pages/WalletPage/WalletPage';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
 
         <Route element={<ProtectedRoute />}>
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="wallet" element={<WalletPage />} />
           {/* Adicionamos outras rotas protegidas aqui como filhas de ProtectedRoute */}
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />

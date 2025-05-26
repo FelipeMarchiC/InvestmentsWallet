@@ -1,9 +1,6 @@
 package br.ifsp.demo.service;
 
-import br.ifsp.demo.domain.Asset;
-import br.ifsp.demo.domain.AssetType;
-import br.ifsp.demo.domain.Investment;
-import br.ifsp.demo.domain.Wallet;
+import br.ifsp.demo.domain.*;
 import br.ifsp.demo.exception.EntityAlreadyExistsException;
 import br.ifsp.demo.repository.WalletRepository;
 import br.ifsp.demo.security.user.JpaUserRepository;
@@ -495,7 +492,7 @@ class WalletServiceTest {
             LocalDate initialDate = date.minusMonths(1);
             LocalDate finalDate = date.plusMonths(1);
 
-            Investment investment = new Investment(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)));
+            Investment investment = createInvestmentWithPurchaseDate(1000, new Asset("Banco Inter", CDB, 0.01, date.plusYears(1)), date);
             sut.addInvestment(user.getId(), investment);
             sut.withdrawInvestment(user.getId(), investment.getId(), date);
 
@@ -845,7 +842,7 @@ class WalletServiceTest {
             when(repository.findByUser_Id(user.getId())).thenReturn(Optional.of(wallet));
 
             Asset assetCDB = new Asset("Banco Inter", CDB, 0.1, date.plusMonths(2));
-            Investment investment = new Investment(1000, assetCDB);
+            Investment investment = createInvestmentWithPurchaseDate(1000, assetCDB, date);
             sut.addInvestment(user.getId(), investment);
             List<Investment> result = sut.filterActiveInvestments(user.getId(), date.minusMonths(1), date.plusMonths(1));
             assertThat(result.size()).isEqualTo(1);

@@ -1,7 +1,7 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -11,7 +11,7 @@ body {
   background-color: var(--blue);
   padding: 1rem 2rem;
   color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .nav-container {
@@ -34,39 +34,68 @@ body {
   padding: 0;
   margin: 0;
   display: flex;
-  gap: 1.5rem;
+  gap: 24px;
 }
 
 .nav-links a {
   color: #ecf0f1;
   text-decoration: none;
   font-size: 1rem;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 0.5rem;
+  padding: 0.5rem clamp(0.75rem, 2vw, 1.5rem);
 }
 
 .nav-links a:hover,
 .nav-links a.active {
-  color: #3498db;
+  background-color: #1f55ca;
+  color: white;
   text-decoration: none;
+  box-shadow: 0 0 8px 2px var(--blue);
+}
+
+.active {
+  background-color: #1f55ca;
 }
 
 .content-area {
   padding: 20px;
-  min-height: calc(100vh - 120px);
-  max-width: 1200px;
-  margin: 1rem auto;
+  min-height: 100vh;
+  max-width: 1500px;
+  background-color: var(--white-bg);
+  margin: 0 auto;
 }
 
 .footer {
-  background-color: #34495e;
-  color: #ecf0f1;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.486);
+  background-color: white;
+  color: var(--black);
   text-align: center;
   padding: 1rem;
   font-size: 0.9rem;
 }
 
 #left-side {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .nav-container {
+    display: inline;
+  }
+
+  .nav-links {
     display: flex;
-    gap: 1rem;
-    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-links a {
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+  }
 }

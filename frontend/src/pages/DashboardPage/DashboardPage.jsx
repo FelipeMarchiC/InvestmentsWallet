@@ -1,26 +1,143 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import "./DashboardPage.css";
+import { FaChartBar, FaStar, FaDollarSign } from "react-icons/fa";
 
 function DashboardPage() {
-  const navigate = useNavigate();
+  const [userName] = useState("Tiago");
+  const [availableBalance, setAvailableBalance] = useState(0);
 
-  const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    navigate('/login');
+  const [summaryData] = useState({
+    totalInvested: 0,
+    expectedReturn: 0,
+    expectedReturnPercentage: 0,
+    totalAssets: 0,
+    totalProfitability: 0,
+    totalProfitabilityPercentage: 0,
+  });
+
+  const [recentInvestments] = useState([]);
+
+  const [opportunities, setOpportunities] = useState([
+    {
+      id: 1,
+      name: "Debênture Empresa Alpha",
+      type: "Debênture Incentivada",
+      description:
+        "Debênture incentivada com isenção de IR para pessoa física...",
+      profitability: "13.50%",
+      minInvestment: 10000,
+    },
+    {
+      id: 2,
+      name: "CDB Banco GHI",
+      type: "CDB",
+      description:
+        "CDB com rentabilidade de 115% do CDI, com carência de 1 ano...",
+      profitability: "12.20%",
+      minInvestment: 2000,
+    },
+  ]);
+
+  const formatCurrency = (value) => {
+    return value.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
   };
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h2>Welcome to your Dashboard!</h2>
-      <p>This is a placeholder for your application's main content after login.</p>
-      <p>From here, you would access protected features.</p>
-      {/* Exemplo de botão de logout. Você usaria Link ou useNavigate para redirecionar */}
-      <button onClick={handleLogout} style={{padding: '10px 20px', marginTop: '20px', cursor: 'pointer'}}>
-        Logout (Placeholder)
-      </button>
-      <p style={{marginTop: '30px'}}>
-        <Link to="/login">Go back to Login</Link>
-      </p>
+    <div className="new-dashboard-container">
+      <div className="new-dashboard-header">
+        <h1>Dashboard</h1>
+        <button className="deposit-button">
+          <FaDollarSign /> Depositar (Demo)
+        </button>
+      </div>
+
+      <div className="new-dashboard-main-content">
+        <div className="new-dashboard-left-column">
+          <div className="new-summary-card">
+            <h2>Resumo da Carteira</h2>
+            <div className="new-summary-grid">
+              <div className="new-info-box">
+                <p className="new-info-label">Total Investido</p>
+                <p className="new-info-value">
+                  {formatCurrency(summaryData.totalInvested)}
+                </p>
+              </div>
+              <div className="new-info-box new-highlight-green">
+                <p className="new-info-label">Retorno Esperado</p>
+                <p className="new-info-value">
+                  {formatCurrency(summaryData.expectedReturn)} (
+                  {summaryData.expectedReturnPercentage.toFixed(2)}%)
+                </p>
+              </div>
+              <div className="new-info-box new-highlight-purple">
+                <p className="new-info-label">Total de Ativos</p>
+                <p className="new-info-value">{summaryData.totalAssets}</p>
+              </div>
+            </div>
+            <div className="new-total-profitability">
+              <p className="new-info-label">Rentabilidade Total</p>
+              <p className="new-info-value-profit">
+                {formatCurrency(summaryData.totalProfitability)} (
+                {summaryData.totalProfitabilityPercentage.toFixed(2)}%)
+              </p>
+            </div>
+          </div>
+
+          <div className="new-recent-investments-card">
+            <h2>Investimentos Recentes</h2>
+            {recentInvestments.length === 0 ? (
+              <p className="new-empty-message">
+                Nenhum investimento recente para exibir.
+              </p>
+            ) : (
+              <ul>{/* Mapear os investimentos recentes aqui */}</ul>
+            )}
+          </div>
+        </div>
+        <div className="new-dashboard-right-column">
+          <div className="new-welcome-card">
+            <h3>Bem-vindo, {userName}</h3>
+            <p>Seu saldo disponível</p>
+            <p className="new-balance-value">
+              {formatCurrency(availableBalance)}
+            </p>
+            <button className="invest-now-button">
+              <FaChartBar /> Investir Agora
+            </button>
+          </div>
+
+          <div className="new-opportunities-card">
+            <h3>Melhores Oportunidades</h3>
+            <div className="new-opportunities-list">
+              {opportunities.map((opp) => (
+                <div key={opp.id} className="new-opportunity-item">
+                  <div className="new-opportunity-header">
+                    <h4 className="new-opportunity-item-title">{opp.name}</h4>
+                    <span className="new-opportunity-profitability">
+                      {opp.profitability}
+                    </span>
+                  </div>
+                  <p className="new-opportunity-type">{opp.type}</p>
+                  <p className="new-opportunity-description">
+                    {opp.description}
+                  </p>
+                  <div className="new-opportunity-footer">
+                    <span className="new-opportunity-min">
+                      Min: {formatCurrency(opp.minInvestment)}
+                    </span>
+                    <button className="view-details-button">
+                      Ver Detalhes
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
@@ -6,6 +7,15 @@ import DashboardPage from './pages/DashboardPage/DashboardPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import RegisterPage from './pages/RegisterPage/RegisterPage';
 import WalletPage from './pages/WalletPage/WalletPage';
+=======
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Layout from "./components/Layout/Layout";
+import LoginPage from "./pages/LoginPage/LoginPage";
+import DashboardPage from "./pages/DashboardPage/DashboardPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import RegisterPage from "./pages/RegisterPage/RegisterPage";
+>>>>>>> 25d5957 (feat: add dashboard page and update layout)
 
 function App() {
   return (

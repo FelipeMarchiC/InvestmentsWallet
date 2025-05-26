@@ -1,15 +1,14 @@
 :root {
   --blue: #1e3a8a;
   --blue-hover: #0056b3;
-  --light-blue: #eff6ff
+  --light-blue: #eff6ff;
   --white-bg: #f9fafb;
-  --white: #ffffff
-  --green: #16a44a
-  --green-hover: #22c55e
-  --light-green: #f0fdf4
-  --purble: #7e22ce
-  --light-purple: #faf5ff
-  --light-yellow: #fef9c3
-  --gray: #6b7280
-  --black: #111827
+  --green: #16a44a;
+  --green-hover: #22c55e;
+  --light-green: #f0fdf4;
+  --purple: #7e22ce;
+  --light-purple: #faf5ff;
+  --light-yellow: #fef9c3;
+  --gray: #6b7280;
+  --black: #111827;
 }

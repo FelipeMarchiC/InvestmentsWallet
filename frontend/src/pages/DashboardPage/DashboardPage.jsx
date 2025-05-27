@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import "./DashboardPage.css";
 import { FaChartBar, FaDollarSign } from "react-icons/fa";
 import SummaryCard from "../../components/SummaryCard/SummaryCard";
+import { useNavigate } from "react-router-dom";
 
 function DashboardPage() {
   const [userName] = useState("Tiago");
-  const [availableBalance, setAvailableBalance] = useState(0);
   const [recentInvestments] = useState([]);
+  const navigate = useNavigate();
 
   const [opportunities, setOpportunities] = useState([
     {
@@ -34,6 +35,10 @@ function DashboardPage() {
       style: "currency",
       currency: "BRL",
     });
+  };
+
+  const handleInvestNowButton = () => {
+    navigate("/assets");
   };
 
   return (
@@ -65,11 +70,10 @@ function DashboardPage() {
         <div className="new-dashboard-right-column">
           <div className="new-welcome-card">
             <h3>Bem-vindo, {userName}</h3>
-            <p>Seu saldo disponível</p>
-            <p className="new-balance-value">
-              {formatCurrency(availableBalance)}
-            </p>
-            <button className="invest-now-button">
+            <button
+              onClick={handleInvestNowButton}
+              className="invest-now-button"
+            >
               <FaChartBar /> Investir Agora
             </button>
           </div>

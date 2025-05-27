@@ -3,6 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 import "./Layout.css";
 import { IoWalletOutline } from "react-icons/io5";
 import { SlGraph, SlWallet } from "react-icons/sl";
+import { MdAttachMoney } from "react-icons/md";
 import MenuListComposition from "./MenuListComposition";
 import { useLocation } from "react-router-dom";
 
@@ -31,14 +32,15 @@ function Layout() {
                 </Link>
               </li>
               <li>
-                <Link to="/wallet" className={isActive("wallet")}>
-                  <SlWallet />
-                  Wallet
+                <Link to="/assets" className={isActive("assets")}>
+                  <MdAttachMoney size={24} />
+                  Assets
                 </Link>
               </li>
               <li>
-                <Link to="/assets" className={isActive("assets")}>
-                  Assets
+                <Link to="/wallet" className={isActive("wallet")}>
+                  <SlWallet />
+                  Wallet
                 </Link>
               </li>
             </ul>

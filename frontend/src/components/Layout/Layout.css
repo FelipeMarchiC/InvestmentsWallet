@@ -1,4 +1,4 @@
-@import url("../Variables.css");
+@import url("../../Variables.css");
 
 .navbar {
   background-color: var(--blue);

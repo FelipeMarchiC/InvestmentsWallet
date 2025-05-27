@@ -45,9 +45,6 @@ function DashboardPage() {
     <div className="new-dashboard-container">
       <div className="new-dashboard-header">
         <h1>Dashboard</h1>
-        <button className="deposit-button">
-          <FaDollarSign /> Depositar (Demo)
-        </button>
       </div>
 
       <div className="new-dashboard-main-content">

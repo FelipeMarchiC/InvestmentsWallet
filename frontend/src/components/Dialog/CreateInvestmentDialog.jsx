@@ -8,38 +8,70 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import '../AssetCard/AssetCard.css';
 import { FaChartLine } from 'react-icons/fa';
+import { investmentService } from '../../services/investmentService';
+import { Alert } from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
 
 export default function CreateInvestmentDialog({assetId}) {
-  const [open, setOpen] = React.useState(false);
+  const [openDialog, setOpenDialog] = React.useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = React.useState('success');
+
+ const handleClickOpenDialog = () => {
+    setOpenDialog(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
   };
 
   return (
     <React.Fragment>
-      <button className="invest-button" onClick={handleClickOpen}>
+      <button className="invest-button" onClick={handleClickOpenDialog}>
         <FaChartLine /> Investir
       </button>
       <Dialog
-        open={open}
-        onClose={handleClose}
+        open={openDialog}
+        onClose={handleCloseDialog}
         slotProps={{
           paper: {
             component: 'form',
-            onSubmit: (event) => {
+            onSubmit: async (event) => {
               event.preventDefault();
               const formData = new FormData(event.currentTarget);
               const formJson = Object.fromEntries(formData.entries());
               const initialValue = formJson.initialValue;
-              console.log(initialValue);
-              console.log(assetId);
-              
-              handleClose();
+              try {
+                var res = await investmentService.registerInvestment(initialValue, assetId);
+                if (res && (res.status === 201 || res.status === 200)) {
+                  setSnackbarMessage('Investimento registrado com sucesso!');
+                  setSnackbarSeverity('success');
+                  setSnackbarOpen(true);
+                  handleCloseDialog();
+                } else {
+                  const errorMessage = error.response?.data?.message || error.message;
+                  console.log(errorMessage);
+                  setSnackbarMessage('Erro ao registrar investimento.');
+                  setSnackbarSeverity('error');
+                  setSnackbarOpen(true);
+                }
+                handleCloseDialog();
+              } catch (error) {
+                const errorMessage = error.response?.data?.message || error.message;
+                console.log(errorMessage);
+                setSnackbarMessage('Falha ao registrar investimento. Tente novamente.');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
+              }
             },
           },
         }}
@@ -57,15 +89,33 @@ export default function CreateInvestmentDialog({assetId}) {
             name="initialValue"
             label="Valor inicial"
             type="number"
+            min="1"
             fullWidth
             variant="standard"
+            InputProps={{
+              inputProps: {
+                step: '0.1',
+                min: '1',
+              },
+            }}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancelar</Button>
+          <Button onClick={handleCloseDialog}>Cancelar</Button>
           <Button type="submit">Registrar</Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000} // Tempo em ms que o snackbar fica visível
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </React.Fragment>
   );
 }

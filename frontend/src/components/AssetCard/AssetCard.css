@@ -36,37 +36,9 @@
   font-weight: bold;
 }
 
-.tag-risk {
-  background-color: #e9f5ff;
-  color: #007bff;
-}
-
 .tag-type {
   background-color: #e6f9f0;
   color: #28a745;
-}
-
-.asset-details {
-  margin-bottom: 15px;
-}
-
-.asset-details p {
-  margin: 5px 0;
-  font-size: 0.9rem;
-  color: #495057;
-}
-
-.asset-details p strong {
-  color: #333;
-  font-weight: bold;
-}
-
-.asset-description {
-  font-size: 0.9rem;
-  color: #6c757d;
-  line-height: 1.5;
-  margin-bottom: 20px;
-  flex-grow: 1;
 }
 
 .invest-button {

@@ -20,17 +20,16 @@ function WalletPage() {
         <button className="new-investment-button">New investment</button>
       </div>
 
-      {/* Card de Resumo da Carteira */}
       <div>
         <SummaryCard />
       </div>
 
       {/* Seção de Investimentos */}
       <div className="investments-section">
-        <h2>Investimentos</h2>
+        <h2>Investments</h2>
         <div className="investments-list">
           {walletData.investments.length === 0 ? (
-            <p className="empty-message">Você ainda não possui investimentos em sua carteira.</p>
+            <p className="empty-message">You don't have any investments in your wallet.</p>
           ) : (
             {/* Futuramente, a lista de investimentos será renderizada aqui */}
           )}

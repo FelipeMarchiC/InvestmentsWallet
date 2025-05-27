@@ -56,20 +56,6 @@
   gap: 30px;
 }
 
-/* Card de Resumo da Carteira (similar ao WalletPage, mas com prefixo 'new-') */
-.new-summary-card {
-  border: 2px solid var(--blue);
-}
-
-.new-summary-card,
-.new-recent-investments-card {
-  background-color: white;
-  padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.new-summary-card h2,
 .new-recent-investments-card h2 {
   margin-top: 0;
   margin-bottom: 20px;

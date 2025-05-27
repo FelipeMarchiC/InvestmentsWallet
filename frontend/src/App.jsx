@@ -11,19 +11,23 @@ import AvailableAssetsPage from "./pages/AvailableAssetsPage/AvailableAssetsPage
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Navigate to="/login" replace />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
-        <Route element={<ProtectedRoute />}>
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="wallet" element={<WalletPage />} />
-          <Route path="assets" element={<AvailableAssetsPage /> } />
-          {/* Adicionamos outras rotas protegidas aqui como filhas de ProtectedRoute */}
-        </Route>
-        <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="wallet" element={<WalletPage />} />
+        <Route path="assets" element={<AvailableAssetsPage />} />
+        <Route index element={<Navigate to="/dashboard" replace />} />
       </Route>
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

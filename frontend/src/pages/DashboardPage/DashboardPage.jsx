@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./DashboardPage.css";
-import { FaChartBar, FaStar, FaDollarSign } from "react-icons/fa";
+import { FaChartBar, FaDollarSign } from "react-icons/fa";
 import SummaryCard from "../../components/SummaryCard/SummaryCard";
 
 function DashboardPage() {
@@ -48,7 +48,7 @@ function DashboardPage() {
       <div className="new-dashboard-main-content">
         <div className="new-dashboard-left-column">
           <div>
-            <SummaryCard/>
+            <SummaryCard />
           </div>
 
           <div className="new-recent-investments-card">

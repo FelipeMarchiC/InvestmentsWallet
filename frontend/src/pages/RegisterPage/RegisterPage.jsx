@@ -1,31 +1,31 @@
-import React, { useState } from 'react';
-import './RegisterPage.css'; 
-import { useNavigate } from 'react-router-dom';
-import { authService } from '../../services/authService';
+import React, { useState } from "react";
+import "./RegisterPage.css";
+import { useNavigate } from "react-router-dom";
+import { authService } from "../../services/authService";
 
 function RegisterPage() {
-  const [name, setName] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [name, setName] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError('');
-    setSuccessMessage('');
+    setError("");
+    setSuccessMessage("");
 
     if (!name || !lastname || !email || !password) {
-      setError('Please fill in all fields.');
+      setError("Please fill in all fields.");
       return;
     }
 
     // Validação de senha (exemplo simples)
     if (password.length < 6) {
-      setError('Password must be at least 6 characters long.');
+      setError("Password must be at least 6 characters long.");
       return;
     }
 
@@ -41,27 +41,39 @@ function RegisterPage() {
     try {
       const responseData = await authService.register(userData);
       setLoading(false);
-        setSuccessMessage(responseData.message || 'Registration successful! Redirecting to login...');
-        setName('');
-        setLastname('');
-        setEmail('');
-        setPassword('');
-        
-        navigate('/login');
+      setSuccessMessage(
+        responseData.message ||
+          "Registration successful! Redirecting to login..."
+      );
+      setName("");
+      setLastname("");
+      setEmail("");
+      setPassword("");
+
+      navigate("/login");
     } catch (err) {
       setLoading(false);
-      setError(err.message || 'An unexpected error occurred during registration.');
-      console.error('Registration attempt failed:', err);
+      setError(
+        err.message || "An unexpected error occurred during registration."
+      );
+      console.error("Registration attempt failed:", err);
     }
   };
 
+  const handleCancel = () => {
+    navigate("/login");
+  };
+
   return (
-    <div className="register-container"> {/* Pode usar 'login-container' se compartilhar CSS */}
-      <form onSubmit={handleSubmit} className="register-form"> {/* Pode usar 'login-form' */}
+    <div className="register-container">
+      {" "}
+      {/* Pode usar 'login-container' se compartilhar CSS */}
+      <form onSubmit={handleSubmit} className="register-form">
+        {" "}
+        {/* Pode usar 'login-form' */}
         <h2>Register</h2>
         {error && <p className="error-message">{error}</p>}
         {successMessage && <p className="success-message">{successMessage}</p>}
-
         <div className="form-group">
           <label htmlFor="name">Name:</label>
           <input
@@ -74,7 +86,6 @@ function RegisterPage() {
             required
           />
         </div>
-
         <div className="form-group">
           <label htmlFor="lastname">Last Name:</label>
           <input
@@ -87,7 +98,6 @@ function RegisterPage() {
             required
           />
         </div>
-
         <div className="form-group">
           <label htmlFor="email">Email:</label>
           <input
@@ -100,7 +110,6 @@ function RegisterPage() {
             required
           />
         </div>
-
         <div className="form-group">
           <label htmlFor="password">Password:</label>
           <input
@@ -113,10 +122,18 @@ function RegisterPage() {
             required
           />
         </div>
-
-        <button type="submit" className="register-button" disabled={loading}>
-          {loading ? 'Registering...' : 'Register'}
-        </button>
+        <div className="buttons-container">
+          <button type="submit" className="register-button" disabled={loading}>
+            {loading ? "Registering..." : "Register"}
+          </button>
+          <button
+            onClick={handleCancel}
+            className="register-button"
+            disabled={loading}
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

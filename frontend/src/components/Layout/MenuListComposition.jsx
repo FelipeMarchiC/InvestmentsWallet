@@ -8,11 +8,13 @@ import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import { RiAccountPinCircleFill } from "react-icons/ri";
 import { IoIosArrowDown } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 import "./MenuListComposition.css";
 
 export default function MenuListComposition() {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
+  const navigate = useNavigate();
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -24,6 +26,13 @@ export default function MenuListComposition() {
     }
 
     setOpen(false);
+  };
+
+  const handleLogout = async (event) => {
+    event.preventDefault();
+    handleClose(event);
+    localStorage.clear();
+    navigate("/login");
   };
 
   function handleListKeyDown(event) {
@@ -102,7 +111,7 @@ export default function MenuListComposition() {
                   <MenuItem sx={{ paddingRight: 10 }} onClick={handleClose}>
                     My account
                   </MenuItem>
-                  <MenuItem sx={{ paddingRight: 10 }} onClick={handleClose}>
+                  <MenuItem sx={{ paddingRight: 10 }} onClick={handleLogout}>
                     Logout
                   </MenuItem>
                 </MenuList>

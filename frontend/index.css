@@ -4,6 +4,8 @@
 
 * {
   font-family: "Inter", Arial, sans-serif;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 body {

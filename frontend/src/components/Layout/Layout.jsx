@@ -1,11 +1,9 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
 import "./Layout.css";
-import "../Variables.css";
 import { IoWalletOutline } from "react-icons/io5";
 import { SlGraph, SlWallet } from "react-icons/sl";
 import MenuListComposition from "./MenuListComposition";
-
 import { useLocation } from "react-router-dom";
 
 function Layout() {
@@ -20,11 +18,11 @@ function Layout() {
         <div className="nav-container">
           <div id="left-side">
             <IoWalletOutline size={30} />
-            <Link to="/" className="nav-logo">
+            <Link to="/dashboard" className="nav-logo">
               InvestmentsWallet
             </Link>
           </div>
-          <div>
+          <div className="nav-links-wrapper">
             <ul className="nav-links">
               <li>
                 <Link to="/dashboard" className={isActive("dashboard")}>
@@ -43,19 +41,9 @@ function Layout() {
                   Assets
                 </Link>
               </li>
-              <li>
-                <Link to="/login" className={isActive("login")}>
-                  Login
-                </Link>
-              </li>
-              <li>
-                <Link to="/register" className={isActive("register")}>
-                  Register
-                </Link>
-              </li>
             </ul>
           </div>
-          <div>
+          <div className="menu-composition-container">
             <MenuListComposition />
           </div>
         </div>
@@ -64,6 +52,7 @@ function Layout() {
         <Outlet />
       </main>
       <footer className="footer">
+        <b>InvestmentsWallet</b>
         <p>
           &copy; {new Date().getFullYear()} InvestmentsWallet. All rights
           reserved.

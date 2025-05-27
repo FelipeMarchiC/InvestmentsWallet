@@ -1,5 +1,6 @@
 package br.ifsp.demo.security.auth;
 
+import br.ifsp.demo.service.WalletService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Registration/Authentication API")
 public class UserController {
 
+    @Autowired
+    private final WalletService walletService;
     private final AuthenticationService authenticationService;
 
     @Operation(
@@ -47,7 +51,7 @@ public class UserController {
     })
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterUserRequest request) {
-        final RegisterUserResponse response = authenticationService.register(request);
+        final RegisterUserResponse response = authenticationService.register(request, walletService);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

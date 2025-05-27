@@ -1,16 +1,19 @@
 package br.ifsp.demo.security.auth;
 
+import br.ifsp.demo.domain.Wallet;
 import br.ifsp.demo.exception.EntityAlreadyExistsException;
 import br.ifsp.demo.security.config.JwtService;
 import br.ifsp.demo.security.user.JpaUserRepository;
 import br.ifsp.demo.security.user.Role;
 import br.ifsp.demo.security.user.User;
+import br.ifsp.demo.service.WalletService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -20,8 +23,9 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final WalletService walletService;
 
-    public RegisterUserResponse register(RegisterUserRequest request) {
+    public RegisterUserResponse register(RegisterUserRequest request, WalletService walletService) {
 
         userRepository.findByEmail(request.email()).ifPresent(unused -> {
             throw new EntityAlreadyExistsException("Email already registered: " + request.email());});
@@ -39,6 +43,7 @@ public class AuthenticationService {
                 .build();
 
         userRepository.save(user);
+        walletService.createWallet(id);
         return new RegisterUserResponse(id);
     }
 

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import './WalletPage.css';
-import SummaryCard from '../../components/SummaryCard/SummaryCard';
+import React, { useState } from "react";
+import "./WalletPage.css";
+import SummaryCard from "../../components/SummaryCard/SummaryCard";
 
 function WalletPage() {
   const [walletData, setWalletData] = useState({
@@ -26,12 +26,30 @@ function WalletPage() {
 
       {/* Seção de Investimentos */}
       <div className="investments-section">
-        <h2>Investments</h2>
+        <h2>Investimentos ativos</h2>
         <div className="investments-list">
           {walletData.investments.length === 0 ? (
-            <p className="empty-message">You don't have any investments in your wallet.</p>
+            <p className="empty-message">
+              Você não possui investimentos ativos.
+            </p>
           ) : (
-            {/* Futuramente, a lista de investimentos será renderizada aqui */}
+            {
+              /* Futuramente, a lista de investimentos será renderizada aqui */
+            }
+          )}
+        </div>
+      </div>
+      <div className="investments-section">
+        <h2>Histórico</h2>
+        <div className="investments-list">
+          {walletData.investments.length === 0 ? (
+            <p className="empty-message">
+              Você não possui investimentos no histórico.
+            </p>
+          ) : (
+            {
+              /* Futuramente, a lista de investimentos será renderizada aqui */
+            }
           )}
         </div>
       </div>

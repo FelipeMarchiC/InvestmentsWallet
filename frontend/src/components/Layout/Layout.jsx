@@ -3,6 +3,9 @@ import { Link, Outlet } from "react-router-dom";
 import "./Layout.css";
 import "../Variables.css";
 import { IoWalletOutline } from "react-icons/io5";
+import { SlGraph, SlWallet } from "react-icons/sl";
+import MenuListComposition from "./MenuListComposition";
+
 import { useLocation } from "react-router-dom";
 
 function Layout() {
@@ -21,23 +24,35 @@ function Layout() {
               InvestmentsWallet
             </Link>
           </div>
-          <ul className="nav-links">
-            <li>
-              <Link to="/dashboard" className={isActive("dashboard")}>
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link to="/login" className={isActive("login")}>
-                Login
-              </Link>
-            </li>
-            <li>
-              <Link to="/register" className={isActive("register")}>
-                Register
-              </Link>
-            </li>
-          </ul>
+          <div>
+            <ul className="nav-links">
+              <li>
+                <Link to="/dashboard" className={isActive("dashboard")}>
+                  <SlGraph />
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link to="/wallet" className={isActive("wallet")}>
+                  <SlWallet />
+                  Wallet
+                </Link>
+              </li>
+              <li>
+                <Link to="/login" className={isActive("login")}>
+                  Login
+                </Link>
+              </li>
+              <li>
+                <Link to="/register" className={isActive("register")}>
+                  Register
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <MenuListComposition />
+          </div>
         </div>
       </nav>
       <main className="content-area">

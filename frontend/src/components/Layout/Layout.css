@@ -1,11 +1,4 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@import url("../Variables.css");
 
 .navbar {
   background-color: var(--blue);
@@ -38,6 +31,9 @@ body {
 }
 
 .nav-links a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   color: #ecf0f1;
   text-decoration: none;
   font-size: 1rem;
@@ -48,14 +44,14 @@ body {
 
 .nav-links a:hover,
 .nav-links a.active {
-  background-color: #1f55ca;
+  background-color: #1f47ca;
   color: white;
   text-decoration: none;
   box-shadow: 0 0 8px 2px var(--blue);
 }
 
 .active {
-  background-color: #1f55ca;
+  background-color: #1f47ca;
 }
 
 .content-area {

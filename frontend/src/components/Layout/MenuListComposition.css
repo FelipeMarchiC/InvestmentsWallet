@@ -1,0 +1,24 @@
+@import url("../Variables.css");
+
+.menu-list-open {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: medium;
+  color: white;
+  transition: 0.5s;
+  font-family: "Inter", Arial, sans-serif;
+}
+
+.menu-list-open:hover {
+  color: #4574f7;
+}
+
+.user-info {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.menu-list {
+  color: #181818b9;
+}

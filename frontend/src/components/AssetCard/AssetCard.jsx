@@ -1,6 +1,6 @@
 import React from 'react';
 import './AssetCard.css';
-import { FaChartLine } from 'react-icons/fa';
+import CreateInvestmentDialog from '../Dialog/CreateInvestmentDialog';
 
 function AssetCard({ asset }) {
   if (!asset) {
@@ -19,9 +19,7 @@ function AssetCard({ asset }) {
         <p>Rentabilidade: <strong>{asset.profitability || 'N/A'}</strong></p>
         <p>Vencimento: <strong>{asset.maturity || 'N/A'}</strong></p>
       </div>
-      <button className="invest-button">
-        <FaChartLine /> Investir
-      </button>
+      <CreateInvestmentDialog assetId={asset.id}/>
     </div>
   );
 }

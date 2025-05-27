@@ -6,6 +6,7 @@ import DashboardPage from "./pages/DashboardPage/DashboardPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import WalletPage from "./pages/WalletPage/WalletPage";
+import SummaryCard from "./components/SummaryCard/SummaryCard";
 
 function App() {
   return (

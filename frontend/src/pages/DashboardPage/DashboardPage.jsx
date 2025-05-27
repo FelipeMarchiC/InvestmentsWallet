@@ -1,20 +1,11 @@
 import React, { useState } from "react";
 import "./DashboardPage.css";
 import { FaChartBar, FaStar, FaDollarSign } from "react-icons/fa";
+import SummaryCard from "../../components/SummaryCard/SummaryCard";
 
 function DashboardPage() {
   const [userName] = useState("Tiago");
   const [availableBalance, setAvailableBalance] = useState(0);
-
-  const [summaryData] = useState({
-    totalInvested: 0,
-    expectedReturn: 0,
-    expectedReturnPercentage: 0,
-    totalAssets: 0,
-    totalProfitability: 0,
-    totalProfitabilityPercentage: 0,
-  });
-
   const [recentInvestments] = useState([]);
 
   const [opportunities, setOpportunities] = useState([
@@ -56,34 +47,8 @@ function DashboardPage() {
 
       <div className="new-dashboard-main-content">
         <div className="new-dashboard-left-column">
-          <div className="new-summary-card">
-            <h2>Resumo da Carteira</h2>
-            <div className="new-summary-grid">
-              <div className="new-info-box">
-                <p className="new-info-label">Total Investido</p>
-                <p className="new-info-value">
-                  {formatCurrency(summaryData.totalInvested)}
-                </p>
-              </div>
-              <div className="new-info-box new-highlight-green">
-                <p className="new-info-label">Retorno Esperado</p>
-                <p className="new-info-value">
-                  {formatCurrency(summaryData.expectedReturn)} (
-                  {summaryData.expectedReturnPercentage.toFixed(2)}%)
-                </p>
-              </div>
-              <div className="new-info-box new-highlight-purple">
-                <p className="new-info-label">Total de Ativos</p>
-                <p className="new-info-value">{summaryData.totalAssets}</p>
-              </div>
-            </div>
-            <div className="new-total-profitability">
-              <p className="new-info-label">Rentabilidade Total</p>
-              <p className="new-info-value-profit">
-                {formatCurrency(summaryData.totalProfitability)} (
-                {summaryData.totalProfitabilityPercentage.toFixed(2)}%)
-              </p>
-            </div>
+          <div>
+            <SummaryCard/>
           </div>
 
           <div className="new-recent-investments-card">

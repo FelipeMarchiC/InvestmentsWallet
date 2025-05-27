@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './WalletPage.css';
+import SummaryCard from '../../components/SummaryCard/SummaryCard';
 
 function WalletPage() {
   const [walletData, setWalletData] = useState({
@@ -12,44 +13,16 @@ function WalletPage() {
     investments: [],
   });
 
-  // Função para formatar valores monetários
-  const formatCurrency = (value) => {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  };
-
   return (
     <div className="wallet-container">
-      {/* Cabeçalho da página */}
       <div className="wallet-header">
         <h1>My wallet</h1>
         <button className="new-investment-button">New investment</button>
       </div>
 
       {/* Card de Resumo da Carteira */}
-      <div className="summary-card">
-        <h2>Resumo da Carteira</h2>
-        <div className="summary-grid">
-          <div className="info-box">
-            <p className="info-label">Total Investido</p>
-            <p className="info-value">{formatCurrency(walletData.totalInvested)}</p>
-          </div>
-          <div className="info-box highlight-green">
-            <p className="info-label">Retorno Esperado</p>
-            <p className="info-value">
-              {formatCurrency(walletData.expectedReturn)} ({walletData.expectedReturnPercentage.toFixed(2)}%)
-            </p>
-          </div>
-          <div className="info-box highlight-purple">
-            <p className="info-label">Total de Ativos</p>
-            <p className="info-value">{walletData.totalAssets}</p>
-          </div>
-        </div>
-        <div className="total-profitability">
-          <p className="info-label">Rentabilidade Total</p>
-          <p className="info-value-profit">
-            {formatCurrency(walletData.totalProfitability)} ({walletData.totalProfitabilityPercentage.toFixed(2)}%)
-          </p>
-        </div>
+      <div>
+        <SummaryCard />
       </div>
 
       {/* Seção de Investimentos */}

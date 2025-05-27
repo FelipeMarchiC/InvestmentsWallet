@@ -39,6 +39,11 @@ function Layout() {
                 </Link>
               </li>
               <li>
+                <Link to="/assets" className={isActive("assets")}>
+                  Assets
+                </Link>
+              </li>
+              <li>
                 <Link to="/login" className={isActive("login")}>
                   Login
                 </Link>

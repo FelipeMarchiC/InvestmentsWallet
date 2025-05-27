@@ -6,6 +6,7 @@ import DashboardPage from "./pages/DashboardPage/DashboardPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import WalletPage from "./pages/WalletPage/WalletPage";
+import AvailableAssetsPage from "./pages/AvailableAssetsPage/AvailableAssetsPage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="wallet" element={<WalletPage />} />
+          <Route path="assets" element={<AvailableAssetsPage /> } />
           {/* Adicionamos outras rotas protegidas aqui como filhas de ProtectedRoute */}
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />

@@ -62,64 +62,6 @@
   font-size: 1.5rem;
 }
 
-.new-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 20px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-}
-
-.new-info-box {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-}
-
-.new-info-box.new-highlight-green {
-  background-color: #e6f9f0;
-}
-
-.new-info-box.new-highlight-purple {
-  background-color: #f3eefc;
-}
-
-.new-info-label {
-  margin: 0 0 8px 0;
-  font-size: 0.9rem;
-  color: #555;
-  font-weight: bold;
-}
-
-.new-info-value {
-  margin: 0;
-  font-size: 1.6rem;
-  font-weight: bold;
-}
-
-.new-total-profitability {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.new-info-value-profit {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: var(--green);
-}
-
-.new-recent-investments-card {
-  min-height: 150px;
-  display: flex;
-  flex-direction: column;
-}
-.new-recent-investments-card .new-empty-message {
-  margin: auto;
-  color: #888;
-}
-
 /* Card de Boas-vindas */
 .new-welcome-card {
   background-color: var(--blue);
@@ -208,6 +150,10 @@
   font-size: 1.1rem;
   color: var(--black);
   font-weight: 500;
+}
+
+.new-opportunity-item-title {
+  font-size: medium;
 }
 
 .new-opportunity-profitability {

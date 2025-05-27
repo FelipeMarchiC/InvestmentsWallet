@@ -84,7 +84,7 @@ function DashboardPage() {
               {opportunities.map((opp) => (
                 <div key={opp.id} className="new-opportunity-item">
                   <div className="new-opportunity-header">
-                    <h4 className="new-opportunity-item-title">{opp.name}</h4>
+                    <b className="new-opportunity-item-title">{opp.name}</b>
                     <span className="new-opportunity-profitability">
                       {opp.profitability}
                     </span>

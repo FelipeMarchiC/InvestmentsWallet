@@ -57,8 +57,8 @@ export default function InvestmentDetailModal({ isOpen, onClose, investment, onW
       }
       onClose(); 
     } catch (error) {
-      console.error("Erro ao retirar investimento:", error);
-      setSnackbar({ open: true, message: error.message || 'Falha ao retirar o investimento.', severity: 'error' });
+      console.error("Erro ao resgatar investimento:", error);
+      setSnackbar({ open: true, message: error.message || 'Falha ao resgatar o investimento.', severity: 'error' });
     } finally {
       setIsWithdrawing(false);
     }
@@ -125,7 +125,7 @@ export default function InvestmentDetailModal({ isOpen, onClose, investment, onW
               disabled={isWithdrawing}
               startIcon={isWithdrawing ? <CircularProgress size={20} color="inherit" /> : null}
             >
-              {isWithdrawing ? 'Retirando...' : 'Retirar Investimento'}
+              {isWithdrawing ? 'Resgatando...' : 'Resgatar Investimento'}
             </Button>
           )}
         </DialogActions>

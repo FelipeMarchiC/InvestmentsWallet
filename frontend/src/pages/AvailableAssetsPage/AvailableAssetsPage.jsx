@@ -37,14 +37,14 @@ function AvailableAssetsPage() {
           id: apiAsset.id,
           name: apiAsset.name,
           type: formatAssetType(apiAsset.assetType),
-          profitability: `${apiAsset.profitability.toFixed(2)}%`,
+          profitability: `${(apiAsset.profitability*100).toFixed(2)}%`,
           maturity: formatDate(apiAsset.maturityDate), // Formata a data
         }));
 
         setAssets(formattedAssets);
       } catch (err) {
         console.error("Failed to fetch assets:", err);
-        setError(err.message || 'Falha ao buscar os ativos.');
+        setError('Falha ao buscar os ativos.');
       } finally {
         setLoading(false);
       }
@@ -58,7 +58,7 @@ function AvailableAssetsPage() {
   }
 
   if (error) {
-    return <div className="available-assets-container"><p>Erro: {error}</p></div>;
+    return <div className="available-assets-container"><p>{error}</p></div>;
   }
 
   return (

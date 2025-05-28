@@ -87,9 +87,13 @@
 }
 
 .investment-row.history-row {
+<<<<<<< HEAD
   background-color: var(--white-bg);
 }
 .investment-row.history-row .investment-name-cell .main-name,
 .investment-row.history-row .investment-return-cell .main-return {
   color: #5a6268;
+=======
+  background-color: white;
+>>>>>>> 6402f11 (refactor: update UI and styling across multiple components and pages)
 }

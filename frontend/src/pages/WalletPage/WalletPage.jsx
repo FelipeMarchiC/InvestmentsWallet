@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import './WalletPage.css';
 import SummaryCard from '../../components/SummaryCard/SummaryCard'; 
 import InvestmentCard from '../../components/InvestmentCard/InvestmentCard';
@@ -124,7 +125,6 @@ function WalletPage() {
           <div className="header-cell asset-name-cell">ATIVO</div>
           <div className="header-cell asset-type-cell">TIPO</div>
           <div className="header-cell asset-value-cell">VALOR</div>
-          {/* MODIFICAÇÃO AQUI: Título da Coluna */}
           <div className="header-cell asset-profitability-cell">RENTABILIDADE</div> 
           <div className="header-cell asset-date-cell">DATA INVESTIMENTO</div>
           <div className="header-cell asset-maturity-cell">VENCIMENTO</div>
@@ -150,7 +150,9 @@ function WalletPage() {
     <div className="wallet-container">
       <div className="wallet-header">
         <h1>Minha Carteira</h1>
-        <button className="new-investment-button">Novo Investimento</button>
+        <Link to="/assets" className="new-investment-button">
+          Novo Investimento
+        </Link>
       </div>
 
       <SummaryCard />

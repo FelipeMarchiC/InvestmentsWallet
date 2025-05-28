@@ -4,6 +4,7 @@ import SummaryCard from '../../components/SummaryCard/SummaryCard';
 import InvestmentCard from '../../components/InvestmentCard/InvestmentCard';
 import { walletService } from '../../services/walletService';
 import { assetService } from '../../services/assetService';
+import InvestmentDetailModal from '../../components/InvestmentDetailModal/InvestmentDetailModal';
 
 
 function WalletPage() {
@@ -14,6 +15,10 @@ function WalletPage() {
   // Estados para histórico de investimentos
   const [userHistoryInvestments, setUserHistoryInvestments] = useState([]); 
   const [displayableHistoryInvestments, setDisplayableHistoryInvestments] = useState([]);
+
+  // Estados para o modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedInvestmentForModal, setSelectedInvestmentForModal] = useState(null);
 
   const [allAssets, setAllAssets] = useState([]);
   
@@ -99,6 +104,16 @@ function WalletPage() {
     }
   }, [userHistoryInvestments, allAssets, loadingData]);
 
+  const handleOpenInvestmentModal = (investmentData) => {
+    setSelectedInvestmentForModal(investmentData);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseInvestmentModal = () => {
+    setIsModalOpen(false);
+    setSelectedInvestmentForModal(null); // Limpa o investimento selecionado
+  };
+
   // JSX para renderizar uma seção de InvestmentCards
   const renderInvestmentRows = (title, investmentsList, isLoading, specificError) => { 
     if (isLoading) {
@@ -124,7 +139,11 @@ function WalletPage() {
            </p>
         ) : (
           investmentsList.map((investmentData) => (
-            <InvestmentCard key={investmentData.id} investment={investmentData} />
+            <InvestmentCard 
+              key={investmentData.id} 
+              investment={investmentData} 
+              onClick={() => handleOpenInvestmentModal(investmentData)} 
+            />
           ))
         )}
       </>
@@ -149,6 +168,12 @@ function WalletPage() {
         <h2>Histórico de Investimentos</h2>
         {renderInvestmentRows("Histórico", displayableHistoryInvestments, loadingData, error)}
       </div>
+
+      <InvestmentDetailModal
+        isOpen={isModalOpen}
+        onClose={handleCloseInvestmentModal}
+        investment={selectedInvestmentForModal}
+      />
     </div>
   );
 }

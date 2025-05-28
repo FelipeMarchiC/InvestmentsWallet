@@ -1,7 +1,7 @@
 import React from 'react';
 import './InvestmentCard.css'; 
 
-// Funções de formatação
+// Funções de formatação 
 const formatDate = (dateString) => {
   if (!dateString) return '-';
   try {
@@ -28,13 +28,23 @@ const formatCurrency = (value, showSymbol = true) => {
   });
 };
 
-function InvestmentCard({ investment }) {
+function InvestmentCard({ investment, onClick }) { 
   if (!investment) {
     return null;
   }
 
+  const handleCardClick = () => {
+    if (onClick) {
+      onClick(investment); 
+    }
+  };
+
   return (
-    <div className={`investment-row ${investment.isHistory ? 'history-row' : ''}`}>
+    <div 
+      className={`investment-row ${investment.isHistory ? 'history-row' : ''}`}
+      onClick={handleCardClick}
+      style={{ cursor: onClick ? 'pointer' : 'default' }} 
+    >
       <div className="investment-cell investment-name-cell">
         <span className="main-name">{investment.assetName || 'N/A'}</span>
         {investment.assetSubtitle && <span className="subtitle">{investment.assetSubtitle}</span>}

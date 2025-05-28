@@ -67,6 +67,7 @@ public class Investment {
 
     public Investment() {
         this.id = UUID.randomUUID();
+        this.dateResolver = new EffectiveWithdrawDateResolver();
     }
 
     private void verifyInvestment(double initialValue, Asset asset, LocalDate purchaseDate){

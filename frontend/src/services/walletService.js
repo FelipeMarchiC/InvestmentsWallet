@@ -56,8 +56,27 @@ const withdrawInvestment = async (investmentId) => {
   }
 };
 
+const getWalletTotalBalance = async () => {
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('No auth token found');
+    }
+    const response = await axios.get(`${API_BASE_URL}/wallet/totalBalance`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data; // Espera-se um Double com o valor do balance
+  } catch (error) {
+    console.error('Get Wallet Total Balance API Error:', error.response || error.message);
+    throw new Error(error.response?.data?.message || error.message || 'Failed to fetch total balance');
+  }
+};
+
 export const walletService = {
   getUserInvestments,
   getUserHistoryInvestments,
   withdrawInvestment,
+  getWalletTotalBalance
 };

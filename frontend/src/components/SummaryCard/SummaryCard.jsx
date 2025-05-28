@@ -1,8 +1,9 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react"; 
 import "./SummaryCard.css";
+import { walletService } from "../../services/walletService"; 
 
 function SummaryCard() {
-  const [summaryData] = useState({
+  const [summaryData, setSummaryData] = useState({
     totalInvested: 0,
     expectedReturn: 0,
     expectedReturnPercentage: 0,
@@ -11,12 +12,53 @@ function SummaryCard() {
     totalProfitabilityPercentage: 0,
   });
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchSummaryData = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const totalBalanceData = await walletService.getWalletTotalBalance();
+        setSummaryData((prevData) => ({
+          ...prevData,
+          totalInvested: totalBalanceData,
+        }));
+      } catch (err) {
+        console.error("Erro ao buscar dados do resumo:", err);
+        setError(err.message || "Falha ao carregar resumo da carteira.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSummaryData();
+  }, []); 
+
   const formatCurrency = (value) => {
-    return value.toLocaleString("pt-BR", {
+    const numericValue = typeof value === 'number' ? value : 0;
+    return numericValue.toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
     });
   };
+
+  if (loading) {
+    return (
+      <div className="new-summary-card loading-state">
+        <p>Carregando resumo da carteira...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="new-summary-card error-state">
+        <p>Erro ao carregar resumo: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="new-summary-card">
@@ -37,6 +79,7 @@ function SummaryCard() {
         </div>
         <div className="new-info-box new-highlight-purple">
           <p className="new-info-label">Total de Ativos</p>
+          {/* Idealmente, este valor viria de uma contagem real dos ativos ou de um endpoint */}
           <p className="new-info-value">{summaryData.totalAssets}</p>
         </div>
       </div>

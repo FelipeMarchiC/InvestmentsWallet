@@ -109,10 +109,10 @@ export default function MenuListComposition() {
                     </div>
                   </MenuItem>
                   <MenuItem sx={{ paddingRight: 10 }} onClick={handleClose}>
-                    My account
+                    Minha conta
                   </MenuItem>
                   <MenuItem sx={{ paddingRight: 10 }} onClick={handleLogout}>
-                    Logout
+                    Sair
                   </MenuItem>
                 </MenuList>
               </ClickAwayListener>

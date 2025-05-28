@@ -1,7 +1,6 @@
 import React from 'react';
 import './InvestmentCard.css'; 
 
-// Funções de formatação 
 const formatDate = (dateString) => {
   if (!dateString) return '-';
   try {
@@ -55,13 +54,8 @@ function InvestmentCard({ investment, onClick }) {
       <div className="investment-cell investment-value-cell">
         {formatCurrency(investment.value)}
       </div>
-      <div className="investment-cell investment-return-cell">
-        <span className="main-return">{formatCurrency(investment.expectedReturn)}</span>
-        {(typeof investment.returnProfit === 'number' && investment.returnPercentage) && (
-          <span className="subtitle-return">
-            {`${formatCurrency(investment.returnProfit, false)} (${investment.returnPercentage})`}
-          </span>
-        )}
+      <div className="investment-cell investment-profitability-cell"> 
+        <span className="main-profitability">{investment.profitability || 'N/A'}</span>
       </div>
       <div className="investment-cell investment-date-cell">
         {formatDate(investment.investmentDate)}

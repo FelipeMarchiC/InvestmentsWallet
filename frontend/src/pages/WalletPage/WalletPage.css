@@ -75,8 +75,8 @@
   flex: 1.2;
   text-align: right;
 }
-.investment-row-header .asset-return-cell {
-  flex: 1.5;
+.investment-row-header .asset-profitability-cell { /* Nova classe ou renomeie a asset-return-cell */
+  flex: 1.5; /* Mesma largura que a célula de dados no InvestmentCard.css */
   text-align: right;
 }
 .investment-row-header .asset-date-cell {

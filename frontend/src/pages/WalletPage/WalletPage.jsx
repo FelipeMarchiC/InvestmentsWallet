@@ -66,7 +66,8 @@ function WalletPage() {
       value: initialVal,
       expectedReturn: simulatedExpectedReturn, 
       returnProfit: simulatedProfit, 
-      returnPercentage: simulatedReturnPercentage,
+      returnPercentage: simulatedReturnPercentage, 
+      profitability: `${(profitRate * 100).toFixed(2)}%`,
       investmentDate: inv.purchaseDate,
       maturityDate: isHistory ? (inv.withdrawDate || assetDetail.maturityDate) : assetDetail.maturityDate, 
       isHistory: isHistory,
@@ -123,7 +124,8 @@ function WalletPage() {
           <div className="header-cell asset-name-cell">ATIVO</div>
           <div className="header-cell asset-type-cell">TIPO</div>
           <div className="header-cell asset-value-cell">VALOR</div>
-          <div className="header-cell asset-return-cell">RETORNO ESPERADO</div>
+          {/* MODIFICAÇÃO AQUI: Título da Coluna */}
+          <div className="header-cell asset-profitability-cell">RENTABILIDADE</div> 
           <div className="header-cell asset-date-cell">DATA INVESTIMENTO</div>
           <div className="header-cell asset-maturity-cell">VENCIMENTO</div>
         </div>

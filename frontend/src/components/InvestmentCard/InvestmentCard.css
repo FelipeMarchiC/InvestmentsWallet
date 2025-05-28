@@ -56,19 +56,27 @@
   font-weight: 500;
 }
 
-.investment-return-cell {
-  flex: 1.5;
+.investment-value-cell {
+  flex: 1.2;
+  text-align: right;
+  font-weight: 500;
+}
+
+.investment-profitability-cell { 
+  flex: 1.5; 
   text-align: right;
 }
-.investment-return-cell .main-return {
+.investment-profitability-cell .main-profitability {
   font-weight: bold;
-  color: #16a34a; 
-  font-size: 0.95rem;
+  color: var(--black); 
+  font-size: 0.95rem; 
 }
-.investment-return-cell .subtitle-return {
-  font-size: 0.8rem;
-  color: #6c757d;
-  margin-top: 2px;
+
+.investment-date-cell,
+.investment-maturity-cell {
+  flex: 1;
+  text-align: right;
+  color: #495057;
 }
 
 .investment-date-cell,
@@ -79,7 +87,7 @@
 }
 
 .investment-row.history-row {
-  background-color: #f8f9fa;
+  background-color: var(--white-bg);
 }
 .investment-row.history-row .investment-name-cell .main-name,
 .investment-row.history-row .investment-return-cell .main-return {

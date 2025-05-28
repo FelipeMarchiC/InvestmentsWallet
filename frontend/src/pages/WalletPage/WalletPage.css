@@ -1,6 +1,7 @@
 .wallet-container {
   font-family: Arial, sans-serif;
   color: #333;
+  padding: 20px; 
 }
 
 .wallet-header {
@@ -16,7 +17,7 @@
   font-weight: bold;
 }
 
-.new-investment-button {
+.new-investment-button { 
   background-color: var(--blue);
   color: white;
   border: none;
@@ -30,6 +31,85 @@
 
 .new-investment-button:hover {
   background-color: var(--blue-hover);
+}
+
+.investments-section {
+  margin-top: 40px; 
+}
+
+.investments-section h2 {
+  font-size: 1.5rem; 
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.investment-row-header {
+  display: flex; 
+  align-items: center;
+  padding: 10px 15px; 
+  background-color: transparent;
+  border-bottom: 2px solid #e9ecef; 
+  margin-bottom: 12px; 
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.investment-row-header .header-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 10px;
+  text-align: left;
+}
+
+.investment-row-header .asset-name-cell {
+  flex: 2.5; 
+}
+.investment-row-header .asset-type-cell {
+  flex: 0.8;
+  text-align: center;
+}
+.investment-row-header .asset-value-cell {
+  flex: 1.2;
+  text-align: right;
+}
+.investment-row-header .asset-return-cell {
+  flex: 1.5;
+  text-align: right;
+}
+.investment-row-header .asset-date-cell {
+  flex: 1;
+  text-align: right;
+}
+.investment-row-header .asset-maturity-cell {
+  flex: 1;
+  text-align: right;
+}
+
+.loading-message,
+.error-message {
+  text-align: center;
+  font-size: 1.1rem;
+  padding: 30px 0;
+  color: #555;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+}
+
+/* Estilo para a mensagem de "lista vazia" quando dentro de um contêiner que já tem algum estilo */
+.empty-message.full-width-message {
+  padding: 30px;
+  text-align: center;
+  color: #888;
+  background-color: #fff; 
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
+  margin-top: 12px; 
 }
 
 .info-box {
@@ -68,22 +148,4 @@
   font-size: 1.25rem;
   font-weight: bold;
   color: #28a745;
-}
-
-.investments-section h2 {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-}
-
-.investments-list {
-  text-align: center;
-  padding: 40px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.empty-message {
-  color: #888;
-  font-size: 1rem;
 }

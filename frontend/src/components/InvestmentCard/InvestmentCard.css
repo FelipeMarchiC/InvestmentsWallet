@@ -1,0 +1,87 @@
+.investment-row {
+  display: flex;
+  align-items: center;
+  padding: 18px 15px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.investment-row:last-child {
+  margin-bottom: 0;
+}
+
+.investment-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 10px;
+  text-align: left;
+}
+
+.investment-name-cell {
+  flex: 2.5; 
+  font-weight: bold;
+}
+.investment-name-cell .main-name {
+  color: var(--blue);
+  font-size: 1rem;
+}
+.investment-name-cell .subtitle {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 2px;
+}
+
+.investment-type-cell {
+  flex: 0.8;
+  align-items: center; 
+}
+.investment-type-tag {
+  background-color: #e0e7ff; 
+  color: #4338ca; 
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.investment-value-cell {
+  flex: 1.2;
+  text-align: right;
+  font-weight: 500;
+}
+
+.investment-return-cell {
+  flex: 1.5;
+  text-align: right;
+}
+.investment-return-cell .main-return {
+  font-weight: bold;
+  color: #16a34a; 
+  font-size: 0.95rem;
+}
+.investment-return-cell .subtitle-return {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 2px;
+}
+
+.investment-date-cell,
+.investment-maturity-cell {
+  flex: 1;
+  text-align: right;
+  color: #495057;
+}
+
+.investment-row.history-row {
+  background-color: #f8f9fa;
+}
+.investment-row.history-row .investment-name-cell .main-name,
+.investment-row.history-row .investment-return-cell .main-return {
+  color: #5a6268;
+}

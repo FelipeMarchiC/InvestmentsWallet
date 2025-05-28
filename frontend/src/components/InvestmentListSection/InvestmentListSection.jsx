@@ -8,6 +8,7 @@ const InvestmentListSection = ({
   investmentsList,
   isLoading,
   specificError,
+  refreshWalletData
 }) => {
   if (isLoading) {
     return <p className="loading-message">Carregando {title.toLowerCase()}...</p>;

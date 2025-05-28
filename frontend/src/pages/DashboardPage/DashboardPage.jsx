@@ -4,7 +4,7 @@ import { FaChartBar } from "react-icons/fa";
 import SummaryCard from "../../components/SummaryCard/SummaryCard";
 import { useNavigate } from "react-router-dom";
 import { useWalletData } from "../../hooks/useWalletData";
-import { useDisplayableInvestments } from "../../hooks/useDisplayableInvestments ";
+import { useDisplayableInvestments } from "../../hooks/useDisplayableInvestments";
 import InvestmentListSection from "../../components/InvestmentListSection/InvestmentListSection";
 
 function DashboardPage() {
@@ -30,7 +30,6 @@ function DashboardPage() {
     .slice()
     .reverse()
     .slice(0, 2);
-    console.log(allAssets)
 
     const opportunities = allAssets
     .sort((a, b) => b.profitability - a.profitability)
@@ -77,6 +76,7 @@ function DashboardPage() {
                 isLoading={loadingData}
                 specificError={error}
                 onInvestmentClick={() => {}}
+                refreshWalletData={refreshWalletData}
               />
             )}
           </div>

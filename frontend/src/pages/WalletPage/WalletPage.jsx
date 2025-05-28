@@ -4,7 +4,7 @@ import SummaryCard from '../../components/SummaryCard/SummaryCard';
 import { useNavigate } from 'react-router-dom';
 import { useWalletData } from '../../hooks/useWalletData';
 import InvestmentListSection from '../../components/InvestmentListSection/InvestmentListSection';
-import { useDisplayableInvestments } from '../../hooks/useDisplayableInvestments ';
+import { useDisplayableInvestments } from '../../hooks/useDisplayableInvestments';
 
 function WalletPage() {
   const {
@@ -52,6 +52,7 @@ function WalletPage() {
           investmentsList={displayableActiveInvestments}
           isLoading={loadingData}
           specificError={error}
+          refreshWalletData={refreshWalletData}
         />
       </div>
 
@@ -62,6 +63,7 @@ function WalletPage() {
           investmentsList={displayableHistoryInvestments}
           isLoading={loadingData}
           specificError={error}
+          refreshWalletData={refreshWalletData}
         />
       </div>
     </div>

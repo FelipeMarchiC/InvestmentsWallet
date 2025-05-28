@@ -27,7 +27,7 @@ function SummaryCard() {
         }));
       } catch (err) {
         console.error("Erro ao buscar dados do resumo:", err);
-        setError(err.message || "Falha ao carregar resumo da carteira.");
+        setError("Falha ao carregar resumo da carteira.");
       } finally {
         setLoading(false);
       }

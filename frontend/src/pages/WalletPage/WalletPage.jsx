@@ -1,22 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './WalletPage.css';
 import SummaryCard from '../../components/SummaryCard/SummaryCard'; 
 import InvestmentCard from '../../components/InvestmentCard/InvestmentCard';
+import InvestmentDetailModal from '../../components/InvestmentDetailModal/InvestmentDetailModal';
 import { walletService } from '../../services/walletService';
 import { assetService } from '../../services/assetService';
-import InvestmentDetailModal from '../../components/InvestmentDetailModal/InvestmentDetailModal';
-
 
 function WalletPage() {
-  // Estados para investimentos ativos
   const [userActiveInvestments, setUserActiveInvestments] = useState([]); 
   const [displayableActiveInvestments, setDisplayableActiveInvestments] = useState([]);
   
-  // Estados para histórico de investimentos
   const [userHistoryInvestments, setUserHistoryInvestments] = useState([]); 
   const [displayableHistoryInvestments, setDisplayableHistoryInvestments] = useState([]);
 
-  // Estados para o modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInvestmentForModal, setSelectedInvestmentForModal] = useState(null);
 
@@ -25,38 +21,36 @@ function WalletPage() {
   const [loadingData, setLoadingData] = useState(true); 
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    const fetchAllWalletData = async () => {
-      setLoadingData(true);
-      setError('');
-      try {
-        const [assetsData, activeInvestmentsData, historyData] = await Promise.all([
-          assetService.getAllAssets(),
-          walletService.getUserInvestments(),
-          walletService.getUserHistoryInvestments()
-        ]);
-        
-        setAllAssets(assetsData);
-        setUserActiveInvestments(activeInvestmentsData); 
-        setUserHistoryInvestments(historyData);
+  const fetchAllWalletData = useCallback(async () => {
+    setLoadingData(true);
+    setError('');
+    try {
+      const [assetsData, activeInvestmentsData, historyData] = await Promise.all([
+        assetService.getAllAssets(),
+        walletService.getUserInvestments(),
+        walletService.getUserHistoryInvestments()
+      ]);
+      
+      setAllAssets(assetsData);
+      setUserActiveInvestments(activeInvestmentsData); 
+      setUserHistoryInvestments(historyData);
 
-      } catch (err) {
-        const errorMessage = err.message || 'Erro ao carregar dados da carteira.';
-        setError(errorMessage);
-        console.error("Erro ao buscar dados da carteira:", err);
-      } finally {
-        setLoadingData(false);
-      }
-    };
-
-    fetchAllWalletData();
+    } catch (err) {
+      const errorMessage = err.message || 'Erro ao carregar dados da carteira.';
+      setError(errorMessage);
+      console.error("Erro ao buscar dados da carteira:", err);
+    } finally {
+      setLoadingData(false);
+    }
   }, []);
 
-  // Função auxiliar para transformar dados para o InvestmentCard
+  useEffect(() => {
+    fetchAllWalletData();
+  }, [fetchAllWalletData]);
+
   const transformToInvestmentCardData = (inv, assetDetail, isHistory = false) => {
     if (!assetDetail) return null;
 
-    // SIMULAÇÃO DE RETORNO
     const profitRate = assetDetail.profitability || 0; 
     const initialVal = inv.initialValue || 0;
     
@@ -74,13 +68,11 @@ function WalletPage() {
       returnProfit: simulatedProfit, 
       returnPercentage: simulatedReturnPercentage,
       investmentDate: inv.purchaseDate,
-      // Para histórico, prioriza withdrawDate. Se não houver, usa maturityDate do ativo.
       maturityDate: isHistory ? (inv.withdrawDate || assetDetail.maturityDate) : assetDetail.maturityDate, 
       isHistory: isHistory,
     };
   };
 
-  // Efeito para processar investimentos ATIVOS
   useEffect(() => {
     if (allAssets.length > 0) {
       const enriched = userActiveInvestments 
@@ -92,7 +84,6 @@ function WalletPage() {
     }
   }, [userActiveInvestments, allAssets, loadingData]);
 
-  // Efeito para processar HISTÓRICO
   useEffect(() => {
     if (allAssets.length > 0) { 
       const enriched = userHistoryInvestments
@@ -111,10 +102,13 @@ function WalletPage() {
 
   const handleCloseInvestmentModal = () => {
     setIsModalOpen(false);
-    setSelectedInvestmentForModal(null); // Limpa o investimento selecionado
+    setSelectedInvestmentForModal(null);
   };
 
-  // JSX para renderizar uma seção de InvestmentCards
+  const handleWithdrawSuccess = () => {
+    fetchAllWalletData(); 
+  };
+
   const renderInvestmentRows = (title, investmentsList, isLoading, specificError) => { 
     if (isLoading) {
       return <p className="loading-message">Carregando {title.toLowerCase()}...</p>;
@@ -173,6 +167,7 @@ function WalletPage() {
         isOpen={isModalOpen}
         onClose={handleCloseInvestmentModal}
         investment={selectedInvestmentForModal}
+        onWithdrawSuccess={handleWithdrawSuccess}
       />
     </div>
   );

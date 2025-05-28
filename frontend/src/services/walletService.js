@@ -1,4 +1,3 @@
-// src/services/walletService.js
 import axios from 'axios';
 
 const API_BASE_URL = '/api/v1';
@@ -21,7 +20,6 @@ const getUserInvestments = async () => {
   }
 };
 
-// Nova função para buscar o histórico de investimentos
 const getUserHistoryInvestments = async () => {
   try {
     const token = localStorage.getItem('authToken');
@@ -40,7 +38,26 @@ const getUserHistoryInvestments = async () => {
   }
 };
 
+const withdrawInvestment = async (investmentId) => {
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('No auth token found');
+    }
+    const response = await axios.post(`${API_BASE_URL}/wallet/investment/withdraw/${investmentId}`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error('Withdraw Investment API Error:', error.response || error.message);
+    throw new Error(error.response?.data?.message || error.message || 'Failed to withdraw investment');
+  }
+};
+
 export const walletService = {
   getUserInvestments,
-  getUserHistoryInvestments, // Adiciona a nova função
+  getUserHistoryInvestments,
+  withdrawInvestment,
 };

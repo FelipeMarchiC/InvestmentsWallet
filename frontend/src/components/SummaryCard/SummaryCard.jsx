@@ -20,14 +20,37 @@ function SummaryCard() {
       setLoading(true);
       setError('');
       try {
-        const totalBalanceData = await walletService.getWalletTotalBalance();
+        // Buscar todos os dados necessários em paralelo
+        const [
+          totalBalanceData, 
+          activeInvestments, 
+          historyInvestments
+        ] = await Promise.all([
+          walletService.getWalletTotalBalance(),
+          walletService.getUserInvestments(),      
+          walletService.getUserHistoryInvestments()
+        ]);
+
+        const totalNumberOfAssets = (activeInvestments?.length || 0) + (historyInvestments?.length || 0);
+
         setSummaryData((prevData) => ({
           ...prevData,
           totalInvested: totalBalanceData,
+          totalAssets: totalNumberOfAssets,
         }));
+
       } catch (err) {
         console.error("Erro ao buscar dados do resumo:", err);
-        setError("Falha ao carregar resumo da carteira.");
+        // Para mensagens de erro mais específicas, você pode verificar o tipo de erro
+        let specificMessage = "Falha ao carregar resumo da carteira.";
+        if (err.message.includes("total balance")) {
+            specificMessage = "Falha ao carregar total investido.";
+        } else if (err.message.includes("user investments")) {
+            specificMessage = "Falha ao carregar investimentos ativos para contagem.";
+        } else if (err.message.includes("history investments")) {
+            specificMessage = "Falha ao carregar histórico para contagem.";
+        }
+        setError(specificMessage);
       } finally {
         setLoading(false);
       }
@@ -42,6 +65,10 @@ function SummaryCard() {
       style: "currency",
       currency: "BRL",
     });
+  };
+
+  const formatTotalAssets = (value) => {
+    return typeof value === 'number' ? value : 0;
   };
 
   if (loading) {
@@ -79,8 +106,7 @@ function SummaryCard() {
         </div>
         <div className="new-info-box new-highlight-purple">
           <p className="new-info-label">Total de Ativos</p>
-          {/* Idealmente, este valor viria de uma contagem real dos ativos ou de um endpoint */}
-          <p className="new-info-value">{summaryData.totalAssets}</p>
+          <p className="new-info-value">{formatTotalAssets(summaryData.totalAssets)}</p>
         </div>
       </div>
       <div className="new-total-profitability">

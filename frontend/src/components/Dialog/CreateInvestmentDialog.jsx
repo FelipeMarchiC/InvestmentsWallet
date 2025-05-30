@@ -94,7 +94,7 @@ export default function CreateInvestmentDialog({assetId}) {
             variant="standard"
             InputProps={{
               inputProps: {
-                step: '0.1',
+                step: '0.01',
                 min: '1',
               },
             }}

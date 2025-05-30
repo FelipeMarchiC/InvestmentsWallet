@@ -103,7 +103,7 @@ public class WalletController {
     }
 
     @GetMapping("/report")
-    public ResponseEntity<String> generateReport(@RequestParam LocalDate relativeDate) {
+    public ResponseEntity<String> generateReport() {
         UUID userId = authenticationInfoService.getAuthenticatedUserId();
         String report = walletService.generateReport(userId);
 

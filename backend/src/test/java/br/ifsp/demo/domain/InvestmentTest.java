@@ -96,6 +96,24 @@ class InvestmentTest {
         }
 
         @Test
+        @Tag("TDD")
+        @Tag("UnitTest")
+        @Tag("Functional")
+        @DisplayName("Should calculate balance at the same bought day")
+        void shouldCalculateBalanceAtTheSameBoughtDay() {
+            LocalDate purchaseDate = LocalDate.of(2025, 4, 1);
+            LocalDate maturityDate = LocalDate.of(2026, 4, 1);
+            Asset asset = new Asset("Banco Inter", CDB, 0.1, maturityDate);
+
+            EffectiveWithdrawDateResolver dateResolver = mock(EffectiveWithdrawDateResolver.class);
+            when(dateResolver.resolve(null)).thenReturn(purchaseDate);
+            Investment sut = new Investment(1000, asset, purchaseDate, dateResolver);
+
+            double calculatedBalance = sut.calculateCurrentBalance();
+            assertThat(calculatedBalance).isEqualTo(1000);
+        }
+
+        @Test
         @Tag("UnitTest")
         @Tag("Functional")
         @DisplayName("Should use withdrawDate as effective date")

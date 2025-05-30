@@ -28,6 +28,7 @@
   margin: 0;
   display: flex;
   gap: 24px;
+  flex-wrap: wrap;
 }
 
 .nav-links a {
@@ -80,7 +81,7 @@
   white-space: nowrap;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 796px) {
   .nav-container {
     display: inline;
   }
@@ -92,7 +93,7 @@
   }
 
   .nav-links a {
-    font-size: small;
+    font-size: medium;
   }
 
   #left-side {
@@ -103,5 +104,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  .icon {
+    display: none;
   }
 }

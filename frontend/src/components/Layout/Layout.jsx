@@ -27,19 +27,19 @@ function Layout() {
             <ul className="nav-links">
               <li>
                 <Link to="/dashboard" className={isActive("dashboard")}>
-                  <SlGraph />
+                  <SlGraph className="icon" />
                   Dashboard
                 </Link>
               </li>
               <li>
                 <Link to="/assets" className={isActive("assets")}>
-                  <MdAttachMoney size={24} />
+                  <MdAttachMoney className="icon" size={24} />
                   Assets
                 </Link>
               </li>
               <li>
                 <Link to="/wallet" className={isActive("wallet")}>
-                  <SlWallet />
+                  <SlWallet className="icon" />
                   Wallet
                 </Link>
               </li>

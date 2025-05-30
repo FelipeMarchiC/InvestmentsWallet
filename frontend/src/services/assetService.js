@@ -1,10 +1,11 @@
 import axios from 'axios';
+import { getItemWithExpiry } from '../utils/storageWithExpiry';
 
 const API_BASE_URL = '/api/v1';
 
 const getAllAssets = async () => {
   try {
-    const token = localStorage.getItem('authToken');
+    const token = getItemWithExpiry("authToken");
     if (!token) {
       throw new Error('No auth token found');
     }

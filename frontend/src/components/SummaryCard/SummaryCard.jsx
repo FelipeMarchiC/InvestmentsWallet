@@ -82,7 +82,7 @@ function SummaryCard() {
   if (error) {
     return (
       <div className="new-summary-card error-state">
-        <p>error</p>
+        <p>{error}</p>
       </div>
     );
   }

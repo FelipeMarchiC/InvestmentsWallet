@@ -1,8 +1,9 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { getItemWithExpiry } from "../utils/storageWithExpiry";
 
 const isAuthenticated = () => {
-  const token = localStorage.getItem("authToken");
+  const token = getItemWithExpiry("authToken");
   return token !== null && token !== undefined && token !== "";
 };
 

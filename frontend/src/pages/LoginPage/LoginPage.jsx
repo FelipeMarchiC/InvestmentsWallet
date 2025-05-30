@@ -3,6 +3,7 @@ import { authService } from '../../services/authService';
 import './LoginPage.css';
 import { useNavigate } from 'react-router-dom';
 import { IoWalletOutline } from "react-icons/io5";
+import { setItemWithExpiry } from '../../utils/storageWithExpiry';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -27,7 +28,7 @@ function LoginPage() {
       setLoading(false);
 
       if (responseData.token) {
-        localStorage.setItem('authToken', responseData.token);
+        setItemWithExpiry('authToken', responseData.token)
         navigate('/dashboard');
       }
 

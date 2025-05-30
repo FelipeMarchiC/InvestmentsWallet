@@ -1,10 +1,11 @@
 import axios from 'axios';
+import { getItemWithExpiry } from '../utils/storageWithExpiry';
 
 const API_BASE_URL = '/api/v1';
 
 const getUserInvestments = async () => {
   try {
-    const token = localStorage.getItem('authToken');
+    const token = getItemWithExpiry("authToken");
     if (!token) {
       throw new Error('No auth token found');
     }
@@ -22,7 +23,7 @@ const getUserInvestments = async () => {
 
 const getUserHistoryInvestments = async () => {
   try {
-    const token = localStorage.getItem('authToken');
+    const token = getItemWithExpiry("authToken");
     if (!token) {
       throw new Error('No auth token found');
     }
@@ -40,7 +41,7 @@ const getUserHistoryInvestments = async () => {
 
 const withdrawInvestment = async (investmentId) => {
   try {
-    const token = localStorage.getItem('authToken');
+    const token = getItemWithExpiry("authToken");
     if (!token) {
       throw new Error('No auth token found');
     }
@@ -58,7 +59,7 @@ const withdrawInvestment = async (investmentId) => {
 
 const getWalletTotalBalance = async () => {
   try {
-    const token = localStorage.getItem('authToken');
+    const token = getItemWithExpiry("authToken");
     if (!token) {
       throw new Error('No auth token found');
     }

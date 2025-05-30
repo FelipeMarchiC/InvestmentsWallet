@@ -16,7 +16,13 @@
 }
 
 .menu-list {
-  color: #181818b9;
+  border-radius: 0.3rem;
+  color: var(--black);
+  border: 1px solid var(--blue);
+}
+
+.MuiPopper-root, .MuiList-root {
+  border-radius: 0.3rem;
 }
 
 .exit-btn {

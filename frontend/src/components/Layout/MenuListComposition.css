@@ -15,10 +15,10 @@
   color: #4574f7;
 }
 
-.user-info {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 .menu-list {
   color: #181818b9;
+}
+
+.exit-btn {
+  text-align: center;
 }

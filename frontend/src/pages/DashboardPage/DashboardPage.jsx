@@ -10,7 +10,6 @@ import { useAuthGuard } from "../../hooks/useAuthGuard";
 
 function DashboardPage() {
   useAuthGuard();
-  const [userName] = useState("usuário");
   const navigate = useNavigate();
 
   const {
@@ -44,13 +43,6 @@ function DashboardPage() {
       profitability: `${(asset.profitability * 100).toFixed(2)}%`,
     }));
 
-  const formatCurrency = (value) => {
-    return value.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-  };
-
   const handleInvestNowButton = () => {
     navigate("/assets");
   };
@@ -73,7 +65,7 @@ function DashboardPage() {
             <h2>Investimentos Recentes</h2>
             {recentInvestments.length === 0 ? (
               <p className="new-empty-message">
-                Nenhum investimento recente para exibir.
+                {loadingData ? "Carregando os investimentos recentes..." : "Nenhum investimento recente para exibir."}
               </p>
             ) : (
               <InvestmentListSection
@@ -90,7 +82,7 @@ function DashboardPage() {
 
         <div className="new-dashboard-right-column">
           <div className="new-welcome-card">
-            <h3>Bem-vindo, {userName}</h3>
+            <h3>Bem-vindo</h3>
             <button onClick={handleInvestNowButton} className="invest-now-button">
               <FaChartBar /> Investir Agora
             </button>

@@ -54,9 +54,6 @@ function InvestmentCard({ investment, onClick }) {
       <div className="investment-cell investment-value-cell">
         {formatCurrency(investment.value)}
       </div>
-      <div className="investment-cell investment-profitability-cell"> 
-        <span className="main-profitability">{investment.profitability || 'N/A'}</span>
-      </div>
       <div className="investment-cell investment-date-cell">
         {formatDate(investment.investmentDate)}
       </div>

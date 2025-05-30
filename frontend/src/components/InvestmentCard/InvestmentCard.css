@@ -8,6 +8,7 @@
   margin-bottom: 12px;
   font-size: 0.9rem;
   color: #333;
+
 }
 
 .investment-row:last-child {
@@ -37,8 +38,10 @@
 }
 
 .investment-type-cell {
-  flex: 0.8;
+  flex: 2;
   align-items: center; 
+  overflow: hidden;
+  flex-wrap: wrap;
 }
 .investment-type-tag {
   background-color: #e0e7ff; 
@@ -48,23 +51,26 @@
   font-size: 0.75rem;
   font-weight: 500;
   display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .investment-value-cell {
   flex: 1.2;
-  text-align: right;
+  text-align: center;
   font-weight: 500;
 }
 
 .investment-value-cell {
   flex: 1.2;
-  text-align: right;
+  text-align: center;
   font-weight: 500;
 }
 
 .investment-profitability-cell { 
   flex: 1.5; 
-  text-align: right;
+  text-align: center;
 }
 .investment-profitability-cell .main-profitability {
   font-weight: bold;
@@ -75,25 +81,35 @@
 .investment-date-cell,
 .investment-maturity-cell {
   flex: 1;
-  text-align: right;
+  text-align: center;
   color: #495057;
 }
 
 .investment-date-cell,
 .investment-maturity-cell {
   flex: 1;
-  text-align: right;
+  text-align: center;
   color: #495057;
 }
 
 .investment-row.history-row {
-<<<<<<< HEAD
-  background-color: var(--white-bg);
-}
-.investment-row.history-row .investment-name-cell .main-name,
-.investment-row.history-row .investment-return-cell .main-return {
-  color: #5a6268;
-=======
   background-color: white;
->>>>>>> 6402f11 (refactor: update UI and styling across multiple components and pages)
+}
+
+@media (max-width: 1080px) {
+  .investment-type-tag {
+    max-width: 117px;
+  }
+}
+@media (max-width: 800px) {
+  .investment-row,
+  .investment-row-header {
+    flex-direction: column;
+    padding: 12px 15px;
+    gap: 1rem;
+  }
+
+  .investment-type-tag {
+    max-width: 100%;
+  }
 }

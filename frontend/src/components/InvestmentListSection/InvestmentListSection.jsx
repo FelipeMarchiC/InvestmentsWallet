@@ -42,9 +42,6 @@ const InvestmentListSection = ({
         <div className="header-cell asset-name-cell">ATIVO</div>
         <div className="header-cell asset-type-cell">TIPO</div>
         <div className="header-cell asset-value-cell">VALOR</div>
-        <div className="header-cell asset-return-cell">
-          {title === "Investimentos Ativos" ? "RETORNO ESPERADO" : "RETORNO OBTIDO"}
-        </div>
         <div className="header-cell asset-date-cell">DATA INVESTIMENTO</div>
         <div className="header-cell asset-maturity-cell">VENCIMENTO</div>
       </div>

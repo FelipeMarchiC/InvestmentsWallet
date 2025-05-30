@@ -95,23 +95,8 @@ export default function MenuListComposition() {
                   sx={{ padding: 0 }}
                   className="menu-list"
                 >
-                  <MenuItem
-                    sx={{ paddingRight: 10 }}
-                    className="user-info"
-                    onClick={handleClose}
-                  >
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                      <div>
-                        <b>Nome</b>
-                      </div>
-                      <div style={{ fontSize: 14 }}>email@gmail.com</div>
-                    </div>
-                  </MenuItem>
-                  <MenuItem sx={{ paddingRight: 10 }} onClick={handleClose}>
-                    Minha conta
-                  </MenuItem>
-                  <MenuItem sx={{ paddingRight: 10 }} onClick={handleLogout}>
-                    Sair
+                  <MenuItem sx={{ paddingInline: 5 }} onClick={handleLogout}>
+                    <span className="exit-btn">Sair</span>
                   </MenuItem>
                 </MenuList>
               </ClickAwayListener>

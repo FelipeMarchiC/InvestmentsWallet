@@ -53,9 +53,13 @@ function RegisterPage() {
       navigate("/login");
     } catch (err) {
       setLoading(false);
-      setError(
-        err.message || "An unexpected error occurred during registration."
-      );
+      if (err.status === 409) {
+        setError("Email already registered. Please use a different email.");
+      } else {
+        setError(
+          err.message || "An unexpected error occurred during registration."
+        );
+      }
       console.error("Registration attempt failed:", err);
     }
   };

@@ -14,7 +14,9 @@ const login = async (username, password) => {
     if (error.response) {
       console.error('Authentication API Error - Status:', error.response.status);
       console.error('Authentication API Error - Data:', error.response.data);
-      throw new Error(error.response.data?.message || `Authentication failed. Status: ${error.response.status}`);
+      const errToThrow = new Error(error.response.data?.message || `Authentication failed. Status: ${error.response.status}`);
+      errToThrow.status = error.response.status;
+      throw errToThrow;
     } else if (error.request) {
       console.error('Authentication Network Error - Request made but no response:', error.request);
       throw new Error('Network error. Please check your connection (proxied request).');
@@ -34,7 +36,9 @@ const register = async (userData) => {
     if (error.response) {
       console.error('Registration API Error - Status:', error.response.status);
       console.error('Registration API Error - Data:', error.response.data);
-      throw new Error(error.response.data?.message || `Registration failed. Status: ${error.response.status}`);
+      const errToThrow = new Error(error.response.data?.message || `Registration failed. Status: ${error.response.status}`);
+      errToThrow.status = error.response.status;
+      throw errToThrow;
     } else if (error.request) {
       console.error('Registration Network Error - Request made but no response:', error.request);
       throw new Error('Network error. Please check your connection (proxied request).');

@@ -33,7 +33,12 @@ function LoginPage() {
 
     } catch (err) {
       setLoading(false);
-      setError('Não foi possível entar devido a um erro inesperado.');
+      if (err.status === 401) {
+        setError('Email ou senha incorretos. Por favor, tente novamente.');
+        return;
+      } else {
+        setError('Não foi possível entar devido a um erro inesperado.');
+      }      
       console.error('Login attempt failed:', err);
     }
   };

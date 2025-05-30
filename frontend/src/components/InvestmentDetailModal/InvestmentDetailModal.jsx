@@ -94,14 +94,6 @@ export default function InvestmentDetailModal({ isOpen, onClose, investment, onW
             </Typography>
             <Typography variant="body1"><strong>Tipo:</strong> {investment.type || 'N/A'}</Typography>
             <Typography variant="body1"><strong>Valor Aplicado:</strong> {formatCurrency(investment.value)}</Typography>
-            <Typography variant="body1">
-              <strong>Retorno Atual/Esperado:</strong> {formatCurrency(investment.expectedReturn)}
-              {(typeof investment.returnProfit === 'number' && investment.returnPercentage) && (
-                <Typography variant="caption" component="span" sx={{ color: '#28a745', display: 'block', fontSize: '0.8rem' }}>
-                  {`Lucro: ${formatCurrency(investment.returnProfit, false)} (${investment.returnPercentage})`}
-                </Typography>
-              )}
-            </Typography>
             <Typography variant="body1"><strong>Data do Investimento:</strong> {formatDate(investment.investmentDate)}</Typography>
             <Typography variant="body1">
               <strong>{investment.isHistory ? 'Data do Saque:' : 'Vencimento:'}</strong> {formatDate(investment.maturityDate)}

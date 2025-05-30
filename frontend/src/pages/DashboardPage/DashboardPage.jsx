@@ -8,7 +8,7 @@ import { useDisplayableInvestments } from "../../hooks/useDisplayableInvestments
 import InvestmentListSection from "../../components/InvestmentListSection/InvestmentListSection";
 
 function DashboardPage() {
-  const [userName] = useState("Tiago");
+  const [userName] = useState("usuário");
   const navigate = useNavigate();
 
   const {
@@ -52,6 +52,10 @@ function DashboardPage() {
   const handleInvestNowButton = () => {
     navigate("/assets");
   };
+
+  const handleViewAssetDetails = () => {
+    navigate("/assets");
+  }
 
   return (
     <div className="new-dashboard-container">
@@ -102,7 +106,7 @@ function DashboardPage() {
                   <p className="new-opportunity-type">{opp.type}</p>
                   <p className="new-opportunity-description">{opp.description}</p>
                   <div className="new-opportunity-footer">
-                    <button className="view-details-button">Ver Detalhes</button>
+                    <button className="view-details-button" onClick={handleViewAssetDetails}>Ver Detalhes</button>
                   </div>
                 </div>
               ))}

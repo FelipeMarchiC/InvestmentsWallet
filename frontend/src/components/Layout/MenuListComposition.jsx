@@ -65,7 +65,6 @@ export default function MenuListComposition() {
         onClick={handleToggle}
       >
         <div className="menu-list-open">
-          R$ 0,00
           <RiAccountPinCircleFill size={36} color="#4574f7" />
           <IoIosArrowDown />
         </div>

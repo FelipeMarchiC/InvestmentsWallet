@@ -6,10 +6,8 @@ function SummaryCard() {
   const [summaryData, setSummaryData] = useState({
     totalInvested: 0,
     expectedReturn: 0,
-    expectedReturnPercentage: 0,
     totalAssets: 0,
-    totalProfitability: 0,
-    totalProfitabilityPercentage: 0,
+    expectedProfit: 0,
   });
 
   const [loading, setLoading] = useState(true);
@@ -23,20 +21,28 @@ function SummaryCard() {
         // Buscar todos os dados necessários em paralelo
         const [
           totalBalanceData, 
+          futureBalanceData,
           activeInvestments, 
           historyInvestments
         ] = await Promise.all([
           walletService.getWalletTotalBalance(),
+          walletService.getWalletFutureBalance(),
           walletService.getUserInvestments(),      
           walletService.getUserHistoryInvestments()
         ]);
 
         const totalNumberOfAssets = (activeInvestments?.length || 0) + (historyInvestments?.length || 0);
 
+        const handleExpectedProfit = (totalBalanceData, futureBalanceData) => {
+            return futureBalanceData - totalBalanceData;
+        }
+
         setSummaryData((prevData) => ({
           ...prevData,
           totalInvested: totalBalanceData,
+          expectedReturn: futureBalanceData,
           totalAssets: totalNumberOfAssets,
+          expectedProfit: handleExpectedProfit(totalBalanceData, futureBalanceData)
         }));
 
       } catch (err) {
@@ -100,8 +106,7 @@ function SummaryCard() {
         <div className="new-info-box new-highlight-green">
           <p className="new-info-label">Retorno Esperado</p>
           <p className="new-info-value">
-            {formatCurrency(summaryData.expectedReturn)} (
-            {summaryData.expectedReturnPercentage.toFixed(2)}%)
+            {formatCurrency(summaryData.expectedReturn)}
           </p>
         </div>
         <div className="new-info-box new-highlight-purple">
@@ -110,10 +115,9 @@ function SummaryCard() {
         </div>
       </div>
       <div className="new-total-profitability">
-        <p className="new-info-label">Rentabilidade Total</p>
+        <p className="new-info-label">Lucro esperado</p>
         <p className="new-info-value-profit">
-          {formatCurrency(summaryData.totalProfitability)} (
-          {summaryData.totalProfitabilityPercentage.toFixed(2)}%)
+          {formatCurrency(summaryData.expectedProfit)}
         </p>
       </div>
     </div>

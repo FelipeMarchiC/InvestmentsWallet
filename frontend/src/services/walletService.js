@@ -75,9 +75,28 @@ const getWalletTotalBalance = async () => {
   }
 };
 
+const getWalletFutureBalance = async () => {
+  try {
+    const token = getItemWithExpiry("authToken");
+    if (!token) {
+      throw new Error('No auth token found');
+    }
+    const response = await axios.get(`${API_BASE_URL}/wallet/futureBalance`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data; // Espera-se um Double com o valor do balance
+  } catch (error) {
+    console.error('Get Wallet Future Balance API Error:', error.response || error.message);
+    throw new Error(error.response?.data?.message || error.message || 'Failed to fetch future balance');
+  }
+};
+
 export const walletService = {
   getUserInvestments,
   getUserHistoryInvestments,
   withdrawInvestment,
-  getWalletTotalBalance
+  getWalletTotalBalance,
+  getWalletFutureBalance
 };

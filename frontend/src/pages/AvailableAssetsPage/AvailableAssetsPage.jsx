@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './AvailableAssetsPage.css';
 import AssetCard from '../../components/AssetCard/AssetCard';
 import { assetService } from '../../services/assetService';
+import { useAuthGuard } from '../../hooks/useAuthGuard';
 
 const formatAssetType = (apiAssetType) => {
   switch (apiAssetType) {
@@ -21,6 +22,8 @@ const formatDate = (dateString) => {
 };
 
 function AvailableAssetsPage() {
+  useAuthGuard();
+
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

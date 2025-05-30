@@ -5,8 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import { useWalletData } from '../../hooks/useWalletData';
 import InvestmentListSection from '../../components/InvestmentListSection/InvestmentListSection';
 import { useDisplayableInvestments } from '../../hooks/useDisplayableInvestments';
+import { useAuthGuard } from '../../hooks/useAuthGuard';
 
 function WalletPage() {
+  useAuthGuard();
+
   const {
     userActiveInvestments,
     userHistoryInvestments,

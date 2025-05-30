@@ -6,8 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { useWalletData } from "../../hooks/useWalletData";
 import { useDisplayableInvestments } from "../../hooks/useDisplayableInvestments";
 import InvestmentListSection from "../../components/InvestmentListSection/InvestmentListSection";
+import { useAuthGuard } from "../../hooks/useAuthGuard";
 
 function DashboardPage() {
+  useAuthGuard();
   const [userName] = useState("usuário");
   const navigate = useNavigate();
 

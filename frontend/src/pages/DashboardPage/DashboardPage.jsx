@@ -15,9 +15,12 @@ function DashboardPage() {
   const {
     userActiveInvestments,
     allAssets,
+    totalBalance,
+    expectedReturn,
+    countInvestments,
     loadingData,
     error,
-    refreshWalletData,
+    refreshWalletData
   } = useWalletData();
 
   const displayableActiveInvestments = useDisplayableInvestments(
@@ -59,7 +62,13 @@ function DashboardPage() {
 
       <div className="new-dashboard-main-content">
         <div className="new-dashboard-left-column">
-          <SummaryCard />
+        <SummaryCard
+          totalBalance={totalBalance}
+          expectedReturn={expectedReturn}
+          countInvestments={countInvestments}
+          loading={loadingData}
+          error={error}
+        />
 
           <div className="new-recent-investments-card">
             <h2>Investimentos Recentes</h2>

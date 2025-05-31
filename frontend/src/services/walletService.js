@@ -111,11 +111,30 @@ const generateWalletReport = async () => {
   }
 };
 
+const removeInvestment = async (investmentId) => {
+  try {
+    const token = getItemWithExpiry("authToken");
+    if (!token) {
+      throw new Error('No auth token found');
+    }
+    const response = await axios.delete(`${API_BASE_URL}/wallet/investment/${investmentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Remove investment error: ', error.response || error.message);
+    throw new Error(error.response?.data?.message || error.message || 'Failed to remove investment');
+  }
+}
+
 export const walletService = {
   getUserInvestments,
   getUserHistoryInvestments,
   withdrawInvestment,
   getWalletTotalBalance,
   getWalletFutureBalance,
-  generateWalletReport
+  generateWalletReport,
+  removeInvestment
 };

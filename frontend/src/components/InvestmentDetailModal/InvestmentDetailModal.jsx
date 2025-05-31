@@ -39,8 +39,9 @@ const formatCurrency = (value, showSymbol = true) => {
   });
 };
 
-export default function InvestmentDetailModal({ isOpen, onClose, investment, onWithdrawSuccess }) {
+export default function InvestmentDetailModal({ isOpen, onClose, investment, onOperationSuccess }) {
   const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   if (!isOpen || !investment) {
@@ -52,8 +53,8 @@ export default function InvestmentDetailModal({ isOpen, onClose, investment, onW
     try {
       await walletService.withdrawInvestment(investment.id);
       setSnackbar({ open: true, message: 'Investimento retirado com sucesso!', severity: 'success' });
-      if (onWithdrawSuccess) {
-        onWithdrawSuccess(); 
+      if (onOperationSuccess) {
+        onOperationSuccess(); 
       }
       onClose(); 
     } catch (error) {
@@ -70,6 +71,23 @@ export default function InvestmentDetailModal({ isOpen, onClose, investment, onW
     }
     setSnackbar(prev => ({ ...prev, open: false }));
   };
+
+  const handleRemoveClick = async () => {
+    setIsRemoving(true);
+    try {
+      await walletService.removeInvestment(investment.id);
+      setSnackbar({ open: true, message: 'Investimento removido com sucesso!', severity: 'success' });
+      if (onOperationSuccess) {
+        onOperationSuccess(); 
+      }
+      onClose();
+    } catch (error) {
+      console.error("Erro ao remover investimento: ", error);
+      setSnackbar({ open: true, message: error.message || 'Falha ao remover o investimento.', severity: 'error' });
+    } finally {
+      setIsRemoving(false);
+    }
+  }
 
   return (
     <>
@@ -107,15 +125,18 @@ export default function InvestmentDetailModal({ isOpen, onClose, investment, onW
           </Box>
         </DialogContent>
         <DialogActions sx={{ p: '16px 24px' }}>
-          <Button onClick={onClose} variant="outlined" disabled={isWithdrawing}>
+          <Button onClick={onClose} variant="outlined" disabled={isWithdrawing || isRemoving}>
             Voltar
+          </Button>
+          <Button onClick={handleRemoveClick} variant="outlined" disabled={isWithdrawing || isRemoving} color="error">
+            Remover
           </Button>
           {!investment.isHistory && (
             <Button 
               onClick={handleWithdrawClick} 
               variant="contained" 
               color="primary" 
-              disabled={isWithdrawing}
+              disabled={isWithdrawing || isRemoving}
               startIcon={isWithdrawing ? <CircularProgress size={20} color="inherit" /> : null}
             >
               {isWithdrawing ? 'Resgatando...' : 'Resgatar Investimento'}

@@ -32,7 +32,7 @@ const InvestmentListSection = ({
     setSelectedInvestmentForModal(null);
   };
 
-  const handleWithdrawSuccess = () => {
+  const handleOperationSuccess = () => {
     refreshWalletData();
   };
 
@@ -62,7 +62,7 @@ const InvestmentListSection = ({
           isOpen={isModalOpen}
           onClose={handleCloseInvestmentModal}
           investment={selectedInvestmentForModal}
-          onWithdrawSuccess={handleWithdrawSuccess}
+          onOperationSuccess={handleOperationSuccess}
         />
     </>
   );

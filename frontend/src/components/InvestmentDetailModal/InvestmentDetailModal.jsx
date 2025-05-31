@@ -94,6 +94,7 @@ export default function InvestmentDetailModal({ isOpen, onClose, investment, onW
             </Typography>
             <Typography variant="body1"><strong>Tipo:</strong> {investment.type || 'N/A'}</Typography>
             <Typography variant="body1"><strong>Valor Aplicado:</strong> {formatCurrency(investment.value)}</Typography>
+            <Typography variant="body1"><strong>Rentabilidade:</strong> {((investment.returnPorcentage) * 100).toFixed(2) + "%"}</Typography>
             <Typography variant="body1"><strong>Data do Investimento:</strong> {formatDate(investment.investmentDate)}</Typography>
             <Typography variant="body1">
               <strong>{investment.isHistory ? 'Data do Saque:' : 'Vencimento:'}</strong> {formatDate(investment.maturityDate)}

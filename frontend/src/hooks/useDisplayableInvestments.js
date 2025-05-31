@@ -10,6 +10,7 @@ export const useDisplayableInvestments = (userInvestments, allAssets, loadingDat
           const assetDetail = allAssets.find(asset => asset.id === inv.assetId);
           if (!assetDetail) return null;
           const initialVal = inv.initialValue || 0;
+          const profitRate = assetDetail.profitability || 0;
 
           return {
             id: inv.id,
@@ -17,6 +18,7 @@ export const useDisplayableInvestments = (userInvestments, allAssets, loadingDat
             assetSubtitle: `Banco ${assetDetail.name.split(' ')[1] || 'Genérico'}`,
             type: assetDetail.assetType,
             value: initialVal,
+            returnPorcentage: profitRate,
             investmentDate: inv.purchaseDate,
             maturityDate: isHistory ? (inv.withdrawDate || assetDetail.maturityDate) : assetDetail.maturityDate,
             isHistory,

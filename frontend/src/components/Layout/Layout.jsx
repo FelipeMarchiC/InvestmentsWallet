@@ -34,13 +34,13 @@ function Layout() {
               <li>
                 <Link to="/assets" className={isActive("assets")}>
                   <MdAttachMoney className="icon" size={24} />
-                  Assets
+                  Ativos
                 </Link>
               </li>
               <li>
                 <Link to="/wallet" className={isActive("wallet")}>
                   <SlWallet className="icon" />
-                  Wallet
+                  Carteira
                 </Link>
               </li>
             </ul>

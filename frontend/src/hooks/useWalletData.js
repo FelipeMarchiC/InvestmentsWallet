@@ -8,6 +8,10 @@ export function useWalletData() {
   const [userHistoryInvestments, setUserHistoryInvestments] = useState([]);
   const [allAssets, setAllAssets] = useState([]);
 
+  const [totalBalance, setTotalBalance] = useState(0);
+  const [expectedReturn, setExpectedReturn] = useState(0);
+  const [countInvestments, setCountInvestments] = useState(0);
+
   const [loadingData, setLoadingData] = useState(true); 
   const [error, setError] = useState('');
 
@@ -15,15 +19,28 @@ export function useWalletData() {
     setLoadingData(true);
     setError('');
     try {
-      const [assetsData, activeInvestmentsData, historyData] = await Promise.all([
+      const [
+        assetsData,
+        activeInvestmentsData,
+        historyData,
+        totalBalanceData,
+        futureBalanceData
+      ] = await Promise.all([
         assetService.getAllAssets(),
         walletService.getUserInvestments(),
-        walletService.getUserHistoryInvestments()
+        walletService.getUserHistoryInvestments(),
+        walletService.getWalletTotalBalance(),
+        walletService.getWalletFutureBalance()
       ]);
       
+
       setAllAssets(assetsData);
       setUserActiveInvestments(activeInvestmentsData); 
       setUserHistoryInvestments(historyData);
+
+      setTotalBalance(totalBalanceData);
+      setExpectedReturn(futureBalanceData);
+      setCountInvestments(activeInvestmentsData.length + historyData.length);
     } catch (err) {
       const errorMessage = 'Erro ao carregar dados da carteira.';
       setError(errorMessage);
@@ -41,6 +58,9 @@ export function useWalletData() {
     userActiveInvestments,
     userHistoryInvestments,
     allAssets,
+    totalBalance,
+    expectedReturn,
+    countInvestments,
     loadingData,
     error,
     refreshWalletData: fetchAllWalletData,

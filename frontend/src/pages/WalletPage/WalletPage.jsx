@@ -16,6 +16,9 @@ function WalletPage() {
     userActiveInvestments,
     userHistoryInvestments,
     allAssets,
+    totalBalance,
+    expectedReturn,
+    countInvestments,
     loadingData,
     error,
     refreshWalletData
@@ -74,7 +77,13 @@ function WalletPage() {
         </div>
       </div>
 
-      <SummaryCard />
+      <SummaryCard 
+        totalBalance={totalBalance}
+        expectedReturn={expectedReturn}
+        countInvestments={countInvestments}
+        loading={loadingData}
+        error={error}
+      />
 
       <div className="investments-section">
         <h2>Investimentos Ativos</h2>

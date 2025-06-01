@@ -1206,7 +1206,6 @@ class WalletServiceTest {
                     "Initial value = R$ 1500,00 | Asset name = Banco Inter | Type: TESOURO_DIRETO",
                     "Current Total Balance: R$ 2500,00",
                     "Future Investments Balance: R$ 0,00",
-                    "Total Balance (Current + Future): R$ 2500,00",
                     "| TESOURO_DIRETO: 50,00% | CDB: 50,00% | LCI: 0,00% | LCA: 0,00% | CRI: 0,00% | CRA: 0,00%"
             );
         }
@@ -1217,7 +1216,6 @@ class WalletServiceTest {
                     "Initial value = R$ 3000,00 | Asset name = Banco Inter | Type: TESOURO_DIRETO",
                     "Current Total Balance: R$ 5000,00",
                     "Future Investments Balance: R$ 6069,25",
-                    "Total Balance (Current + Future): R$ 11069,25",
                     "| TESOURO_DIRETO: 50,00% | CDB: 50,00% | LCI: 0,00% | LCA: 0,00% | CRI: 0,00% | CRA: 0,00%"
             );
         }
@@ -1230,7 +1228,6 @@ class WalletServiceTest {
                     "Initial value = R$ 1500,00 | Asset name = Banco Inter | Type: TESOURO_DIRETO",
                     "Current Total Balance: R$ 7500,00",
                     "Future Investments Balance: R$ 6069,25",
-                    "Total Balance (Current + Future): R$ 13569,25",
                     "| TESOURO_DIRETO: 50,00% | CDB: 50,00% | LCI: 0,00% | LCA: 0,00% | CRI: 0,00% | CRA: 0,00%",
                     "| TESOURO_DIRETO: 50,00% | CDB: 50,00% | LCI: 0,00% | LCA: 0,00% | CRI: 0,00% | CRA: 0,00%"
             );

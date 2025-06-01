@@ -40,8 +40,7 @@ public class WalletReportService {
         }
 
         report.append("> Current Total Balance: R$ ").append(String.format("%.2f", wallet.getTotalBalance())).append("\n");
-        report.append("> Future Investments Balance: R$ ").append(String.format("%.2f", wallet.getFutureBalance())).append("\n");
-        report.append("> Total Balance (Current + Future): R$ ").append(String.format("%.2f", wallet.getTotalBalance() + wallet.getFutureBalance())).append("\n\n");
+        report.append("> Future Investments Balance: R$ ").append(String.format("%.2f", wallet.getFutureBalance())).append("\n\n");
         report.append("> Investment by Type: \n").append(generateAndFormatInvestmentsByType());
         return report.toString();
     }

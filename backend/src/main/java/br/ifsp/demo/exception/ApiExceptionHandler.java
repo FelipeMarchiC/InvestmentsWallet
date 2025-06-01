@@ -3,19 +3,23 @@ package br.ifsp.demo.exception;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
 
 @ControllerAdvice
 public class ApiExceptionHandler {
 
-    @ExceptionHandler(value = NullPointerException.class)
-    public ResponseEntity<?> handleNullPointerException(NullPointerException e){
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<?> handleNullPointerException(NullPointerException e) {
         final HttpStatus badRequest = BAD_REQUEST;
         final ApiException apiException = ApiException.builder()
                 .status(badRequest)
@@ -26,8 +30,8 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, badRequest);
     }
 
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException e){
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException e) {
         final HttpStatus badRequest = BAD_REQUEST;
         final ApiException apiException = ApiException.builder()
                 .status(badRequest)
@@ -38,8 +42,8 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, badRequest);
     }
 
-    @ExceptionHandler(value = IllegalStateException.class)
-    public ResponseEntity<?> handleIllegalStateException(IllegalStateException e){
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<?> handleIllegalStateException(IllegalStateException e) {
         final HttpStatus forbidden = FORBIDDEN;
         final ApiException apiException = ApiException.builder()
                 .status(forbidden)
@@ -50,8 +54,8 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, forbidden);
     }
 
-    @ExceptionHandler(value = EntityNotFoundException.class)
-    public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException e){
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException e) {
         final HttpStatus notFound = NOT_FOUND;
         final ApiException apiException = ApiException.builder()
                 .status(notFound)
@@ -62,8 +66,8 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, notFound);
     }
 
-    @ExceptionHandler(value = EntityAlreadyExistsException.class)
-    public ResponseEntity<?> handleEntityAlreadyExistsException(EntityAlreadyExistsException e){
+    @ExceptionHandler(EntityAlreadyExistsException.class)
+    public ResponseEntity<?> handleEntityAlreadyExistsException(EntityAlreadyExistsException e) {
         final HttpStatus conflict = CONFLICT;
         final ApiException apiException = ApiException.builder()
                 .status(conflict)
@@ -72,5 +76,54 @@ public class ApiExceptionHandler {
                 .timestamp(ZonedDateTime.now(ZoneId.of("Z")))
                 .build();
         return new ResponseEntity<>(apiException, conflict);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleValidationException(MethodArgumentNotValidException e) {
+        String errors = e.getBindingResult().getFieldErrors()
+                .stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining("; "));
+
+        final HttpStatus badRequest = BAD_REQUEST;
+        final ApiException apiException = ApiException.builder()
+                .status(badRequest)
+                .message(errors)
+                .developerMessage(e.getClass().getName())
+                .timestamp(ZonedDateTime.now(ZoneId.of("Z")))
+                .build();
+        return new ResponseEntity<>(apiException, badRequest);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiException> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+
+        assert e.getRequiredType() != null;
+        String message = String.format("Invalid value '%s' for parameter '%s'. Expected type is %s.",
+                e.getValue(), e.getName(), e.getRequiredType().getSimpleName());
+
+        ApiException apiException = ApiException.builder()
+                .status(badRequest)
+                .message(message)
+                .developerMessage(e.getClass().getName())
+                .timestamp(ZonedDateTime.now(ZoneId.of("Z")))
+                .build();
+
+        return new ResponseEntity<>(apiException, badRequest);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<ApiException> handleNoSuchElementException(NoSuchElementException e) {
+        HttpStatus notFound = HttpStatus.NOT_FOUND;
+
+        ApiException apiException = ApiException.builder()
+                .status(notFound)
+                .message(e.getMessage())
+                .developerMessage(e.getClass().getName())
+                .timestamp(ZonedDateTime.now(ZoneId.of("Z")))
+                .build();
+
+        return new ResponseEntity<>(apiException, notFound);
     }
 }

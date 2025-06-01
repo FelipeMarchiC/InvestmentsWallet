@@ -30,9 +30,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
 
+        String authHeader = request.getHeader("Authorization");
         final String prefix = "Bearer ";
+
         if (authHeader == null || !authHeader.startsWith(prefix)) {
             filterChain.doFilter(request, response);
             return;
@@ -57,11 +58,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (JwtException e) {
+            // Aqui tratamos apenas problemas com o JWT (ex: token inválido ou expirado)
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"JWT is not valid or is expired.\"}");
             return;
         }
+
+        // Erros no controller seguirão normalmente para o ControllerAdvice
         filterChain.doFilter(request, response);
     }
 }

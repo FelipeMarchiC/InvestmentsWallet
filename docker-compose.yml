@@ -1,0 +1,30 @@
+version: '3.8' 
+
+services:
+  backend:
+    build:
+      context: ./backend 
+      dockerfile: Dockerfile 
+    container_name: meu-investmentswallet-backend 
+    ports:
+      - "8080:8080" 
+    networks:
+      - investmentswallet-network
+
+  frontend:
+    build:
+      context: ./frontend 
+      dockerfile: Dockerfile
+    container_name: meu-investmentswallet-frontend
+    ports:
+      - "5173:80" 
+                  
+    depends_on:
+      - backend 
+                
+    networks:
+      - investmentswallet-network 
+
+networks:
+  investmentswallet-network:
+    driver: bridge

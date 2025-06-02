@@ -52,7 +52,12 @@ function WalletPage() {
       const report = await walletService.generateWalletReport();
       setWalletReport(report)
     } catch (error) {
-      setWalletReport("Erro ao gerar relatório");
+      const emptyWalletMessage = error?.message;
+      setWalletReport(
+        emptyWalletMessage === "There are no investments in this wallet"
+          ? "Não existem investimentos na carteira"
+          : "Erro ao gerar relatório"
+      );
       console.log("Erro ao gerar relatório:", error);
     }
     setOpenModal(true);

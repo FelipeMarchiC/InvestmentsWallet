@@ -47,8 +47,14 @@ function WalletPage() {
     navigate("/assets");
   };
 
-  const handleGenerateReportBtn = () => {
-    setWalletReport(walletService.generateWalletReport())
+  const handleGenerateReportBtn = async () => {
+    try {
+      const report = await walletService.generateWalletReport();
+      setWalletReport(report)
+    } catch (error) {
+      setWalletReport("Erro ao gerar relatório");
+      console.log("Erro ao gerar relatório:", error);
+    }
     setOpenModal(true);
   };
 

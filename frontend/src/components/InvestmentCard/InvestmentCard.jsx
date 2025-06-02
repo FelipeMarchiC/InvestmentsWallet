@@ -3,14 +3,12 @@ import './InvestmentCard.css';
 
 const formatDate = (dateString) => {
   if (!dateString) return '-';
+
   try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return dateString;
-    return date.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
+    const dateOnly = dateString.split('T')[0];
+    const [year, month, day] = dateOnly.split('-');
+
+    return `${day}/${month}/${year}`;
   } catch (e) {
     console.error('Erro ao formatar data:', e);
     return dateString;

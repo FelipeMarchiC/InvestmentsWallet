@@ -4,11 +4,11 @@ export function setItemWithExpiry(key, value) {
     value,
     expiry: now.getTime() + 8640000, // ~2h24min
   };
-  localStorage.setItem(key, JSON.stringify(item));
+  sessionStorage.setItem(key, JSON.stringify(item));
 }
 
 export function getItemWithExpiry(key) {
-  const itemStr = localStorage.getItem(key);
+  const itemStr = sessionStorage.getItem(key);
   if (!itemStr) return null;
 
   try {
@@ -16,18 +16,18 @@ export function getItemWithExpiry(key) {
     const now = new Date();
 
     if (now.getTime() > item.expiry) {
-      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
       return null;
     }
 
     return item.value;
   } catch (e) {
     console.error('Erro ao ler item com expiração:', e);
-    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
     return null;
   }
 }
 
 export function removeItem(key) {
-  localStorage.removeItem(key);
+  sessionStorage.removeItem(key);
 }

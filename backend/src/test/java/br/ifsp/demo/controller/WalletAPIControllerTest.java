@@ -112,6 +112,22 @@ class WalletAPIControllerTest {
     @DisplayName("Investment Endpoints")
     class InvestmentEndpoints {
 
+        @Test
+        @DisplayName("DELETE /api/v1/wallet/investment/{investmentId}: Should successfully delete an investment")
+        @Transactional
+        void shouldSuccessfullyDeleteAnInvestment() throws Exception {
+            UUID investmentIdToDelete = addInvestment(100.0, tesouroDiretoAssetId);
+
+            mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/wallet/investment/{investmentId}", investmentIdToDelete)
+                            .header("Authorization", "Bearer " + jwtToken))
+                    .andExpect(status().isNoContent());
+
+            List<InvestmentResponseDTO> currentActiveInvestments = getActiveInvestments();
+            assertThat(currentActiveInvestments).noneMatch(inv -> inv.id().equals(investmentIdToDelete));
+
+            List<InvestmentResponseDTO> currentHistoryInvestments = getHistoryInvestments();
+            assertThat(currentHistoryInvestments).noneMatch(inv -> inv.id().equals(investmentIdToDelete));
+        }
     }
 
     @Nested

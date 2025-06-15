@@ -1,0 +1,123 @@
+package br.ifsp.demo.controller;
+
+import br.ifsp.demo.repository.WalletRepository;
+import br.ifsp.demo.security.user.JpaUserRepository;
+import br.ifsp.demo.dto.investment.InvestmentRequestDTO;
+import br.ifsp.demo.dto.investment.InvestmentResponseDTO;
+import br.ifsp.demo.security.auth.AuthRequest;
+import br.ifsp.demo.security.auth.AuthResponse;
+import br.ifsp.demo.security.auth.RegisterUserRequest;
+import br.ifsp.demo.security.auth.RegisterUserResponse;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.UUID;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Tag("IntegrationTest")
+@DisplayName("Wallet API Integration Tests")
+class WalletAPIControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    private static String jwtToken;
+
+    private final UUID tesouroDiretoAssetId = UUID.fromString("5bbff5c5-e4df-4e37-9f46-5cdc332f1f70");
+    private final UUID cdbAssetId = UUID.fromString("cd63e59b-1fbf-4461-a03e-8d3449610b14");
+
+    @BeforeAll
+    static void setupGlobalIntegrationTestEnvironment(@Autowired MockMvc staticMockMvc, @Autowired ObjectMapper staticObjectMapper,
+                                                      @Autowired WalletRepository staticWalletRepository, @Autowired JpaUserRepository staticUserRepository) throws Exception {
+        staticWalletRepository.deleteAll();
+        staticUserRepository.deleteAll();
+
+        MvcResult registerResult = staticMockMvc.perform(MockMvcRequestBuilders.post("/api/v1/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(staticObjectMapper.writeValueAsString(new RegisterUserRequest("Integration", "User", "integration.user@example.com", "securepass"))))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        staticObjectMapper.readValue(registerResult.getResponse().getContentAsString(), RegisterUserResponse.class);
+
+        MvcResult authResult = staticMockMvc.perform(MockMvcRequestBuilders.post("/api/v1/authenticate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(staticObjectMapper.writeValueAsString(new AuthRequest("integration.user@example.com", "securepass"))))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String responseContent = authResult.getResponse().getContentAsString();
+        AuthResponse authResponse = staticObjectMapper.readValue(responseContent, AuthResponse.class);
+        jwtToken = authResponse.token();
+    }
+
+    private UUID addInvestment(double initialValue, UUID assetId) throws Exception {
+        List<InvestmentResponseDTO> initialInvestments = getActiveInvestments();
+
+        InvestmentRequestDTO requestDTO = new InvestmentRequestDTO(initialValue, assetId);
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet/investment")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isCreated());
+
+        List<InvestmentResponseDTO> currentInvestments = getActiveInvestments();
+        assertThat(currentInvestments.size()).isEqualTo(initialInvestments.size() + 1);
+
+        return currentInvestments.stream()
+                .filter(inv -> initialInvestments.stream().noneMatch(existingInv -> existingInv.id().equals(inv.id())))
+                .filter(inv -> Math.abs(inv.initialValue() - initialValue) < 0.001 && inv.assetId().equals(assetId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Não foi possível encontrar o investimento recém-adicionado na carteira.")).id();
+    }
+
+    private List<InvestmentResponseDTO> getActiveInvestments() throws Exception {
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/wallet/investment")
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isOk())
+                .andReturn();
+        return objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+        });
+    }
+
+    private List<InvestmentResponseDTO> getHistoryInvestments() throws Exception {
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/wallet/history")
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isOk())
+                .andReturn();
+        return objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+        });
+    }
+
+    @Nested
+    @Tag("ApiTest")
+    @DisplayName("Investment Endpoints")
+    class InvestmentEndpoints {
+
+    }
+
+    @Nested
+    @Tag("ApiTest")
+    @DisplayName("Wallet Report and Balance Endpoints")
+    class WalletReportAndBalanceEndpoints {
+
+    }
+}

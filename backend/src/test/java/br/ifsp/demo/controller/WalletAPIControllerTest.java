@@ -128,6 +128,23 @@ class WalletAPIControllerTest {
             List<InvestmentResponseDTO> currentHistoryInvestments = getHistoryInvestments();
             assertThat(currentHistoryInvestments).noneMatch(inv -> inv.id().equals(investmentIdToDelete));
         }
+
+        @Test
+        @DisplayName("POST /api/v1/wallet/investment/withdraw/{investmentId}: Should successfully withdraw an investment")
+        @Transactional
+        void shouldSuccessfullyWithdrawAnInvestment() throws Exception {
+            UUID investmentIdToWithdraw = addInvestment(200.0, cdbAssetId);
+
+            mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet/investment/withdraw/{investmentId}", investmentIdToWithdraw)
+                            .header("Authorization", "Bearer " + jwtToken))
+                    .andExpect(status().isNoContent());
+
+            List<InvestmentResponseDTO> activeInvestments = getActiveInvestments();
+            assertThat(activeInvestments).noneMatch(inv -> inv.id().equals(investmentIdToWithdraw));
+
+            List<InvestmentResponseDTO> historyInvestments = getHistoryInvestments();
+            assertThat(historyInvestments).anyMatch(inv -> inv.id().equals(investmentIdToWithdraw) && inv.withdrawDate() != null);
+        }
     }
 
     @Nested

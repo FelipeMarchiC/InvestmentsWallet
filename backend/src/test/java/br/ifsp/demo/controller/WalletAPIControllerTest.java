@@ -45,13 +45,8 @@ class WalletAPIControllerTest {
     private final UUID cdbAssetId = UUID.fromString("cd63e59b-1fbf-4461-a03e-8d3449610b14");
 
     @BeforeAll
-    static void setupGlobalIntegrationTestEnvironment(
-                    @Autowired MockMvc staticMockMvc,
-                    @Autowired ObjectMapper staticObjectMapper,
-                    @Autowired WalletRepository staticWalletRepository,
-                    @Autowired JpaUserRepository staticUserRepository
-    ) throws Exception {
-
+    static void setupGlobalIntegrationTestEnvironment(@Autowired MockMvc staticMockMvc, @Autowired ObjectMapper staticObjectMapper,
+                                                      @Autowired WalletRepository staticWalletRepository, @Autowired JpaUserRepository staticUserRepository) throws Exception {
         staticWalletRepository.deleteAll();
         staticUserRepository.deleteAll();
 
@@ -170,5 +165,45 @@ class WalletAPIControllerTest {
     @DisplayName("Wallet Report and Balance Endpoints")
     class WalletReportAndBalanceEndpoints {
 
+        @Test
+        @DisplayName("GET /api/v1/wallet/report: Should generate a wallet report")
+        @Transactional
+        void shouldGenerateAWalletReport() throws Exception {
+            addInvestment(100.0, tesouroDiretoAssetId);
+            UUID withdrawnInvestmentId = addInvestment(50.0, cdbAssetId);
+            mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet/investment/withdraw/{investmentId}", withdrawnInvestmentId)
+                    .header("Authorization", "Bearer " + jwtToken));
+
+            MvcResult reportResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/wallet/report")
+                            .header("Authorization", "Bearer " + jwtToken))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String reportContent = reportResult.getResponse().getContentAsString();
+            assertThat(reportContent).contains("=========== WALLET REPORT ===========");
+            assertThat(reportContent).contains("> Active Investments:");
+            assertThat(reportContent).contains("> Historical Investments:");
+            assertThat(reportContent).contains("> Current Total Balance:");
+            assertThat(reportContent).contains("> Future Investments Balance:");
+            assertThat(reportContent).contains("> Investment by Type:");
+            assertThat(reportContent).contains("Tesouro Selic 2025");
+            assertThat(reportContent).contains("CDB Banco Inter");
+        }
+
+        @Test
+        @DisplayName("GET /api/v1/wallet/totalBalance: Should retrieve total wallet balance")
+        @Transactional
+        void shouldRetrieveTotalBalance() throws Exception {
+            addInvestment(100.0, tesouroDiretoAssetId);
+            addInvestment(200.0, cdbAssetId);
+
+            MvcResult totalBalanceResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/wallet/totalBalance")
+                            .header("Authorization", "Bearer " + jwtToken))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            Double totalBalance = objectMapper.readValue(totalBalanceResult.getResponse().getContentAsString(), Double.class);
+            assertThat(totalBalance).isEqualTo(300.0);
+        }
     }
 }

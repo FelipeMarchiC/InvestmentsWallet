@@ -45,8 +45,13 @@ class WalletAPIControllerTest {
     private final UUID cdbAssetId = UUID.fromString("cd63e59b-1fbf-4461-a03e-8d3449610b14");
 
     @BeforeAll
-    static void setupGlobalIntegrationTestEnvironment(@Autowired MockMvc staticMockMvc, @Autowired ObjectMapper staticObjectMapper,
-                                                      @Autowired WalletRepository staticWalletRepository, @Autowired JpaUserRepository staticUserRepository) throws Exception {
+    static void setupGlobalIntegrationTestEnvironment(
+            @Autowired MockMvc staticMockMvc,
+            @Autowired ObjectMapper staticObjectMapper,
+
+            @Autowired WalletRepository staticWalletRepository,
+            @Autowired JpaUserRepository staticUserRepository
+    ) throws Exception {
         staticWalletRepository.deleteAll();
         staticUserRepository.deleteAll();
 
@@ -234,6 +239,22 @@ class WalletAPIControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.investments").isArray())
+                .andExpect(jsonPath("$.historyInvestments").isArray());
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/wallet: Should retrieve wallet successfully after creation")
+    @Transactional
+    void shouldRetrieveWalletSuccessfullyAfterCreation() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet")
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/wallet")
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.investments").isArray())
                 .andExpect(jsonPath("$.historyInvestments").isArray());

@@ -304,4 +304,30 @@ class WalletAPIControllerTest {
         assertThat(investments).anyMatch(inv -> Math.abs(inv.initialValue() - 150.0) < 0.001
                 && inv.assetId().equals(tesouroDiretoAssetId));
     }
+
+    @Test
+    @DisplayName("GET /api/v1/wallet/investment: Should retrieve active investments")
+    @Transactional
+    void shouldRetrieveActiveInvestments() throws Exception {
+        String newToken = generateNewUserAndToken("test.user5@ifsp.com");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet")
+                        .header("Authorization", "Bearer " + newToken))
+                .andExpect(status().isCreated());
+
+        InvestmentRequestDTO investmentRequest = new InvestmentRequestDTO(200.0, cdbAssetId);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet/investment")
+                        .header("Authorization", "Bearer " + newToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(investmentRequest)))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/wallet/investment")
+                        .header("Authorization", "Bearer " + newToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].initialValue").value(200.0))
+                .andExpect(jsonPath("$[0].assetId").value(cdbAssetId.toString()));
+    }
 }

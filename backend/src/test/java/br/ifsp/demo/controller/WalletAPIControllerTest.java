@@ -112,6 +112,24 @@ class WalletAPIControllerTest {
         });
     }
 
+    private String generateNewUserAndToken(String email) throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new RegisterUserRequest("New", "User", email, "password123")
+                        )))
+                .andExpect(status().isCreated());
+
+        MvcResult authResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/authenticate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new AuthRequest(email, "password123"))))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        AuthResponse authResponse = objectMapper.readValue(authResult.getResponse().getContentAsString(), AuthResponse.class);
+        return authResponse.token();
+    }
+
     @Nested
     @Tag("ApiTest")
     @DisplayName("Investment Endpoints")
@@ -236,8 +254,10 @@ class WalletAPIControllerTest {
     @DisplayName("POST /api/v1/wallet: Should create wallet successfully")
     @Transactional
     void shouldCreateWalletSuccessfully() throws Exception {
+        String newToken = generateNewUserAndToken("test.user2@ifsp.com");
+
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet")
-                        .header("Authorization", "Bearer " + jwtToken))
+                        .header("Authorization", "Bearer " + newToken))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.investments").isArray())
@@ -248,15 +268,40 @@ class WalletAPIControllerTest {
     @DisplayName("GET /api/v1/wallet: Should retrieve wallet successfully after creation")
     @Transactional
     void shouldRetrieveWalletSuccessfullyAfterCreation() throws Exception {
+        String newToken = generateNewUserAndToken("test.user3@ifsp.com");
+
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet")
-                        .header("Authorization", "Bearer " + jwtToken))
+                        .header("Authorization", "Bearer " + newToken))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/wallet")
-                        .header("Authorization", "Bearer " + jwtToken))
+                        .header("Authorization", "Bearer " + newToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.investments").isArray())
                 .andExpect(jsonPath("$.historyInvestments").isArray());
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/wallet/investment: Should add investment successfully")
+    @Transactional
+    void shouldAddInvestmentSuccessfully() throws Exception {
+        String newToken = generateNewUserAndToken("test.user4@ifsp.com");
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet")
+                        .header("Authorization", "Bearer " + newToken))
+                .andExpect(status().isCreated());
+
+        InvestmentRequestDTO investmentRequest = new InvestmentRequestDTO(150.0, tesouroDiretoAssetId);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet/investment")
+                        .header("Authorization", "Bearer " + newToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(investmentRequest)))
+                .andExpect(status().isCreated());
+
+        List<InvestmentResponseDTO> investments = getActiveInvestments();
+        assertThat(investments).anyMatch(inv -> Math.abs(inv.initialValue() - 150.0) < 0.001
+                && inv.assetId().equals(tesouroDiretoAssetId));
     }
 }

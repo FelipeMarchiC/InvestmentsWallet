@@ -292,7 +292,9 @@ class WalletAPIControllerTest {
                         .header("Authorization", "Bearer " + newToken))
                 .andExpect(status().isCreated());
 
-        InvestmentRequestDTO investmentRequest = new InvestmentRequestDTO(150.0, tesouroDiretoAssetId);
+        UUID treasureId = UUID.fromString("00000000-0000-0000-0000-000000000001");
+
+        InvestmentRequestDTO investmentRequest = new InvestmentRequestDTO(150.0, treasureId);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet/investment")
                         .header("Authorization", "Bearer " + newToken)
@@ -302,7 +304,7 @@ class WalletAPIControllerTest {
 
         List<InvestmentResponseDTO> investments = getActiveInvestments();
         assertThat(investments).anyMatch(inv -> Math.abs(inv.initialValue() - 150.0) < 0.001
-                && inv.assetId().equals(tesouroDiretoAssetId));
+                && inv.assetId().equals(treasureId));
     }
 
     @Test
@@ -315,7 +317,9 @@ class WalletAPIControllerTest {
                         .header("Authorization", "Bearer " + newToken))
                 .andExpect(status().isCreated());
 
-        InvestmentRequestDTO investmentRequest = new InvestmentRequestDTO(200.0, cdbAssetId);
+        UUID assetId = UUID.fromString("00000000-0000-0000-0000-000000000002");
+
+        InvestmentRequestDTO investmentRequest = new InvestmentRequestDTO(200.0, assetId);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet/investment")
                         .header("Authorization", "Bearer " + newToken)
@@ -328,6 +332,6 @@ class WalletAPIControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].initialValue").value(200.0))
-                .andExpect(jsonPath("$[0].assetId").value(cdbAssetId.toString()));
+                .andExpect(jsonPath("$[0].assetId").value(assetId.toString()));
     }
 }

@@ -223,4 +223,19 @@ class WalletAPIControllerTest {
             assertThat(futureBalance).isGreaterThan(300.0);
         }
     }
+
+    //
+    // [Felipe Endpoints]
+    //
+    @Test
+    @DisplayName("POST /api/v1/wallet: Should create wallet successfully")
+    @Transactional
+    void shouldCreateWalletSuccessfully() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet")
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.investments").isArray())
+                .andExpect(jsonPath("$.historyInvestments").isArray());
+    }
 }

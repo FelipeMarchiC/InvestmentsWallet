@@ -205,5 +205,22 @@ class WalletAPIControllerTest {
             Double totalBalance = objectMapper.readValue(totalBalanceResult.getResponse().getContentAsString(), Double.class);
             assertThat(totalBalance).isEqualTo(300.0);
         }
+
+        @Test
+        @DisplayName("GET /api/v1/wallet/futureBalance: Should retrieve future wallet balance")
+        @Transactional
+        void shouldRetrieveFutureBalance() throws Exception {
+            addInvestment(100.0, tesouroDiretoAssetId);
+            addInvestment(200.0, cdbAssetId);
+
+            MvcResult futureBalanceResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/wallet/futureBalance")
+                            .header("Authorization", "Bearer " + jwtToken))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            Double futureBalance = objectMapper.readValue(futureBalanceResult.getResponse().getContentAsString(), Double.class);
+            assertThat(futureBalance).isPositive();
+            assertThat(futureBalance).isGreaterThan(300.0);
+        }
     }
 }

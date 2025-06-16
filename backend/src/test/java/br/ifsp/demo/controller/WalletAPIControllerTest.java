@@ -45,8 +45,13 @@ class WalletAPIControllerTest {
     private final UUID cdbAssetId = UUID.fromString("cd63e59b-1fbf-4461-a03e-8d3449610b14");
 
     @BeforeAll
-    static void setupGlobalIntegrationTestEnvironment(@Autowired MockMvc staticMockMvc, @Autowired ObjectMapper staticObjectMapper,
-                                                      @Autowired WalletRepository staticWalletRepository, @Autowired JpaUserRepository staticUserRepository) throws Exception {
+    static void setupGlobalIntegrationTestEnvironment(
+                    @Autowired MockMvc staticMockMvc,
+                    @Autowired ObjectMapper staticObjectMapper,
+                    @Autowired WalletRepository staticWalletRepository,
+                    @Autowired JpaUserRepository staticUserRepository
+    ) throws Exception {
+
         staticWalletRepository.deleteAll();
         staticUserRepository.deleteAll();
 
@@ -144,6 +149,19 @@ class WalletAPIControllerTest {
 
             List<InvestmentResponseDTO> historyInvestments = getHistoryInvestments();
             assertThat(historyInvestments).anyMatch(inv -> inv.id().equals(investmentIdToWithdraw) && inv.withdrawDate() != null);
+        }
+
+        @Test
+        @DisplayName("GET /api/v1/wallet/investment/{investmentId}: Should retrieve an investment by ID")
+        @Transactional
+        void shouldRetrieveAnInvestmentById() throws Exception {
+            UUID investmentIdToRetrieve = addInvestment(300.0, tesouroDiretoAssetId);
+
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/wallet/investment/{investmentId}", investmentIdToRetrieve)
+                            .header("Authorization", "Bearer " + jwtToken))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").value(investmentIdToRetrieve.toString()))
+                    .andExpect(jsonPath("$.initialValue").value(300.0));
         }
     }
 

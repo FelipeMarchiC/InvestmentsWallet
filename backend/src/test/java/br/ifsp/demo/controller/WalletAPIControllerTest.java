@@ -1,5 +1,6 @@
 package br.ifsp.demo.controller;
 
+import br.ifsp.demo.domain.AssetType;
 import br.ifsp.demo.dto.investment.InvestmentRequestDTO;
 import br.ifsp.demo.dto.investment.InvestmentResponseDTO;
 import br.ifsp.demo.security.auth.AuthRequest;
@@ -289,6 +290,22 @@ class WalletAPIControllerTest {
                     .body("size()", is(1))
                     .body("[0].id", equalTo(id1.toString()))
                     .body("[0].withdrawDate", notNullValue());
+        }
+        @Test
+        @DisplayName("GET /api/v1/wallet/history/filterByType/{type}: Should retrieve history by investment type")
+        void shouldFilterHistoryByInvestmentType() throws Exception {
+            UUID id2 = addInvestment(200.0, cdbAssetId);
+
+            given().header("Authorization", "Bearer " + jwtToken)
+                    .when().post("/api/v1/wallet/investment/withdraw/{investmentId}", id2)
+                    .then().statusCode(204);
+
+            given().header("Authorization", "Bearer " + jwtToken)
+                    .when().get("/api/v1/wallet/history/filterByType/{type}", AssetType.CDB)
+                    .then().statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .body("size()", is(1))
+                    .body("[0].id", equalTo(id2.toString()));
         }
 
 

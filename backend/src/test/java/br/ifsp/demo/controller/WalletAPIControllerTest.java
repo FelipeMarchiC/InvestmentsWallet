@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -307,6 +308,58 @@ class WalletAPIControllerTest {
                     .body("size()", is(1))
                     .body("[0].id", equalTo(id2.toString()));
         }
+        @Test
+        @DisplayName("GET /api/v1/wallet/history/filterByDate : should filter history by date")
+        void shouldFilterHistoryByDate() throws Exception {
+            UUID id1 = addInvestment(100.0, tesouroDiretoAssetId);
+            UUID id2 = addInvestment(200.0, cdbAssetId);
+
+            given().header("Authorization", "Bearer " + jwtToken)
+                    .when().post("/api/v1/wallet/investment/withdraw/{investmentId}", id1)
+                    .then().statusCode(204);
+
+            given().header("Authorization", "Bearer " + jwtToken)
+                    .when().post("/api/v1/wallet/investment/withdraw/{investmentId}", id2)
+                    .then().statusCode(204);
+
+            String from = LocalDate.now().minusDays(1).toString();
+            String to   = LocalDate.now().plusDays(1).toString();
+
+            List<String> ids = given().header("Authorization", "Bearer " + jwtToken)
+                    .queryParam("initialDate", from)
+                    .queryParam("finalDate", to)
+                    .when().get("/api/v1/wallet/history/filterByDate")
+                    .then().statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .extract()
+                    .jsonPath()
+                    .getList("id", String.class);
+
+            assertThat(ids)
+                    .hasSize(2)
+                    .containsExactlyInAnyOrder(id1.toString(), id2.toString());
+        }
+
+        @Test
+        @DisplayName("GET /api/v1/wallet/history/filterByDate with no matching dates")
+        void shouldReturnEmptyWhenNoHistoryInRange() throws Exception {
+            UUID id = addInvestment(150.0, tesouroDiretoAssetId);
+            given().header("Authorization", "Bearer " + jwtToken)
+                    .when().post("/api/v1/wallet/investment/withdraw/{investmentId}", id)
+                    .then().statusCode(204);
+
+            String from = LocalDate.now().plusDays(2).toString();
+            String to   = LocalDate.now().plusDays(3).toString();
+
+            given().header("Authorization", "Bearer " + jwtToken)
+                    .queryParam("initialDate", from)
+                    .queryParam("finalDate", to)
+                    .when().get("/api/v1/wallet/history/filterByDate")
+                    .then().statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .body("size()", is(0));
+        }
+
 
 
     }

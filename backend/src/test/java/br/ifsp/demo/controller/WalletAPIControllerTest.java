@@ -183,6 +183,53 @@ class WalletAPIControllerTest {
                     .body("id", notNullValue())
                     .body("initialValue", notNullValue());
         }
+        @Test
+        @DisplayName("GET /api/v1/wallet/investment/filterByType/{type} : Should filter active investments by type")
+        void shouldFilterActiveInvestmentsByType() throws Exception {
+            UUID id1 = addInvestment(100.0, tesouroDiretoAssetId);
+            UUID id2 = addInvestment(200.0, cdbAssetId);
+
+            List<String> tesouroIds = given().header("Authorization", "Bearer " + jwtToken)
+                    .when().get("/api/v1/wallet/investment/filterByType/{type}", AssetType.TESOURO_DIRETO)
+                    .then().statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .extract()
+                    .jsonPath()
+                    .getList("id", String.class);
+
+            assertThat(tesouroIds)
+                    .hasSize(1)
+                    .containsExactly(id1.toString());
+
+            List<String> cdbIds = given().header("Authorization", "Bearer " + jwtToken)
+                    .when().get("/api/v1/wallet/investment/filterByType/{type}", AssetType.CDB)
+                    .then().statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .extract()
+                    .jsonPath()
+                    .getList("id", String.class);
+
+            assertThat(cdbIds)
+                    .hasSize(1)
+                    .containsExactly(id2.toString());
+        }
+
+        @Test
+        @DisplayName("GET /api/v1/wallet/investment/filterByType/{type} : Should filter active investments by type should return empty for filter active investments by type when no match")
+        void shouldReturnEmptyForFilterActiveInvestmentsByTypeWhenNoMatch() throws Exception {
+            UUID id = addInvestment(50.0, tesouroDiretoAssetId);
+
+            List<String> cdbIds = given().header("Authorization", "Bearer " + jwtToken)
+                    .when().get("/api/v1/wallet/investment/filterByType/{type}", AssetType.CDB)
+                    .then().statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .extract()
+                    .jsonPath()
+                    .getList("id", String.class);
+
+            assertThat(cdbIds).isEmpty();
+        }
+
     }
 
     @Nested
@@ -293,7 +340,7 @@ class WalletAPIControllerTest {
                     .body("[0].withdrawDate", notNullValue());
         }
         @Test
-        @DisplayName("GET /api/v1/wallet/history/filterByType/{type}: Should retrieve history by investment type")
+        @DisplayName("GET /api/v1/wallet/history/filterByType/{type}: Should retrieve history by type")
         void shouldFilterHistoryByInvestmentType() throws Exception {
             UUID id2 = addInvestment(200.0, cdbAssetId);
 
@@ -363,6 +410,7 @@ class WalletAPIControllerTest {
 
 
     }
+
 }
     /*
     // [Felipe Endpoints]

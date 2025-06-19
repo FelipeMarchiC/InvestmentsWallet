@@ -2,77 +2,81 @@ package br.ifsp.demo.controller;
 
 import br.ifsp.demo.domain.Asset;
 import br.ifsp.demo.repository.AssetRepository;
-import br.ifsp.demo.repository.WalletRepository;
 import br.ifsp.demo.security.auth.AuthRequest;
 import br.ifsp.demo.security.auth.AuthResponse;
 import br.ifsp.demo.security.auth.RegisterUserRequest;
-import br.ifsp.demo.security.auth.RegisterUserResponse;
-import br.ifsp.demo.security.user.JpaUserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-@SpringBootTest
-@AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag("IntegrationTest")
-@DisplayName("Asset API Integration Tests")
+@DisplayName("Asset API Integration Tests (RestAssured)")
 public class AssetApiControllerTest {
+
+    @LocalServerPort
+    private int port;
+
+    private String jwtToken;
+
     @Autowired
-    private MockMvc mockMvc;
-    private static String jwtToken;
+    private AssetRepository assetRepository;
 
     @BeforeAll
-    static void setupGlobalIntegrationTestEnvironment(
-            @Autowired MockMvc staticMockMvc,
-            @Autowired ObjectMapper staticObjectMapper,
+    void setupRestAssuredAndAuth() throws Exception {
 
-            @Autowired AssetRepository staticAssetRepository,
-            @Autowired JpaUserRepository staticUserRepository
-    ) throws Exception {
-        staticUserRepository.deleteAll();
+        RestAssured.port = port;
+        RestAssured.basePath = "/api/v1";
 
-        MvcResult registerResult = staticMockMvc.perform(MockMvcRequestBuilders.post("/api/v1/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(staticObjectMapper.writeValueAsString(new RegisterUserRequest("Integration", "User", "integration.user@example.com", "securepass"))))
-                .andExpect(status().isCreated())
-                .andReturn();
 
-        staticObjectMapper.readValue(registerResult.getResponse().getContentAsString(), RegisterUserResponse.class);
+        assetRepository.deleteAll();
 
-        MvcResult authResult = staticMockMvc.perform(MockMvcRequestBuilders.post("/api/v1/authenticate")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(staticObjectMapper.writeValueAsString(new AuthRequest("integration.user@example.com", "securepass"))))
-                .andExpect(status().isOk())
-                .andReturn();
+        // registra usuário
+        jwtToken =
+                given()
+                        .contentType(ContentType.JSON)
+                        .body(new RegisterUserRequest("Integration", "User", "integration.user@example.com", "securepass"))
+                        .when()
+                        .post("/register")
+                        .then()
+                        .statusCode(201)
+                        .extract()
+                        .asString(); // extrai o corpo só pra ter certeza do 201; token vai no próximo passo
 
-        String responseContent = authResult.getResponse().getContentAsString();
-        AuthResponse authResponse = staticObjectMapper.readValue(responseContent, AuthResponse.class);
-        jwtToken = authResponse.token();
+
+        AuthResponse auth =
+                given()
+                        .contentType(ContentType.JSON)
+                        .body(new AuthRequest("integration.user@example.com", "securepass"))
+                        .when()
+                        .post("/authenticate")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .as(AuthResponse.class);
+
+        jwtToken = auth.token();
     }
+
     @Test
-    @DisplayName("GET /api/v1/asset: should retrive all assets")
+    @DisplayName("GET /asset: should retrieve all assets")
     @Transactional
-    void shouldRetrieveAllAssets() throws Exception {
-
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/asset")
-                        .header("Authorization", "Bearer " + jwtToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+    void shouldRetrieveAllAssets() {
+        given()
+                .auth().oauth2(jwtToken)
+                .when()
+                .get("/asset")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("", isA(java.util.List.class)); // verifica que é um array JSON
     }
-
 }

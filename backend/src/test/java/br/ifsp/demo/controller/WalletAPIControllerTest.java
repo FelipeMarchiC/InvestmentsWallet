@@ -20,8 +20,7 @@ import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
-
+import static org.hamcrest.Matchers.*;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -259,6 +258,40 @@ class WalletAPIControllerTest {
             assertThat(futureBalance).isPositive();
             assertThat(futureBalance).isGreaterThan(300.0);
         }
+    }
+
+    @DisplayName("Wallet History Tests")
+    @Nested
+    class WalletHistoryTests{
+        @Test
+        @DisplayName("GET /api/v1/wallet/history: should retrieve only withdrawn investments")
+        void shouldRetrieveWalletHistory() throws Exception {
+
+            UUID id1 = addInvestment(100.0, tesouroDiretoAssetId);
+            UUID id2 = addInvestment(200.0, cdbAssetId);
+
+
+            given()
+                    .header("Authorization", "Bearer " + jwtToken)
+                    .when()
+                    .post("/api/v1/wallet/investment/withdraw/{investmentId}", id1)
+                    .then()
+                    .statusCode(204);
+
+
+            given()
+                    .header("Authorization", "Bearer " + jwtToken)
+                    .when()
+                    .get("/api/v1/wallet/history")
+                    .then()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .body("size()", is(1))
+                    .body("[0].id", equalTo(id1.toString()))
+                    .body("[0].withdrawDate", notNullValue());
+        }
+
+
     }
 }
     /*

@@ -229,6 +229,55 @@ class WalletAPIControllerTest {
 
             assertThat(cdbIds).isEmpty();
         }
+        @Test
+        @DisplayName("GET /api/v1/wallet/investment/filterByDate: Should filter active investments by date")
+        @Transactional
+        void shouldFilterActiveInvestmentsByDate() throws Exception {
+
+            UUID id1 = addInvestment(123.45, tesouroDiretoAssetId);
+            UUID id2 = addInvestment(678.90, cdbAssetId);
+
+            // intervalo que engloba hoje
+            String from = LocalDate.now().minusDays(1).toString();
+            String to   = LocalDate.now().plusDays(1).toString();
+
+            List<String> ids = given()
+                    .header("Authorization", "Bearer " + jwtToken)
+                    .queryParam("initialDate", from)
+                    .queryParam("finalDate", to)
+                    .when()
+                    .get("/api/v1/wallet/investment/filterByDate")
+                    .then()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .extract()
+                    .jsonPath()
+                    .getList("id", String.class);
+            assertThat(ids)
+                    .hasSize(2)
+                    .containsExactlyInAnyOrder(id1.toString(), id2.toString());
+        }
+
+        @Test
+        @DisplayName("GET /api/v1/wallet/investment/filterByDate: Should return empty when no active investments in range")
+        @Transactional
+        void shouldReturnEmptyForFilterActiveInvestmentsByDateWhenNoMatch() throws Exception {
+            addInvestment(50.0, tesouroDiretoAssetId);
+            String from = LocalDate.now().plusDays(1).toString();
+            String to   = LocalDate.now().plusDays(2).toString();
+
+            given()
+                    .header("Authorization", "Bearer " + jwtToken)
+                    .queryParam("initialDate", from)
+                    .queryParam("finalDate", to)
+                    .when()
+                    .get("/api/v1/wallet/investment/filterByDate")
+                    .then()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .body("size()", is(0));
+        }
+
 
     }
 

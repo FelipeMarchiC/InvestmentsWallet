@@ -12,6 +12,7 @@ import br.ifsp.demo.mapper.WalletMapper;
 import br.ifsp.demo.security.auth.AuthenticationInfoService;
 import br.ifsp.demo.service.AssetService;
 import br.ifsp.demo.service.WalletService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "/api/v1/wallet")
+@SecurityRequirement(name = "bearerAuth")
 public class WalletController {
 
     private final WalletService walletService;

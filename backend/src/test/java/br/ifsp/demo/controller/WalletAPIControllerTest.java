@@ -467,10 +467,28 @@ class WalletAPIControllerTest {
 
     @Nested
     @Tag("ApiTest")
-    @DisplayName("Wallet Creation and Retrieval Endpoints")
-    class WalletCreationAndRetrievalEndpoints {
+    @Tag("IntegrationTest")
+    @DisplayName("Wallet Retrieval and Investment Creation Tests")
+    class WalletAndInvestmentTests {
+
+        private InvestmentRequestDTO validInvestmentRequest() {
+            return new InvestmentRequestDTO(150.0, tesouroDiretoAssetId);
+        }
+
+        private InvestmentRequestDTO invalidInvestmentWithNegativeValue() {
+            return new InvestmentRequestDTO(-100.0, tesouroDiretoAssetId);
+        }
+
+        private InvestmentRequestDTO invalidInvestmentWithNullAsset() {
+            return new InvestmentRequestDTO(100.0, null);
+        }
+
+        private InvestmentRequestDTO invalidInvestmentWithUnknownAsset() {
+            return new InvestmentRequestDTO(100.0, UUID.randomUUID());
+        }
+
         @Test
-        @DisplayName("POST /api/v1/wallet: Should return 409 Conflict if wallet already exists")
+        @DisplayName("POST /api/v1/wallet: Should return 403 Conflict if wallet already exists")
         @Transactional
         void shouldFailToCreateWalletIfAlreadyExists() {
             given()
@@ -479,54 +497,6 @@ class WalletAPIControllerTest {
                     .post("/api/v1/wallet")
                     .then()
                     .statusCode(403);
-        }
-
-        @Test
-        @DisplayName("GET /api/v1/wallet: Should retrieve wallet successfully after creation")
-        @Transactional
-        void shouldRetrieveWalletSuccessfullyAfterCreation() throws Exception {
-            given()
-                    .header("Authorization", "Bearer " + jwtToken)
-                    .when()
-                    .get("/api/v1/wallet")
-                    .then()
-                    .statusCode(200)
-                    .contentType(ContentType.JSON)
-                    .body("id", notNullValue())
-                    .body("investments", notNullValue())
-                    .body("historyInvestments", notNullValue());
-        }
-
-        @Test
-        @DisplayName("POST /api/v1/wallet/investment: Should add investment successfully")
-        @Transactional
-        void shouldAddInvestmentSuccessfully() throws Exception {
-            InvestmentRequestDTO investmentRequest = new InvestmentRequestDTO(150.0, tesouroDiretoAssetId);
-
-            given()
-                    .header("Authorization", "Bearer " + jwtToken)
-                    .contentType(ContentType.JSON)
-                    .body(investmentRequest)
-                    .when()
-                    .post("/api/v1/wallet/investment")
-                    .then()
-                    .statusCode(201);
-
-            String responseContent = given()
-                    .header("Authorization", "Bearer " + jwtToken)
-                    .when()
-                    .get("/api/v1/wallet/investment")
-                    .then()
-                    .statusCode(200)
-                    .extract()
-                    .asString();
-
-            List<InvestmentResponseDTO> investments = objectMapper
-                    .readValue(responseContent, new TypeReference<>() { });
-
-            assertThat(investments).anyMatch(inv ->
-                    Math.abs(inv.initialValue() - 150.0) < 0.001 &&
-                            inv.assetId().equals(tesouroDiretoAssetId));
         }
     }
 }

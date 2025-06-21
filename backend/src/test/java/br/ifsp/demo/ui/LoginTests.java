@@ -7,10 +7,15 @@ import com.github.javafaker.Faker;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 @Tag("UiTest")
 @DisplayName("Login and Registration Tests")
 public class LoginTests extends BaseSeleniumTest {
@@ -57,7 +62,51 @@ public class LoginTests extends BaseSeleniumTest {
         wait.until(ExpectedConditions.not(ExpectedConditions.urlContains("/login")));
         String currentUrl = loginAfterRegister.getCurrentUrl();
         assertThat(currentUrl)
-                .as("Após login, deveria redirecionar para área autenticada")
                 .doesNotContain("/login");
     }
+
+    @DisplayName("should not permit to register with invalid fields")
+    @ParameterizedTest(name = "[{index}] name=''{0}'', lastname=''{1}'', email=''{2}'', password=''{3}'' → campo inválido: {4}")
+    @CsvSource({
+            // nome vazio
+            "'',Doe,john@example.com,Secret123!,name",
+            // sobrenome vazio
+            "John,'',john@example.com,Secret123!,lastname",
+            // email vazio
+            "John,Doe,'',Secret123!,email",
+            // email sem '@'
+            "John,Doe,johndoe.com,Secret123!,email",
+            // senha vazia
+            "John,Doe,john@example.com,'',password"
+    })
+    public void shouldNotPermitToRegisterWithInvalidFields(
+            String name,
+            String lastname,
+            String email,
+            String password,
+            String invalidFieldId
+    ) {
+        driver.get(baseUrl + "/register");
+        wait.until(ExpectedConditions.urlContains("/register"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("name")));
+
+        RegisterPageObject register = new RegisterPageObject(driver);
+        register.enterName(name);
+        register.enterLastname(lastname);
+        register.enterEmail(email);
+        register.enterPassword(password);
+
+        WebElement submit = wait.until(ExpectedConditions.elementToBeClickable(
+                By.cssSelector(".register-button[type='submit']")));
+        submit.click();
+
+        WebElement invalidInput = driver.findElement(By.id(invalidFieldId));
+        String validationMessage = (String)((JavascriptExecutor)driver)
+                .executeScript("return arguments[0].validationMessage;", invalidInput);
+
+        assertThat(validationMessage)
+                .as("Campo '%s' com valor inválido deveria disparar validação nativa", invalidFieldId)
+                .isNotEmpty();
+    }
+
 }

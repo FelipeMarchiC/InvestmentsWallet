@@ -65,7 +65,7 @@ public class LoginTests extends BaseSeleniumTest {
                 .doesNotContain("/login");
     }
 
-    @DisplayName("should not permit to register with invalid fields")
+    @DisplayName("should not permit to register with invalid field")
     @ParameterizedTest(name = "[{index}] name=''{0}'', lastname=''{1}'', email=''{2}'', password=''{3}'' → campo inválido: {4}")
     @CsvSource({
             // nome vazio
@@ -109,4 +109,20 @@ public class LoginTests extends BaseSeleniumTest {
                 .isNotEmpty();
     }
 
+
+    @Test
+    @DisplayName("Should redirect to login when accessing dashboard unauthenticated")
+    public void shouldRedirectToLoginWhenAccessingDashboardUnauthenticated() {
+        driver.get(baseUrl + "/dashboard");
+        wait.until(ExpectedConditions.urlContains("/login"));
+
+        String currentUrl = driver.getCurrentUrl();
+        assertThat(currentUrl)
+                .contains("/login");
+
+        assertThat(driver.findElements(By.id("email")))
+                .isNotEmpty();
+        assertThat(driver.findElements(By.cssSelector(".login-button")))
+                .isNotEmpty();
+    }
 }

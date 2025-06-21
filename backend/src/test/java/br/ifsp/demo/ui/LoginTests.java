@@ -125,4 +125,29 @@ public class LoginTests extends BaseSeleniumTest {
         assertThat(driver.findElements(By.cssSelector(".login-button")))
                 .isNotEmpty();
     }
+    @Test
+    @DisplayName("Should show error message for an Unregistered user login")
+    public void shouldShowErrorMessageForAnUnRegisteredUserLogin() {
+        driver.get(baseUrl + "/login");
+        wait.until(ExpectedConditions.urlContains("/login"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("email")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("password")));
+
+        String randomEmail = faker.internet().emailAddress();
+        String randomPassword = faker.internet().password(8, 16, true, true);
+
+        LoginPageObject loginPage = new LoginPageObject(driver);
+        loginPage.enterEmail(randomEmail);
+        loginPage.enterPassword(randomPassword);
+
+        WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(
+                By.cssSelector(".login-button")));
+        loginBtn.click();
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("error-message")));
+        assertThat(loginPage.isErrorMessageDisplayed())
+                .isTrue();
+
+    }
+
 }

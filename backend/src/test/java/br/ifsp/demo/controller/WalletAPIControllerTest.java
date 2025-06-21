@@ -183,8 +183,10 @@ class WalletAPIControllerTest {
                     .body("id", notNullValue())
                     .body("initialValue", notNullValue());
         }
+
         @Test
         @DisplayName("GET /api/v1/wallet/investment/filterByType/{type} : Should filter active investments by type")
+        @Transactional
         void shouldFilterActiveInvestmentsByType() throws Exception {
             UUID id1 = addInvestment(100.0, tesouroDiretoAssetId);
             UUID id2 = addInvestment(200.0, cdbAssetId);
@@ -216,6 +218,7 @@ class WalletAPIControllerTest {
 
         @Test
         @DisplayName("GET /api/v1/wallet/investment/filterByType/{type} : Should filter active investments by type should return empty for filter active investments by type when no match")
+        @Transactional
         void shouldReturnEmptyForFilterActiveInvestmentsByTypeWhenNoMatch() throws Exception {
             UUID id = addInvestment(50.0, tesouroDiretoAssetId);
 
@@ -229,6 +232,7 @@ class WalletAPIControllerTest {
 
             assertThat(cdbIds).isEmpty();
         }
+
         @Test
         @DisplayName("GET /api/v1/wallet/investment/filterByDate: Should filter active investments by date")
         @Transactional
@@ -277,8 +281,6 @@ class WalletAPIControllerTest {
                     .contentType(ContentType.JSON)
                     .body("size()", is(0));
         }
-
-
     }
 
     @Nested
@@ -363,6 +365,7 @@ class WalletAPIControllerTest {
     class WalletHistoryTests{
         @Test
         @DisplayName("GET /api/v1/wallet/history: should retrieve only withdrawn investments")
+        @Transactional
         void shouldRetrieveWalletHistory() throws Exception {
 
             UUID id1 = addInvestment(100.0, tesouroDiretoAssetId);
@@ -388,8 +391,10 @@ class WalletAPIControllerTest {
                     .body("[0].id", equalTo(id1.toString()))
                     .body("[0].withdrawDate", notNullValue());
         }
+
         @Test
         @DisplayName("GET /api/v1/wallet/history/filterByType/{type}: Should retrieve history by type")
+        @Transactional
         void shouldFilterHistoryByInvestmentType() throws Exception {
             UUID id2 = addInvestment(200.0, cdbAssetId);
 
@@ -404,8 +409,10 @@ class WalletAPIControllerTest {
                     .body("size()", is(1))
                     .body("[0].id", equalTo(id2.toString()));
         }
+
         @Test
         @DisplayName("GET /api/v1/wallet/history/filterByDate : should filter history by date")
+        @Transactional
         void shouldFilterHistoryByDate() throws Exception {
             UUID id1 = addInvestment(100.0, tesouroDiretoAssetId);
             UUID id2 = addInvestment(200.0, cdbAssetId);
@@ -438,6 +445,7 @@ class WalletAPIControllerTest {
 
         @Test
         @DisplayName("GET /api/v1/wallet/history/filterByDate with no matching dates")
+        @Transactional
         void shouldReturnEmptyWhenNoHistoryInRange() throws Exception {
             UUID id = addInvestment(150.0, tesouroDiretoAssetId);
             given().header("Authorization", "Bearer " + jwtToken)
@@ -455,97 +463,70 @@ class WalletAPIControllerTest {
                     .contentType(ContentType.JSON)
                     .body("size()", is(0));
         }
-
-
-
     }
 
+    @Nested
+    @Tag("ApiTest")
+    @DisplayName("Wallet Creation and Retrieval Endpoints")
+    class WalletCreationAndRetrievalEndpoints {
+        @Test
+        @DisplayName("POST /api/v1/wallet: Should return 409 Conflict if wallet already exists")
+        @Transactional
+        void shouldFailToCreateWalletIfAlreadyExists() {
+            given()
+                    .header("Authorization", "Bearer " + jwtToken)
+                    .when()
+                    .post("/api/v1/wallet")
+                    .then()
+                    .statusCode(403);
+        }
+
+        @Test
+        @DisplayName("GET /api/v1/wallet: Should retrieve wallet successfully after creation")
+        @Transactional
+        void shouldRetrieveWalletSuccessfullyAfterCreation() throws Exception {
+            given()
+                    .header("Authorization", "Bearer " + jwtToken)
+                    .when()
+                    .get("/api/v1/wallet")
+                    .then()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .body("id", notNullValue())
+                    .body("investments", notNullValue())
+                    .body("historyInvestments", notNullValue());
+        }
+
+        @Test
+        @DisplayName("POST /api/v1/wallet/investment: Should add investment successfully")
+        @Transactional
+        void shouldAddInvestmentSuccessfully() throws Exception {
+            InvestmentRequestDTO investmentRequest = new InvestmentRequestDTO(150.0, tesouroDiretoAssetId);
+
+            given()
+                    .header("Authorization", "Bearer " + jwtToken)
+                    .contentType(ContentType.JSON)
+                    .body(investmentRequest)
+                    .when()
+                    .post("/api/v1/wallet/investment")
+                    .then()
+                    .statusCode(201);
+
+            String responseContent = given()
+                    .header("Authorization", "Bearer " + jwtToken)
+                    .when()
+                    .get("/api/v1/wallet/investment")
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .asString();
+
+            List<InvestmentResponseDTO> investments = objectMapper
+                    .readValue(responseContent, new TypeReference<>() { });
+
+            assertThat(investments).anyMatch(inv ->
+                    Math.abs(inv.initialValue() - 150.0) < 0.001 &&
+                            inv.assetId().equals(tesouroDiretoAssetId));
+        }
+    }
 }
-    /*
-    // [Felipe Endpoints]
-    //
-    @Test
-    @DisplayName("POST /api/v1/wallet: Should create wallet successfully")
-    @Transactional
-    void shouldCreateWalletSuccessfully() throws Exception {
-        String newToken = generateNewUserAndToken("test.user2@ifsp.com");
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet")
-                        .header("Authorization", "Bearer " + newToken))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.investments").isArray())
-                .andExpect(jsonPath("$.historyInvestments").isArray());
-    }
-
-    @Test
-    @DisplayName("GET /api/v1/wallet: Should retrieve wallet successfully after creation")
-    @Transactional
-    void shouldRetrieveWalletSuccessfullyAfterCreation() throws Exception {
-        String newToken = generateNewUserAndToken("test.user3@ifsp.com");
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet")
-                        .header("Authorization", "Bearer " + newToken))
-                .andExpect(status().isCreated());
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/wallet")
-                        .header("Authorization", "Bearer " + newToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.investments").isArray())
-                .andExpect(jsonPath("$.historyInvestments").isArray());
-    }
-
-    @Test
-    @DisplayName("POST /api/v1/wallet/investment: Should add investment successfully")
-    @Transactional
-    void shouldAddInvestmentSuccessfully() throws Exception {
-        String newToken = generateNewUserAndToken("test.user4@ifsp.com");
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet")
-                        .header("Authorization", "Bearer " + newToken))
-                .andExpect(status().isCreated());
-
-        UUID treasureId = UUID.fromString("00000000-0000-0000-0000-000000000001");
-
-        InvestmentRequestDTO investmentRequest = new InvestmentRequestDTO(150.0, treasureId);
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet/investment")
-                        .header("Authorization", "Bearer " + newToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(investmentRequest)))
-                .andExpect(status().isCreated());
-
-        List<InvestmentResponseDTO> investments = getActiveInvestments();
-        assertThat(investments).anyMatch(inv -> Math.abs(inv.initialValue() - 150.0) < 0.001
-                && inv.assetId().equals(treasureId));
-    }
-
-    @Test
-    @DisplayName("GET /api/v1/wallet/investment: Should retrieve active investments")
-    @Transactional
-    void shouldRetrieveActiveInvestments() throws Exception {
-        String newToken = generateNewUserAndToken("test.user5@ifsp.com");
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet")
-                        .header("Authorization", "Bearer " + newToken))
-                .andExpect(status().isCreated());
-
-        UUID assetId = UUID.fromString("00000000-0000-0000-0000-000000000002");
-
-        InvestmentRequestDTO investmentRequest = new InvestmentRequestDTO(200.0, assetId);
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/wallet/investment")
-                        .header("Authorization", "Bearer " + newToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(investmentRequest)))
-                .andExpect(status().isCreated());
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/wallet/investment")
-                        .header("Authorization", "Bearer " + newToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].initialValue").value(200.0))
-                .andExpect(jsonPath("$[0].assetId").value(assetId.toString()));
-    }
-}*/

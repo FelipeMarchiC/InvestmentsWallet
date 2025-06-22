@@ -260,7 +260,7 @@ class WalletAPIControllerTest {
         @DisplayName("GET /api/v1/wallet/investment/filterByType/{type} : Should filter active investments by type should return empty for filter active investments by type when no match")
         @Transactional
         void shouldReturnEmptyForFilterActiveInvestmentsByTypeWhenNoMatch() throws Exception {
-            UUID id = addInvestment(50.0, tesouroDiretoAssetId);
+            addInvestment(50.0, tesouroDiretoAssetId);
 
             List<String> cdbIds = given().header("Authorization", "Bearer " + jwtToken)
                     .when().get("/api/v1/wallet/investment/filterByType/{type}", AssetType.CDB)
@@ -409,7 +409,7 @@ class WalletAPIControllerTest {
         void shouldRetrieveWalletHistory() throws Exception {
 
             UUID id1 = addInvestment(100.0, tesouroDiretoAssetId);
-            UUID id2 = addInvestment(200.0, cdbAssetId);
+            addInvestment(200.0, cdbAssetId);
 
 
             given()

@@ -57,5 +57,12 @@ public class DashboardTests extends BaseSeleniumTest {
         assertThat(dashboardPage.isOpportunitiesListDisplayed()).isTrue();
     }
 
+    @Test
+    @DisplayName("Should navigate to assets page when 'Investir Agora' button is clicked")
+    void shouldNavigateToAssetsPageWhenInvestNowButtonClicked() {
+        dashboardPage.clickInvestNowButton();
+        wait.until(ExpectedConditions.urlContains("/assets"));
+        assertThat(driver.getCurrentUrl()).contains("/assets");
+    }
 
 }

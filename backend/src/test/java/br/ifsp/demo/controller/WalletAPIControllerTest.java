@@ -539,6 +539,15 @@ class WalletAPIControllerTest {
                     .statusCode(401);
         }
 
+        @Test
+        @DisplayName("GET /api/v1/wallet/investment: should return 401 when user is not authenticated")
+        void getInvestmentShouldReturnUnauthorizedWhenUserIsNotAuthenticated() {
+            given()
+                    .when()
+                    .get("/api/v1/wallet/investment")
+                    .then()
+                    .statusCode(401);
+        }
 
         @Test
         @DisplayName("POST /api/v1/wallet: Should return 403 Forbidden if wallet already exists")

@@ -86,4 +86,21 @@ public class AvailableAssetsTests extends BaseSeleniumTest {
         assertThat(availableAssetsPage.isSnackbarDisplayed()).isTrue();
         assertThat(availableAssetsPage.getSnackbarMessage()).isEqualTo("Investimento registrado com sucesso!");
     }
+
+    @Test
+    @DisplayName("Should show native browser validation for invalid investment value (zero or negative)")
+    void shouldShowNativeBrowserValidationForInvalidInvestmentValue() {
+        availableAssetsPage.clickInvestButtonForAsset(0);
+
+        availableAssetsPage.enterInitialValue("0");
+
+        WebElement initialValueInput = driver.findElement(By.id("initialValue"));
+        String validationMessage = (String)((JavascriptExecutor)driver)
+                .executeScript("return arguments[0].validationMessage;", initialValueInput);
+
+        assertThat(validationMessage)
+                .as("A mensagem de validação nativa do navegador deveria ser exibida.")
+                .isNotEmpty()
+                .contains("deve ser maior ou igual a 1.");
+    }
 }

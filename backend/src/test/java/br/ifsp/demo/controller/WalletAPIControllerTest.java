@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +24,8 @@ import java.util.UUID;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -97,6 +100,21 @@ class WalletAPIControllerTest {
                 .orElseThrow(() -> new RuntimeException("Não foi possível encontrar o investimento recém-adicionado na carteira.")).id();
     }
 
+    private void withdrawInvestment(UUID investmentId) throws Exception {
+        List<InvestmentResponseDTO> initialInvestments = getActiveInvestments();
+
+        given()
+                .header("Authorization", "Bearer " + jwtToken)
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/api/v1/wallet/investment/withdraw/" + investmentId)
+                .then()
+                .statusCode(204);
+
+        List<InvestmentResponseDTO> currentInvestments = getActiveInvestments();
+        assertThat(currentInvestments.size()).isEqualTo(initialInvestments.size() - 1);
+    }
+
     private List<InvestmentResponseDTO> getActiveInvestments() throws Exception {
         String responseContent = given()
                 .header("Authorization", "Bearer " + jwtToken)
@@ -122,6 +140,28 @@ class WalletAPIControllerTest {
         return objectMapper.readValue(responseContent, new TypeReference<>() {
         });
     }
+    private void assertInvestmentMatchesResponse(InvestmentResponseDTO expected, Response response, String jsonPath) {
+        String id = response.path(jsonPath + ".id");
+        Float initialValue = response.path(jsonPath + ".initialValue");
+        String assetId = response.path(jsonPath + ".assetId");
+        String purchaseDate = response.path(jsonPath + ".purchaseDate");
+        String withdrawDate = response.path(jsonPath + ".withdrawDate");
+        String walletId = response.path(jsonPath + ".walletId");
+
+        assertThat(id).isEqualTo(expected.id().toString());
+        assertThat((double) initialValue).isEqualTo(expected.initialValue());
+        assertThat(assetId).isEqualTo(expected.assetId().toString());
+        assertThat(purchaseDate).isEqualTo(expected.purchaseDate().toString());
+
+        if (expected.withdrawDate() == null) {
+            assertThat(withdrawDate).isNull();
+        } else {
+            assertThat(withdrawDate).isEqualTo(expected.withdrawDate().toString());
+        }
+
+        assertThat(walletId).isEqualTo(expected.walletId().toString());
+    }
+
 
     @Nested
     @Tag("ApiTest")
@@ -471,24 +511,16 @@ class WalletAPIControllerTest {
     @DisplayName("Wallet Retrieval and Investment Creation Tests")
     class WalletAndInvestmentTests {
 
-        private InvestmentRequestDTO validInvestmentRequest() {
+        private InvestmentRequestDTO investmentRequest() {
             return new InvestmentRequestDTO(150.0, tesouroDiretoAssetId);
         }
 
-        private InvestmentRequestDTO invalidInvestmentWithNegativeValue() {
-            return new InvestmentRequestDTO(-100.0, tesouroDiretoAssetId);
-        }
-
-        private InvestmentRequestDTO invalidInvestmentWithNullAsset() {
-            return new InvestmentRequestDTO(100.0, null);
-        }
-
-        private InvestmentRequestDTO invalidInvestmentWithUnknownAsset() {
-            return new InvestmentRequestDTO(100.0, UUID.randomUUID());
+        private InvestmentRequestDTO investmentRequest2() {
+            return new InvestmentRequestDTO(150.0, cdbAssetId);
         }
 
         @Test
-        @DisplayName("POST /api/v1/wallet: Should return 403 Conflict if wallet already exists")
+        @DisplayName("POST /api/v1/wallet: Should return 403 Forbidden if wallet already exists")
         @Transactional
         void shouldFailToCreateWalletIfAlreadyExists() {
             given()
@@ -497,6 +529,36 @@ class WalletAPIControllerTest {
                     .post("/api/v1/wallet")
                     .then()
                     .statusCode(403);
+        }
+
+        @Test
+        @DisplayName("GET /api/v1/wallet: should retrieve wallet successfully with investments and history")
+        @Transactional
+        void shouldRetrieveWalletSuccessfullyWithInvestmentsAndHistory() throws Exception {
+            addInvestment(investmentRequest().initialValue(), investmentRequest().assetId());
+            addInvestment(investmentRequest2().initialValue(), investmentRequest2().assetId());
+            withdrawInvestment(addInvestment(investmentRequest().initialValue(), investmentRequest().assetId()));
+
+            var actives = getActiveInvestments();
+            var history = getHistoryInvestments();
+
+            Response response = given()
+                    .header("Authorization", "Bearer " + jwtToken)
+                    .when()
+                    .get("/api/v1/wallet")
+                    .then()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .extract()
+                    .response();
+
+            for (int i = 0; i < actives.size(); i++) {
+                assertInvestmentMatchesResponse(actives.get(i), response, "investments[" + i + "]");
+            }
+
+            for (int i = 0; i < history.size(); i++) {
+                assertInvestmentMatchesResponse(history.get(i), response, "history[" + i + "]");
+            }
         }
     }
 }

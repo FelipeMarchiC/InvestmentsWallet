@@ -74,4 +74,16 @@ public class AvailableAssetsTests extends BaseSeleniumTest {
         availableAssetsPage.clickCancelInvestmentButton();
         assertThat(availableAssetsPage.isDialogClosed()).isTrue();
     }
+
+    @Test
+    @DisplayName("Should successfully register an investment via dialog")
+    void shouldSuccessfullyRegisterInvestment() {
+        availableAssetsPage.clickInvestButtonForAsset(0);
+        availableAssetsPage.enterInitialValue("100.50");
+        availableAssetsPage.clickRegisterInvestmentButton();
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("MuiSnackbar-root")));
+        assertThat(availableAssetsPage.isSnackbarDisplayed()).isTrue();
+        assertThat(availableAssetsPage.getSnackbarMessage()).isEqualTo("Investimento registrado com sucesso!");
+    }
 }

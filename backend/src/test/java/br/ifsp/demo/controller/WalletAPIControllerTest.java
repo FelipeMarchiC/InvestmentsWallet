@@ -24,8 +24,6 @@ import java.util.UUID;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -141,6 +139,7 @@ class WalletAPIControllerTest {
         });
 
     }
+
     private void assertInvestmentMatchesResponse(InvestmentResponseDTO expected, Response response, String jsonPath) {
         String id = response.path(jsonPath + "id");
         Float initialValue = response.path(jsonPath + "initialValue");

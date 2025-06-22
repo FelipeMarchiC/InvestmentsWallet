@@ -111,5 +111,19 @@ public class UserApiControllerTest {
                     .then()
                     .statusCode(409);
         }
+
+        @Test
+        @DisplayName("POST /register: should return 401 when wrong password")
+        void shouldReturnUnauthorizedWhenWrongPassword() {
+            RegisterUserRequest request = createDefaultUser();
+
+            given()
+                    .contentType(ContentType.JSON)
+                    .body(new AuthRequest(request.email(), "wrong-password"))
+                    .when()
+                    .post("/api/v1/authenticate")
+                    .then()
+                    .statusCode(401);
+        }
     }
 }

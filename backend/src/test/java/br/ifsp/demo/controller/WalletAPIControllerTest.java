@@ -554,7 +554,7 @@ class WalletAPIControllerTest {
         void postInvestmentShouldReturnUnauthorizedWhenUserIsNotAuthenticated() {
             given()
                     .when()
-                    .get("/api/v1/wallet/investment")
+                    .post("/api/v1/wallet/investment")
                     .then()
                     .statusCode(401);
         }

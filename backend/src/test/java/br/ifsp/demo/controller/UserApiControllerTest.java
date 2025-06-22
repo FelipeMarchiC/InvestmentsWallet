@@ -61,33 +61,55 @@ public class UserApiControllerTest {
         );
     }
 
-    @Test
-    @DisplayName("POST /register: should create a new user successfully")
-    void shouldRegisterUserSuccessfully() {
-        RegisterUserRequest request = generateDefaultRegisterUserRequest();
+    @Nested
+    @DisplayName("Valid Operations")
+    class ValidOperations {
+        @Test
+        @DisplayName("POST /register: should create a new user successfully")
+        void shouldRegisterUserSuccessfully() {
+            RegisterUserRequest request = generateDefaultRegisterUserRequest();
 
-        given()
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when()
-                .post("/api/v1/register")
-                .then()
-                .statusCode(201)
-                .body("id", notNullValue());
+            given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .post("/api/v1/register")
+                    .then()
+                    .statusCode(201)
+                    .body("id", notNullValue());
+        }
+
+        @Test
+        @DisplayName("POST /authenticate: should authenticate user successfully")
+        void shouldAuthenticateUserSuccessfully() {
+            RegisterUserRequest request = createDefaultUser();
+
+            given()
+                    .contentType(ContentType.JSON)
+                    .body(new AuthRequest(request.email(), request.password()))
+                    .when()
+                    .post("/api/v1/authenticate")
+                    .then()
+                    .statusCode(200)
+                    .body("token", notNullValue());
+        }
     }
 
-    @Test
-    @DisplayName("POST /authenticate: should authenticate user successfully")
-    void shouldAuthenticateUserSuccessfully() {
-        RegisterUserRequest request = createDefaultUser();
+    @Nested
+    @DisplayName("Error Responses")
+    class ErrorResponses {
+        @Test
+        @DisplayName("POST /register: should return 409 when email is already registered")
+        void shouldReturnConflictWhenEmailAlreadyRegistered() {
+            RegisterUserRequest request = createDefaultUser();
 
-        given()
-                .contentType(ContentType.JSON)
-                .body(new AuthRequest(request.email(), request.password()))
-                .when()
-                .post("/api/v1/authenticate")
-                .then()
-                .statusCode(200)
-                .body("token", notNullValue());
+            given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .post("/api/v1/register")
+                    .then()
+                    .statusCode(409);
+        }
     }
 }

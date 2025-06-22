@@ -71,5 +71,10 @@ public class DashboardTests extends BaseSeleniumTest {
         assertThat(dashboardPage.getNoRecentInvestmentsMessage()).isEqualTo("Nenhum investimento recente para exibir.");
     }
 
-
+    @Test
+    @DisplayName("Should display opportunity items on the dashboard")
+    void shouldDisplayOpportunityItems() {
+        assertThat(dashboardPage.isOpportunitiesListDisplayed()).isTrue();
+        assertThat(dashboardPage.getFirstOpportunityTitle()).isNotNull().isNotEmpty();
+    }
 }

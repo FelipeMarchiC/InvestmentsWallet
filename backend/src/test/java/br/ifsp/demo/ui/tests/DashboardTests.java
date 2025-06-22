@@ -65,4 +65,11 @@ public class DashboardTests extends BaseSeleniumTest {
         assertThat(driver.getCurrentUrl()).contains("/assets");
     }
 
+    @Test
+    @DisplayName("Should show a message when there are no recent investments")
+    void shouldShowMessageWhenNoRecentInvestments() {
+        assertThat(dashboardPage.getNoRecentInvestmentsMessage()).isEqualTo("Nenhum investimento recente para exibir.");
+    }
+
+
 }

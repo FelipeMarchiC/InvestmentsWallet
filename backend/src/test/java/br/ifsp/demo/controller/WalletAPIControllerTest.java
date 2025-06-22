@@ -560,5 +560,34 @@ class WalletAPIControllerTest {
                 assertInvestmentMatchesResponse(history.get(i), response, "history[" + i + "]");
             }
         }
+
+        @Test
+        @DisplayName("GET /api/v1/wallet: should retrieve wallet with no investments successfully")
+        @Transactional
+        void shouldRetrieveWalletWithNoInvestmentsSuccessfully() throws Exception {
+            var actives = getActiveInvestments();
+            var history = getHistoryInvestments();
+
+            assertThat(actives).isEmpty();
+            assertThat(history).isEmpty();
+
+            Response response = given()
+                    .header("Authorization", "Bearer " + jwtToken)
+                    .when()
+                    .get("/api/v1/wallet")
+                    .then()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .extract()
+                    .response();
+
+            String walletId = response.path("id");
+            List<?> investments = response.path("investments");
+            List<?> historyInvestments = response.path("history");
+
+            assertThat(walletId).isNotNull();
+            assertThat(investments).isEmpty();
+            assertThat(historyInvestments).isEmpty();
+        }
     }
 }

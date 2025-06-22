@@ -9,6 +9,8 @@ import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,5 +46,15 @@ public class AvailableAssetsTests extends BaseSeleniumTest {
 
         DashboardPageObject dashboardPage = new DashboardPageObject(driver);
         availableAssetsPage = dashboardPage.clickInvestNowButton();
+    }
+
+    @Test
+    @DisplayName("Should display available asset cards")
+    void shouldDisplayAvailableAssetCards() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("assets-grid")));
+        assertThat(availableAssetsPage.getAssetCards()).isNotEmpty();
+        assertThat(availableAssetsPage.isLoadingMessageDisplayed()).isFalse();
+        assertThat(availableAssetsPage.isErrorMessageDisplayed()).isFalse();
+        assertThat(availableAssetsPage.isNoAssetsFoundMessageDisplayed()).isFalse();
     }
 }

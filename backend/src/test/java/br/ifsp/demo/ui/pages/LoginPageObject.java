@@ -17,7 +17,6 @@ public class LoginPageObject extends BasePageObject {
 
     public LoginPageObject(WebDriver driver) {
         super(driver);
-        // Ensure we are on the correct page by checking URL (or title)
         this.wait.until(ExpectedConditions.urlContains(PAGE_PATH));
         if (!PAGE_TITLE.equals(getPageTitle())) {
             throw new IllegalStateException("Wrong page title: " + getPageTitle());

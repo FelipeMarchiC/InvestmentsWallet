@@ -1,4 +1,4 @@
-package br.ifsp.demo.ui;
+package br.ifsp.demo.ui.tests;
 
 import br.ifsp.demo.ui.utils.BaseSeleniumTest;
 import br.ifsp.demo.ui.pages.LoginPageObject;

@@ -534,21 +534,21 @@ class WalletAPIControllerTest {
             }
 
             @Test
-            @DisplayName("POST /api/v1/wallet: should return 401 when user is not authenticated")
-            void postWalletShouldReturnUnauthorizedWhenUserIsNotAuthenticated () {
+            @DisplayName("GET /api/v1/wallet: should return 401 when token is invalid")
+            void getWalletShouldReturnUnauthorizedWhenTokenIsInvalid() {
                 given()
                         .when()
-                        .post("/api/v1/wallet")
+                        .get("/api/v1/wallet")
                         .then()
                         .statusCode(401);
             }
 
             @Test
-            @DisplayName("GET /api/v1/wallet/investment: should return 401 when user is not authenticated")
-            void getInvestmentShouldReturnUnauthorizedWhenUserIsNotAuthenticated () {
+            @DisplayName("POST /api/v1/wallet: should return 401 when user is not authenticated")
+            void postWalletShouldReturnUnauthorizedWhenUserIsNotAuthenticated () {
                 given()
                         .when()
-                        .get("/api/v1/wallet/investment")
+                        .post("/api/v1/wallet")
                         .then()
                         .statusCode(401);
             }
@@ -624,6 +624,20 @@ class WalletAPIControllerTest {
                 assertThat(walletId).isNotNull();
                 assertThat(investments).isEmpty();
                 assertThat(historyInvestments).isEmpty();
+            }
+
+            @Test
+            @DisplayName("POST /api/v1/wallet/investment: should create investment successfully")
+            @Transactional
+            void shouldCreateInvestmentSuccessfully() {
+                given()
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(ContentType.JSON)
+                        .body(investmentRequest())
+                        .when()
+                        .post("/api/v1/wallet/investment")
+                        .then()
+                        .statusCode(201);
             }
 
             @Test

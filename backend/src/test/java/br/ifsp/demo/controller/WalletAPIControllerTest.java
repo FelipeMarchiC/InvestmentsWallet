@@ -139,14 +139,15 @@ class WalletAPIControllerTest {
                 .asString();
         return objectMapper.readValue(responseContent, new TypeReference<>() {
         });
+
     }
     private void assertInvestmentMatchesResponse(InvestmentResponseDTO expected, Response response, String jsonPath) {
-        String id = response.path(jsonPath + ".id");
-        Float initialValue = response.path(jsonPath + ".initialValue");
-        String assetId = response.path(jsonPath + ".assetId");
-        String purchaseDate = response.path(jsonPath + ".purchaseDate");
-        String withdrawDate = response.path(jsonPath + ".withdrawDate");
-        String walletId = response.path(jsonPath + ".walletId");
+        String id = response.path(jsonPath + "id");
+        Float initialValue = response.path(jsonPath + "initialValue");
+        String assetId = response.path(jsonPath + "assetId");
+        String purchaseDate = response.path(jsonPath + "purchaseDate");
+        String withdrawDate = response.path(jsonPath + "withdrawDate");
+        String walletId = response.path(jsonPath + "walletId");
 
         assertThat(id).isEqualTo(expected.id().toString());
         assertThat((double) initialValue).isEqualTo(expected.initialValue());
@@ -508,7 +509,7 @@ class WalletAPIControllerTest {
     @Nested
     @Tag("ApiTest")
     @Tag("IntegrationTest")
-    @DisplayName("Wallet Retrieval and Investment Creation Tests")
+    @DisplayName("Wallet and Investment Create & Retrieve Tests")
     class WalletAndInvestmentTests {
 
         private InvestmentRequestDTO investmentRequest() {
@@ -519,115 +520,151 @@ class WalletAPIControllerTest {
             return new InvestmentRequestDTO(150.0, cdbAssetId);
         }
 
-        @Test
-        @DisplayName("GET /api/v1/wallet: should return 401 when user is not authenticated")
-        void getWalletShouldReturnUnauthorizedWhenUserIsNotAuthenticated() {
-            given()
-                    .when()
-                    .get("/api/v1/wallet")
-                    .then()
-                    .statusCode(401);
-        }
-
-        @Test
-        @DisplayName("POST /api/v1/wallet: should return 401 when user is not authenticated")
-        void postWalletShouldReturnUnauthorizedWhenUserIsNotAuthenticated() {
-            given()
-                    .when()
-                    .post("/api/v1/wallet")
-                    .then()
-                    .statusCode(401);
-        }
-
-        @Test
-        @DisplayName("GET /api/v1/wallet/investment: should return 401 when user is not authenticated")
-        void getInvestmentShouldReturnUnauthorizedWhenUserIsNotAuthenticated() {
-            given()
-                    .when()
-                    .get("/api/v1/wallet/investment")
-                    .then()
-                    .statusCode(401);
-        }
-
-        @Test
-        @DisplayName("POST /api/v1/wallet/investment: should return 401 when user is not authenticated")
-        void postInvestmentShouldReturnUnauthorizedWhenUserIsNotAuthenticated() {
-            given()
-                    .when()
-                    .post("/api/v1/wallet/investment")
-                    .then()
-                    .statusCode(401);
-        }
-
-        @Test
-        @DisplayName("POST /api/v1/wallet: Should return 403 Forbidden if wallet already exists")
-        @Transactional
-        void shouldFailToCreateWalletIfAlreadyExists() {
-            given()
-                    .header("Authorization", "Bearer " + jwtToken)
-                    .when()
-                    .post("/api/v1/wallet")
-                    .then()
-                    .statusCode(403);
-        }
-
-        @Test
-        @DisplayName("GET /api/v1/wallet: should retrieve wallet successfully with investments and history")
-        @Transactional
-        void shouldRetrieveWalletSuccessfullyWithInvestmentsAndHistory() throws Exception {
-            addInvestment(investmentRequest().initialValue(), investmentRequest().assetId());
-            addInvestment(investmentRequest2().initialValue(), investmentRequest2().assetId());
-            withdrawInvestment(addInvestment(investmentRequest().initialValue(), investmentRequest().assetId()));
-
-            var actives = getActiveInvestments();
-            var history = getHistoryInvestments();
-
-            Response response = given()
-                    .header("Authorization", "Bearer " + jwtToken)
-                    .when()
-                    .get("/api/v1/wallet")
-                    .then()
-                    .statusCode(200)
-                    .contentType(ContentType.JSON)
-                    .extract()
-                    .response();
-
-            for (int i = 0; i < actives.size(); i++) {
-                assertInvestmentMatchesResponse(actives.get(i), response, "investments[" + i + "]");
+        @Nested
+        @DisplayName("User Authentication")
+        class UserAuthentication {
+            @Test
+            @DisplayName("GET /api/v1/wallet: should return 401 when user is not authenticated")
+            void getWalletShouldReturnUnauthorizedWhenUserIsNotAuthenticated () {
+                given()
+                        .when()
+                        .get("/api/v1/wallet")
+                        .then()
+                        .statusCode(401);
             }
 
-            for (int i = 0; i < history.size(); i++) {
-                assertInvestmentMatchesResponse(history.get(i), response, "history[" + i + "]");
+            @Test
+            @DisplayName("POST /api/v1/wallet: should return 401 when user is not authenticated")
+            void postWalletShouldReturnUnauthorizedWhenUserIsNotAuthenticated () {
+                given()
+                        .when()
+                        .post("/api/v1/wallet")
+                        .then()
+                        .statusCode(401);
+            }
+
+            @Test
+            @DisplayName("GET /api/v1/wallet/investment: should return 401 when user is not authenticated")
+            void getInvestmentShouldReturnUnauthorizedWhenUserIsNotAuthenticated () {
+                given()
+                        .when()
+                        .get("/api/v1/wallet/investment")
+                        .then()
+                        .statusCode(401);
+            }
+
+            @Test
+            @DisplayName("POST /api/v1/wallet/investment: should return 401 when user is not authenticated")
+            void postInvestmentShouldReturnUnauthorizedWhenUserIsNotAuthenticated () {
+                given()
+                        .when()
+                        .post("/api/v1/wallet/investment")
+                        .then()
+                        .statusCode(401);
             }
         }
 
-        @Test
-        @DisplayName("GET /api/v1/wallet: should retrieve wallet with no investments successfully")
-        @Transactional
-        void shouldRetrieveWalletWithNoInvestmentsSuccessfully() throws Exception {
-            var actives = getActiveInvestments();
-            var history = getHistoryInvestments();
+        @Nested
+        @DisplayName("Valid Operations")
+        class ValidOperations {
+            @Test
+            @DisplayName("GET /api/v1/wallet: should retrieve wallet successfully with investments and history")
+            @Transactional
+            void shouldRetrieveWalletSuccessfullyWithInvestmentsAndHistory() throws Exception {
+                addInvestment(investmentRequest().initialValue(), investmentRequest().assetId());
+                addInvestment(investmentRequest2().initialValue(), investmentRequest2().assetId());
+                withdrawInvestment(addInvestment(investmentRequest().initialValue(), investmentRequest().assetId()));
 
-            assertThat(actives).isEmpty();
-            assertThat(history).isEmpty();
+                var actives = getActiveInvestments();
+                var history = getHistoryInvestments();
 
-            Response response = given()
-                    .header("Authorization", "Bearer " + jwtToken)
-                    .when()
-                    .get("/api/v1/wallet")
-                    .then()
-                    .statusCode(200)
-                    .contentType(ContentType.JSON)
-                    .extract()
-                    .response();
+                Response response = given()
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .when()
+                        .get("/api/v1/wallet")
+                        .then()
+                        .statusCode(200)
+                        .contentType(ContentType.JSON)
+                        .extract()
+                        .response();
 
-            String walletId = response.path("id");
-            List<?> investments = response.path("investments");
-            List<?> historyInvestments = response.path("history");
+                for (int i = 0; i < actives.size(); i++) {
+                    assertInvestmentMatchesResponse(actives.get(i), response, "investments[" + i + "].");
+                }
 
-            assertThat(walletId).isNotNull();
-            assertThat(investments).isEmpty();
-            assertThat(historyInvestments).isEmpty();
+                for (int i = 0; i < history.size(); i++) {
+                    assertInvestmentMatchesResponse(history.get(i), response, "history[" + i + "].");
+                }
+            }
+
+            @Test
+            @DisplayName("GET /api/v1/wallet: should retrieve wallet with no investments successfully")
+            @Transactional
+            void shouldRetrieveWalletWithNoInvestmentsSuccessfully() throws Exception {
+                var actives = getActiveInvestments();
+                var history = getHistoryInvestments();
+
+                assertThat(actives).isEmpty();
+                assertThat(history).isEmpty();
+
+                Response response = given()
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .when()
+                        .get("/api/v1/wallet")
+                        .then()
+                        .statusCode(200)
+                        .contentType(ContentType.JSON)
+                        .extract()
+                        .response();
+
+                String walletId = response.path("id");
+                List<?> investments = response.path("investments");
+                List<?> historyInvestments = response.path("history");
+
+                assertThat(walletId).isNotNull();
+                assertThat(investments).isEmpty();
+                assertThat(historyInvestments).isEmpty();
+            }
+
+            @Test
+            @DisplayName("GET /api/v1/wallet/investment/{id}: should return investment successfully")
+            @Transactional
+            void shouldReturnInvestmentSuccessfully() throws Exception {
+                UUID investmentId = addInvestment(investmentRequest().initialValue(), investmentRequest().assetId());
+                var actives = getActiveInvestments();
+                var expected = actives.getFirst();
+
+                assertThat(actives.size()).isEqualTo(1);
+
+                Response response = given()
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .when()
+                        .get("/api/v1/wallet/investment/" + investmentId)
+                        .then()
+                        .statusCode(200)
+                        .contentType(ContentType.JSON)
+                        .extract()
+                        .response();
+
+                assertInvestmentMatchesResponse(expected, response, "");
+            }
         }
+
+        @Nested
+        @DisplayName("Error Responses")
+        class ErrorResponses {
+            @Test
+            @DisplayName("POST /api/v1/wallet: Should return 409 Conflict if wallet already exists")
+            @Transactional
+            void shouldFailToCreateWalletIfAlreadyExists() {
+                given()
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .when()
+                        .post("/api/v1/wallet")
+                        .then()
+                        .statusCode(409);
+            }
+        }
+
     }
 }

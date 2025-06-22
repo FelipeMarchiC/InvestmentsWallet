@@ -57,4 +57,11 @@ public class AvailableAssetsTests extends BaseSeleniumTest {
         assertThat(availableAssetsPage.isErrorMessageDisplayed()).isFalse();
         assertThat(availableAssetsPage.isNoAssetsFoundMessageDisplayed()).isFalse();
     }
+
+    @Test
+    @DisplayName("Should open investment dialog when 'Investir' button is clicked")
+    void shouldOpenInvestmentDialog() {
+        availableAssetsPage.clickInvestButtonForAsset(0);
+        assertThat(availableAssetsPage.getDialogTitle()).isEqualTo("Registrar um investimento");
+    }
 }

@@ -664,6 +664,19 @@ class WalletAPIControllerTest {
                         .then()
                         .statusCode(409);
             }
+
+            @Test
+            @DisplayName("GET /api/v1/wallet/investment/{id}: should return 404 when investment is not found")
+            void shouldReturnNotFoundWhenInvestmentDoesNotExist() {
+                UUID nonExistentId = UUID.fromString("00000000-0000-0000-0000-000000000000");
+
+                given()
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .when()
+                        .get("/api/v1/wallet/investment/" + nonExistentId)
+                        .then()
+                        .statusCode(404);
+            }
         }
 
     }

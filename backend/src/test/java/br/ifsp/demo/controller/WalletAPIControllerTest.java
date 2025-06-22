@@ -706,6 +706,20 @@ class WalletAPIControllerTest {
                         .then()
                         .statusCode(404);
             }
+
+            @Test
+            @DisplayName("POST /api/v1/wallet/investment: should return 400 Bad Request when initialValue is 0")
+            @Transactional
+            void shouldReturnBadRequestWhenInitialValueIsZeroOrLess() {
+                given()
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(ContentType.JSON)
+                        .body(new InvestmentRequestDTO(0.0, cdbAssetId))
+                        .when()
+                        .post("/api/v1/wallet/investment")
+                        .then()
+                        .statusCode(400);
+            }
         }
 
     }

@@ -677,6 +677,21 @@ class WalletAPIControllerTest {
                         .then()
                         .statusCode(404);
             }
+
+            @Test
+            @DisplayName("GET /api/v1/wallet/investment/{id}: should return 404 when accessing others investment")
+            void shouldReturnNotFoundWhenAccessingOthersInvestment() throws Exception {
+                String otherUserJwt = jwtToken;
+                setupTestUserAndToken();
+                UUID investmentId = addInvestment(investmentRequest().initialValue(), investmentRequest().assetId());
+
+                given()
+                        .header("Authorization", "Bearer " + otherUserJwt)
+                        .when()
+                        .get("/api/v1/wallet/investment/" + investmentId)
+                        .then()
+                        .statusCode(404);
+            }
         }
 
     }

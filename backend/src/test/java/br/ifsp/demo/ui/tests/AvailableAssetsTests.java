@@ -11,6 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,5 +65,13 @@ public class AvailableAssetsTests extends BaseSeleniumTest {
     void shouldOpenInvestmentDialog() {
         availableAssetsPage.clickInvestButtonForAsset(0);
         assertThat(availableAssetsPage.getDialogTitle()).isEqualTo("Registrar um investimento");
+    }
+
+    @Test
+    @DisplayName("Should close investment dialog when 'Cancelar' button is clicked")
+    void shouldCloseInvestmentDialog() {
+        availableAssetsPage.clickInvestButtonForAsset(0);
+        availableAssetsPage.clickCancelInvestmentButton();
+        assertThat(availableAssetsPage.isDialogClosed()).isTrue();
     }
 }
